@@ -47,11 +47,14 @@ frontend/.env.production
 # ============================================================
 .env
 .env.local
-.env.*
-!.env.example
+.env.production
+.env.staging
+!.env.example        # File mẫu này được phép commit
 secrets/
-config/secrets.*
 yt_cookies.json
+
+# GitHub Actions secrets được lưu trong GitHub Secrets
+# KHÔNG bao giờ hardcode secret vào file code
 
 # ============================================================
 # FILE TẠM / TEST (ở thư mục deploy)

@@ -49,6 +49,11 @@ app.use('/api/practice', practiceRoutes);
 app.use('/api', proxyRoutes); // Proxy routes include /api/video, /api/grammar, etc.
 app.use('/', proxyRoutes); // Proxy routes include /translate, /correct
 
+// Health check endpoint (for K8s liveness & readiness probes)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', service: 'backend-js', timestamp: new Date().toISOString() });
+});
+
 app.listen(PORT, () => {
   console.log(`=======================================================`);
   console.log(`🚀 [backend_core] Modular Express API running on http://0.0.0.0:${PORT}`);

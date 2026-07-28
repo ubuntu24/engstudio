@@ -1,12 +1,11 @@
 version: '3.8'
 
+# Production: dùng image đã build sẵn từ GHCR
+# Không build lại trên server, chỉ pull image về và chạy
+
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5000}
+    image: ghcr.io/${GHCR_REPO}/english-studio-frontend:${IMAGE_TAG:-latest}
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -18,9 +17,7 @@ services:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
   backend_js:
-    build:
-      context: ./backend_js
-      dockerfile: Dockerfile
+    image: ghcr.io/${GHCR_REPO}/english-studio-backend-js:${IMAGE_TAG:-latest}
     ports:
       - "5000:5000"
     restart: unless-stopped
@@ -33,9 +30,7 @@ services:
       - AI_SERVICE_URL=http://backend_py:5001
 
   backend_py:
-    build:
-      context: ./backend_py
-      dockerfile: Dockerfile
+    image: ghcr.io/${GHCR_REPO}/english-studio-backend-py:${IMAGE_TAG:-latest}
     ports:
       - "5001:5001"
     restart: unless-stopped
@@ -45,3 +40,13 @@ services:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
       - DB_PATH=/app/database/english_learning.db
       - TRANSCRIPT_DB_PATH=/app/database/transcript_cache.db
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    depends_on:
+      - frontend
+      - backend_js
