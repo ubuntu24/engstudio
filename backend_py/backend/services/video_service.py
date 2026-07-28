@@ -75,19 +75,37 @@ def extract_vid_helper(url_or_id: str) -> str:
 
 
 def init_bilingual_cache():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS bilingual_video_cache (
-            video_id TEXT PRIMARY KEY,
-            title TEXT,
-            channel TEXT,
-            duration REAL,
-            lines_json TEXT,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    conn.commit()
-    conn.close()
+    from backend.core.db import get_db_connection
+    conn = get_db_connection()
+    try:
+        if conn.__class__.__name__ == 'PostgresConnectionWrapper':
+            cur = conn.cursor()
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS bilingual_video_cache (
+                    video_id TEXT PRIMARY KEY,
+                    title TEXT,
+                    channel TEXT,
+                    duration REAL,
+                    lines_json TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+        else:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS bilingual_video_cache (
+                    video_id TEXT PRIMARY KEY,
+                    title TEXT,
+                    channel TEXT,
+                    duration REAL,
+                    lines_json TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+        conn.commit()
+    except Exception as e:
+        print("Error init bilingual cache:", e)
+    finally:
+        conn.close()
 
 
 def get_from_transcript_cache_helper(video_id: str):
