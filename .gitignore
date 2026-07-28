@@ -1,0 +1,77 @@
+# ============================================================
+# DATABASE - Không đẩy DB lên GitHub
+# ============================================================
+database/*.db
+database/*.db-shm
+database/*.db-wal
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ============================================================
+# LOG FILES
+# ============================================================
+*.log
+logs/
+node_backend.log
+nohup.out
+
+# ============================================================
+# PYTHON
+# ============================================================
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.env
+*.env
+.venv/
+
+# ============================================================
+# NODE / NEXT.JS
+# ============================================================
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env*.local
+frontend/.env.local
+frontend/.env.production
+
+# ============================================================
+# SECRETS & CONFIG NHẠY CẢM
+# ============================================================
+.env
+.env.local
+.env.*
+!.env.example
+secrets/
+config/secrets.*
+yt_cookies.json
+
+# ============================================================
+# FILE TẠM / TEST (ở thư mục deploy)
+# ============================================================
+test_*.py
+check_*.py
+add_mock_*.py
+test_db.py
+test_api*.py
+test_queries*.py
+nohup.out
+*.tmp
+*.bak
+
+# ============================================================
+# OS & EDITOR
+# ============================================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

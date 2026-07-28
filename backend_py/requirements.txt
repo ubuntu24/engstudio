@@ -1,0 +1,9 @@
+flask
+flask-cors
+flask-limiter
+Flask-Caching
+google-generativeai
+deep-translator
+yt-dlp
+youtube-transcript-api
+requests

@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://backend_js:5000
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    depends_on:
+      - backend_js
+      - backend_py
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://backend_js:5000
+
+  backend_js:
+    build:
+      context: ./backend_js
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    volumes:
+      - ./database:/app/database
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/app/database/english_learning.db
+      - AI_SERVICE_URL=http://backend_py:5001
+
+  backend_py:
+    build:
+      context: ./backend_py
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    restart: unless-stopped
+    volumes:
+      - ./database:/app/database
+    environment:
+      - DB_PATH=/app/database/english_learning.db
+      - TRANSCRIPT_DB_PATH=/app/database/transcript_cache.db

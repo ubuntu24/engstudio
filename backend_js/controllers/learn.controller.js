@@ -1,0 +1,249 @@
+const { dbQueryAll, dbQueryGet, dbRun } = require('../utils/db');
+const { escapeHtml } = require('../utils/helpers');
+
+async function getProgress(req, res) {
+  try {
+    if (!req.userId) {
+      return res.json({
+        learning: 0,
+        reviewing: 0,
+        known: 0,
+        due_now: 0,
+        total_learned: 0,
+        is_guest: true
+      });
+    }
+
+    const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
+    const learning = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'learning'", [req.userId]))?.c || 0;
+    const reviewing = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'reviewing'", [req.userId]))?.c || 0;
+    const known = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'known'", [req.userId]))?.c || 0;
+
+    const due_now = (
+      await dbQueryGet(
+        "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND due_date <= ? AND status IN ('learning', 'reviewing', 'known')",
+        [req.userId, nowStr]
+      )
+    )?.c || 0;
+
+    res.json({
+      learning,
+      reviewing,
+      known,
+      due_now,
+      total_learned: learning + reviewing + known,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function getTopics(req, res) {
+  try {
+    const totalRow = await dbQueryGet('SELECT COUNT(*) as c FROM vocabulary');
+    const topicRows = await dbQueryAll(
+      "SELECT topic, COUNT(*) as c FROM vocabulary WHERE topic IS NOT NULL AND topic != '' GROUP BY topic ORDER BY c DESC"
+    );
+
+    const topics = [
+      { name: 'Tất cả', count: totalRow ? totalRow.c : 0 },
+      ...topicRows.map(r => ({ name: r.topic, count: r.c }))
+    ];
+
+    res.json({ topics });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function createSession(req, res) {
+  try {
+    const data = req.method === 'POST' ? req.body : req.query;
+    let count = parseInt(data.count || 20);
+    count = Math.max(1, Math.min(count, 50));
+    const topicRaw = (data.topic || '').trim();
+    const topic = topicRaw;
+    const videoOnly = data.video_only === true || data.video_only === 'true';
+
+    if (!req.userId) {
+      let guestSql = `SELECT v.* FROM vocabulary v`;
+      let guestParams = [];
+      if (topic && topic !== 'all' && topic !== 'Tất cả') {
+        guestSql += ` WHERE v.topic = ?`;
+        guestParams.push(topic);
+      }
+      if (videoOnly) {
+        guestSql += guestSql.includes('WHERE') ? ` AND v.video_id IS NOT NULL AND v.video_id != ''` : ` WHERE v.video_id IS NOT NULL AND v.video_id != ''`;
+      }
+      guestSql += ` ORDER BY RANDOM() LIMIT ?`;
+      guestParams.push(count);
+      const cards = await dbQueryAll(guestSql, guestParams);
+      return res.json({
+        session_id: 0,
+        cards: cards,
+        new_count: cards.length,
+        review_count: 0,
+        topic: topic || 'Tất cả',
+        is_guest: true
+      });
+    }
+
+    const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+    let dueSql = `
+      SELECT v.* FROM vocabulary v
+      JOIN learning_progress lp ON lp.word_id = v.id
+      WHERE lp.user_id = ? AND lp.due_date <= ? AND lp.status IN ('learning', 'reviewing', 'known')
+    `;
+    let dueParams = [req.userId, nowStr];
+
+    let newSql = `
+      SELECT v.* FROM vocabulary v
+      WHERE v.id NOT IN (SELECT word_id FROM learning_progress WHERE user_id = ?)
+    `;
+    let newParams = [req.userId];
+
+    if (topic && topic !== 'all' && topic !== 'Tất cả') {
+      dueSql += ` AND v.topic = ?`;
+      dueParams.push(topic);
+      newSql += ` AND v.topic = ?`;
+      newParams.push(topic);
+    }
+    
+    if (videoOnly) {
+      dueSql += ` AND v.video_id IS NOT NULL AND v.video_id != ''`;
+      newSql += ` AND v.video_id IS NOT NULL AND v.video_id != ''`;
+    }
+
+    dueSql += ` ORDER BY lp.due_date ASC LIMIT ?`;
+    dueParams.push(count);
+
+    const dueRows = await dbQueryAll(dueSql, dueParams);
+
+    let newRows = [];
+    const remaining = count - dueRows.length;
+    if (remaining > 0) {
+      newSql += ` ORDER BY RANDOM() LIMIT ?`;
+      newParams.push(remaining);
+      newRows = await dbQueryAll(newSql, newParams);
+    }
+
+    const cards = [...dueRows, ...newRows].sort(() => 0.5 - Math.random());
+
+    const sessionRes = await dbRun(
+      "INSERT INTO review_sessions (user_id, session_type, cards_seen, cards_correct) VALUES (?, 'learn', 0, 0)",
+      [req.userId]
+    );
+
+    res.json({
+      session_id: sessionRes.lastID,
+      cards: cards,
+      new_count: newRows.length,
+      review_count: dueRows.length,
+      topic: topic || 'Tất cả',
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+async function submitReview(req, res) {
+  try {
+    const { word_id, rating, session_id } = req.body || {};
+    if (!word_id || !['again', 'hard', 'good', 'easy'].includes(rating)) {
+      return res.status(400).json({ error: 'Payload không hợp lệ' });
+    }
+
+    if (!req.userId) {
+      return res.json({
+        ok: true,
+        correct: ['good', 'easy'].includes(rating),
+        status: 'learning',
+        interval_days: 0,
+        due_date: new Date().toISOString(),
+        is_guest: true
+      });
+    }
+
+    const now = new Date();
+    const nowStr = now.toISOString().replace('T', ' ').slice(0, 19);
+
+    const row = await dbQueryGet('SELECT * FROM learning_progress WHERE user_id = ? AND word_id = ?', [req.userId, word_id]);
+
+    let ease = row ? parseFloat(row.ease_factor || 2.5) : 2.5;
+    let interval = row ? parseFloat(row.interval_days || 0) : 0;
+    let consecutive = row ? parseInt(row.consecutive_correct || 0) : 0;
+    let totalReviews = row ? parseInt(row.total_reviews || 0) + 1 : 1;
+
+    let status = 'learning';
+
+    // SRS calculation
+    if (rating === 'again') {
+      ease = Math.max(1.3, ease - 0.2);
+      interval = 0;
+      consecutive = 0;
+      status = 'learning';
+    } else if (rating === 'hard') {
+      ease = Math.max(1.3, ease - 0.15);
+      consecutive += 1;
+      interval = interval < 1 ? 1 : interval * 1.2;
+      status = consecutive < 2 ? 'learning' : 'reviewing';
+    } else if (rating === 'good') {
+      consecutive += 1;
+      if (interval < 1) interval = 1;
+      else if (interval < 6) interval = 6;
+      else interval *= ease;
+      status = consecutive < 4 ? 'reviewing' : 'known';
+    } else { // easy
+      ease += 0.15;
+      consecutive += 1;
+      if (interval < 1) interval = 2;
+      else interval *= ease * 1.3;
+      status = consecutive >= 3 ? 'known' : 'reviewing';
+    }
+
+    const dueDate = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000);
+    const dueStr = dueDate.toISOString().replace('T', ' ').slice(0, 19);
+
+    if (row) {
+      await dbRun(
+        `UPDATE learning_progress
+         SET status = ?, ease_factor = ?, interval_days = ?, consecutive_correct = ?,
+             due_date = ?, last_reviewed = ?, total_reviews = ?, updated_at = ?
+         WHERE user_id = ? AND word_id = ?`,
+        [status, ease, interval, consecutive, dueStr, nowStr, totalReviews, nowStr, req.userId, word_id]
+      );
+    } else {
+      await dbRun(
+        `INSERT INTO learning_progress
+         (user_id, word_id, status, ease_factor, interval_days, consecutive_correct,
+          due_date, last_reviewed, total_reviews, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [req.userId, word_id, status, ease, interval, consecutive, dueStr, nowStr, totalReviews, nowStr, nowStr]
+      );
+    }
+
+    await dbRun(
+      `INSERT INTO review_log (session_id, user_id, word_id, rating, reviewed_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      [session_id || null, req.userId, word_id, rating, nowStr]
+    );
+
+    res.json({
+      ok: true,
+      correct: ['good', 'easy'].includes(rating),
+      status,
+      interval_days: interval,
+      due_date: dueStr,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
+module.exports = {
+  getProgress,
+  getTopics,
+  createSession,
+  submitReview
+};
