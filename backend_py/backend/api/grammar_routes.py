@@ -18,7 +18,7 @@ def get_grammar_questions():
         cur = conn.cursor()
         
         # Check if table exists
-        cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='grammar_questions'")
+        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name='grammar_questions'")
         if not cur.fetchone():
             return jsonify({'questions': [], 'total_in_db': 0})
 

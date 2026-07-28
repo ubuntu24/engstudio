@@ -27,6 +27,7 @@ services:
     environment:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
       - DB_PATH=/app/database/english_learning.db
       - AI_SERVICE_URL=http://backend_py:5001
 

@@ -9,11 +9,11 @@ async function register(req, res) {
     username = escapeHtml(username).trim();
     display_name = escapeHtml(display_name || username).trim();
     
-    const existing = await dbQueryGet('SELECT id FROM users WHERE username = ?', [username]);
+    const existing = await dbQueryGet('SELECT id FROM users WHERE username = $1', [username]);
     if (existing) return res.status(400).json({ error: 'Tên đăng nhập đã tồn tại' });
     
     const hashed = hashPassword(password);
-    const result = await dbRun('INSERT INTO users (username, password_hash, display_name) VALUES (?, ?, ?)', [username, hashed, display_name]);
+    const result = await dbRun('INSERT INTO users (username, password_hash, display_name) VALUES ($1, $2, $3) RETURNING id', [username, hashed, display_name]);
     
     const userId = result.lastID;
     const token = generateToken(userId);
@@ -33,7 +33,7 @@ async function login(req, res) {
     if (!username || !password) return res.status(400).json({ error: 'Thiếu username hoặc password' });
     
     username = escapeHtml(username).trim();
-    const user = await dbQueryGet('SELECT id, username, password_hash, display_name FROM users WHERE username = ?', [username]);
+    const user = await dbQueryGet('SELECT id, username, password_hash, display_name FROM users WHERE username = $1', [username]);
     
     if (!user || user.password_hash !== hashPassword(password)) {
       return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không chính xác' });
@@ -57,7 +57,7 @@ function logout(req, res) {
 
 async function getMe(req, res) {
   try {
-    const user = await dbQueryGet('SELECT id, username, display_name FROM users WHERE id = ?', [req.userId]);
+    const user = await dbQueryGet('SELECT id, username, display_name FROM users WHERE id = $1', [req.userId]);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json({ user });
   } catch (err) {

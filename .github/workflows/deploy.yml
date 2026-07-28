@@ -161,6 +161,7 @@ jobs:
           FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         run: |
           printf 'GHCR_REPO=%s\n'           "$GHCR_REPO"           > .env
           printf 'IMAGE_TAG=%s\n'           "$IMAGE_TAG"           >> .env
@@ -168,6 +169,7 @@ jobs:
           printf 'FLASK_SECRET_KEY=%s\n'    "$FLASK_SECRET_KEY"    >> .env
           printf 'NEXT_PUBLIC_API_URL=%s\n' "$NEXT_PUBLIC_API_URL" >> .env
           printf 'CF_TUNNEL_TOKEN=%s\n'     "$CF_TUNNEL_TOKEN"     >> .env
+          printf 'SUPABASE_URL=%s\n'        "$SUPABASE_URL"        >> .env
 
       - name: Pull new images
         run: docker compose -f docker-compose.prod.yml pull

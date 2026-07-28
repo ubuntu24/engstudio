@@ -1,19 +1,79 @@
-import sqlite3
+import psycopg2
+import psycopg2.extras
 import os
 from flask import request, session as flask_session
+import re
 
-DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(__file__), "..", "..", "..", "database", "english_learning.db"))
+DB_PATH = os.environ.get("SUPABASE_URL", os.environ.get("DB_PATH"))
 
-# Ensure directory exists so sqlite3 doesn't crash
-db_dir = os.path.dirname(DB_PATH)
-if db_dir and not os.path.exists(db_dir):
-    os.makedirs(db_dir, exist_ok=True)
+class CursorWrapper:
+    def __init__(self, cursor):
+        self.cursor = cursor
+        self.lastrowid = None
+        self.rowcount = 0
+
+    def execute(self, sql, params=None):
+        sql = sql.replace('sqlite_master', 'information_schema.tables')
+        if 'INSERT OR IGNORE' in sql:
+            sql = sql.replace('INSERT OR IGNORE', 'INSERT')
+            if 'ON CONFLICT' not in sql:
+                sql += ' ON CONFLICT DO NOTHING'
+
+        is_insert = sql.strip().upper().startswith('INSERT')
+        if is_insert and 'RETURNING id' not in sql:
+            sql += ' RETURNING id'
+            
+        if '?' in sql:
+            sql = sql.replace('?', '%s')
+            
+        self.cursor.execute(sql, params)
+        self.rowcount = self.cursor.rowcount
+        
+        if is_insert:
+            try:
+                row = self.cursor.fetchone()
+                if row and 'id' in row:
+                    self.lastrowid = row['id']
+            except Exception:
+                pass
+        return self
+
+    def fetchone(self):
+        return self.cursor.fetchone()
+
+    def fetchall(self):
+        return self.cursor.fetchall()
+
+    def executescript(self, sql):
+        self.cursor.execute(sql)
+
+class ConnectionWrapper:
+    def __init__(self, conn):
+        self.conn = conn
+
+    def cursor(self):
+        cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        return CursorWrapper(cur)
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
+    def execute(self, sql, params=None):
+        cur = self.cursor()
+        cur.execute(sql, params)
+        return cur
+
+    def executescript(self, sql):
+        cur = self.cursor()
+        cur.executescript(sql)
+        return cur
 
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    return conn
+    conn = psycopg2.connect(DB_PATH)
+    return ConnectionWrapper(conn)
 
 def get_default_user(conn):
     """Đảm bảo luôn có user mặc định, trả về user_id. KHÔNG đóng connection."""
@@ -52,15 +112,38 @@ def init_db():
     conn = get_db_connection()
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT DEFAULT '',
             display_name TEXT DEFAULT '',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS vocabulary (
+            id SERIAL PRIMARY KEY,
+            word TEXT NOT NULL,
+            vietnamese_meaning TEXT DEFAULT '',
+            pronunciation TEXT DEFAULT '',
+            video_id TEXT DEFAULT '',
+            timestamp_sec REAL DEFAULT 0,
+            context TEXT DEFAULT '',
+            video_title TEXT DEFAULT '',
+            channel TEXT DEFAULT '',
+            view_count INTEGER DEFAULT 0,
+            embed_url TEXT DEFAULT '',
+            definition TEXT DEFAULT '',
+            example TEXT DEFAULT '',
+            image_path TEXT DEFAULT '',
+            audio_path TEXT DEFAULT '',
+            pos TEXT DEFAULT '',
+            example_vi TEXT DEFAULT '',
+            topic TEXT DEFAULT 'Giao tiếp hàng ngày',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
         CREATE TABLE IF NOT EXISTS learning_progress (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL DEFAULT 1,
             word_id INTEGER NOT NULL,
             status TEXT NOT NULL DEFAULT 'new'
@@ -73,15 +156,14 @@ def init_db():
             total_reviews INTEGER NOT NULL DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            UNIQUE(user_id, word_id),
-            FOREIGN KEY (word_id) REFERENCES vocabulary(id)
+            UNIQUE(user_id, word_id)
         );
 
         CREATE INDEX IF NOT EXISTS idx_lp_due ON learning_progress(user_id, due_date);
         CREATE INDEX IF NOT EXISTS idx_lp_status ON learning_progress(user_id, status);
 
         CREATE TABLE IF NOT EXISTS review_sessions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL DEFAULT 1,
             session_type TEXT NOT NULL DEFAULT 'learn'
                 CHECK (session_type IN ('learn', 'review', 'quiz')),
@@ -92,19 +174,34 @@ def init_db():
         );
 
         CREATE TABLE IF NOT EXISTS review_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             session_id INTEGER,
             user_id INTEGER NOT NULL DEFAULT 1,
             word_id INTEGER NOT NULL,
             rating TEXT NOT NULL
                 CHECK (rating IN ('again', 'hard', 'good', 'easy')),
             response_time_ms INTEGER DEFAULT 0,
-            reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (word_id) REFERENCES vocabulary(id)
+            reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS grammar_questions (
+            id SERIAL PRIMARY KEY,
+            category TEXT NOT NULL,
+            question TEXT NOT NULL,
+            option_a TEXT NOT NULL,
+            option_b TEXT NOT NULL,
+            option_c TEXT NOT NULL,
+            option_d TEXT NOT NULL,
+            correct_answer TEXT NOT NULL,
+            explanation TEXT,
+            source TEXT DEFAULT 'ETS 2024',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            formula TEXT DEFAULT '',
+            signal_words TEXT DEFAULT '',
+            translation_vi TEXT DEFAULT '',
+            ai_breakdown_json TEXT DEFAULT NULL
         );
     """)
 
-    # Migration: add password_hash if table existed before
     try:
         conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT DEFAULT ''")
         conn.commit()

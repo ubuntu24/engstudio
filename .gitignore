@@ -78,3 +78,6 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+.agents/
+skills-lock.json
+database_backup.tar.gz

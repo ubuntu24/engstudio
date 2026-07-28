@@ -15,13 +15,13 @@ async function getProgress(req, res) {
     }
 
     const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
-    const learning = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'learning'", [req.userId]))?.c || 0;
-    const reviewing = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'reviewing'", [req.userId]))?.c || 0;
-    const known = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'known'", [req.userId]))?.c || 0;
+    const learning = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'learning'", [req.userId]))?.c || 0;
+    const reviewing = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'reviewing'", [req.userId]))?.c || 0;
+    const known = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'known'", [req.userId]))?.c || 0;
 
     const due_now = (
       await dbQueryGet(
-        "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND due_date <= ? AND status IN ('learning', 'reviewing', 'known')",
+        "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND due_date <= $2 AND status IN ('learning', 'reviewing', 'known')",
         [req.userId, nowStr]
       )
     )?.c || 0;
@@ -69,14 +69,14 @@ async function createSession(req, res) {
       let guestSql = `SELECT v.* FROM vocabulary v`;
       let guestParams = [];
       if (topic && topic !== 'all' && topic !== 'Tất cả') {
-        guestSql += ` WHERE v.topic = ?`;
         guestParams.push(topic);
+        guestSql += ` WHERE v.topic = $${guestParams.length}`;
       }
       if (videoOnly) {
         guestSql += guestSql.includes('WHERE') ? ` AND v.video_id IS NOT NULL AND v.video_id != ''` : ` WHERE v.video_id IS NOT NULL AND v.video_id != ''`;
       }
-      guestSql += ` ORDER BY RANDOM() LIMIT ?`;
       guestParams.push(count);
+      guestSql += ` ORDER BY RANDOM() LIMIT $${guestParams.length}`;
       const cards = await dbQueryAll(guestSql, guestParams);
       return res.json({
         session_id: 0,
@@ -93,21 +93,21 @@ async function createSession(req, res) {
     let dueSql = `
       SELECT v.* FROM vocabulary v
       JOIN learning_progress lp ON lp.word_id = v.id
-      WHERE lp.user_id = ? AND lp.due_date <= ? AND lp.status IN ('learning', 'reviewing', 'known')
+      WHERE lp.user_id = $1 AND lp.due_date <= $2 AND lp.status IN ('learning', 'reviewing', 'known')
     `;
     let dueParams = [req.userId, nowStr];
 
     let newSql = `
       SELECT v.* FROM vocabulary v
-      WHERE v.id NOT IN (SELECT word_id FROM learning_progress WHERE user_id = ?)
+      WHERE v.id NOT IN (SELECT word_id FROM learning_progress WHERE user_id = $1)
     `;
     let newParams = [req.userId];
 
     if (topic && topic !== 'all' && topic !== 'Tất cả') {
-      dueSql += ` AND v.topic = ?`;
       dueParams.push(topic);
-      newSql += ` AND v.topic = ?`;
+      dueSql += ` AND v.topic = $${dueParams.length}`;
       newParams.push(topic);
+      newSql += ` AND v.topic = $${newParams.length}`;
     }
     
     if (videoOnly) {
@@ -115,23 +115,23 @@ async function createSession(req, res) {
       newSql += ` AND v.video_id IS NOT NULL AND v.video_id != ''`;
     }
 
-    dueSql += ` ORDER BY lp.due_date ASC LIMIT ?`;
     dueParams.push(count);
+    dueSql += ` ORDER BY lp.due_date ASC LIMIT $${dueParams.length}`;
 
     const dueRows = await dbQueryAll(dueSql, dueParams);
 
     let newRows = [];
     const remaining = count - dueRows.length;
     if (remaining > 0) {
-      newSql += ` ORDER BY RANDOM() LIMIT ?`;
       newParams.push(remaining);
+      newSql += ` ORDER BY RANDOM() LIMIT $${newParams.length}`;
       newRows = await dbQueryAll(newSql, newParams);
     }
 
     const cards = [...dueRows, ...newRows].sort(() => 0.5 - Math.random());
 
     const sessionRes = await dbRun(
-      "INSERT INTO review_sessions (user_id, session_type, cards_seen, cards_correct) VALUES (?, 'learn', 0, 0)",
+      "INSERT INTO review_sessions (user_id, session_type, cards_seen, cards_correct) VALUES ($1, 'learn', 0, 0) RETURNING id",
       [req.userId]
     );
 
@@ -168,7 +168,7 @@ async function submitReview(req, res) {
     const now = new Date();
     const nowStr = now.toISOString().replace('T', ' ').slice(0, 19);
 
-    const row = await dbQueryGet('SELECT * FROM learning_progress WHERE user_id = ? AND word_id = ?', [req.userId, word_id]);
+    const row = await dbQueryGet('SELECT * FROM learning_progress WHERE user_id = $1 AND word_id = $2', [req.userId, word_id]);
 
     let ease = row ? parseFloat(row.ease_factor || 2.5) : 2.5;
     let interval = row ? parseFloat(row.interval_days || 0) : 0;
@@ -208,9 +208,9 @@ async function submitReview(req, res) {
     if (row) {
       await dbRun(
         `UPDATE learning_progress
-         SET status = ?, ease_factor = ?, interval_days = ?, consecutive_correct = ?,
-             due_date = ?, last_reviewed = ?, total_reviews = ?, updated_at = ?
-         WHERE user_id = ? AND word_id = ?`,
+         SET status = $1, ease_factor = $2, interval_days = $3, consecutive_correct = $4,
+             due_date = $5, last_reviewed = $6, total_reviews = $7, updated_at = $8
+         WHERE user_id = $9 AND word_id = $10`,
         [status, ease, interval, consecutive, dueStr, nowStr, totalReviews, nowStr, req.userId, word_id]
       );
     } else {
@@ -218,14 +218,14 @@ async function submitReview(req, res) {
         `INSERT INTO learning_progress
          (user_id, word_id, status, ease_factor, interval_days, consecutive_correct,
           due_date, last_reviewed, total_reviews, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
         [req.userId, word_id, status, ease, interval, consecutive, dueStr, nowStr, totalReviews, nowStr, nowStr]
       );
     }
 
     await dbRun(
       `INSERT INTO review_log (session_id, user_id, word_id, rating, reviewed_at)
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5)`,
       [session_id || null, req.userId, word_id, rating, nowStr]
     );
 
