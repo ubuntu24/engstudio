@@ -14,7 +14,8 @@ services:
       - backend_py
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - API_URL=http://backend_js:5000
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-}
 
   backend_js:
     image: ghcr.io/${GHCR_REPO}/english-studio-backend-js:${IMAGE_TAG:-latest}
