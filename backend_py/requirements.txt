@@ -8,3 +8,4 @@ yt-dlp
 youtube-transcript-api
 requests
 psycopg2-binary
+faster-whisper
