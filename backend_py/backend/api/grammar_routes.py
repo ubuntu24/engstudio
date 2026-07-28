@@ -17,9 +17,10 @@ def get_grammar_questions():
     try:
         cur = conn.cursor()
         
-        # Check if table exists
-        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name='grammar_questions'")
-        if not cur.fetchone():
+        try:
+            # We assume the table exists since init_db() creates it.
+            pass
+        except Exception:
             return jsonify({'questions': [], 'total_in_db': 0})
 
         if category and category != 'All':

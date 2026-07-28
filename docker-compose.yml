@@ -16,6 +16,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - API_URL=http://backend_js:5000
 
   backend_js:
     build:
@@ -24,12 +25,10 @@ services:
     ports:
       - "5000:5000"
     restart: unless-stopped
-    volumes:
-      - ./database:/app/database
     environment:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET}
-      - DB_PATH=/app/database/english_learning.db
+      - SUPABASE_URL=${SUPABASE_URL}
       - AI_SERVICE_URL=http://backend_py:5001
 
   backend_py:
@@ -39,9 +38,9 @@ services:
     ports:
       - "5001:5001"
     restart: unless-stopped
-    volumes:
-      - ./database:/app/database
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
-      - DB_PATH=/app/database/english_learning.db
+      - SUPABASE_URL=${SUPABASE_URL}
       - TRANSCRIPT_DB_PATH=/app/database/transcript_cache.db
+    volumes:
+      - ./database:/app/database
