@@ -18,11 +18,14 @@ let sqliteDb = null;   // sql.js Database (local SQLite)
 // ─── Initialize ───────────────────────────────────────────────────────────────
 if (isPostgres) {
   const { Pool } = require('pg');
+  // For Node.js pg, Transaction mode (6543) can cause statement timeouts with extended query protocol.
+  // Switch to Session mode (5432) for stable long-lived connections.
+  const sessionUrl = supabaseUrl.replace(':6543/', ':5432/');
   pool = new Pool({
-    connectionString: supabaseUrl,
+    connectionString: sessionUrl,
     ssl: { rejectUnauthorized: false }   // Required for Supabase
   });
-  console.log('[db] ✅ Using Supabase (PostgreSQL)');
+  console.log('[db] ✅ Using Supabase (PostgreSQL) on Session Pooler (5432)');
 } else {
   // sql.js: WebAssembly SQLite, no native bindings needed on any OS
   const initSqlJs = require('sql.js');

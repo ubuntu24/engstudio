@@ -3,6 +3,8 @@ import sqlite3
 from flask import request, session as flask_session
 
 DB_PATH = os.environ.get("SUPABASE_URL", os.environ.get("DB_PATH", "english_learning.db"))
+if DB_PATH and ':6543/' in DB_PATH:
+    DB_PATH = DB_PATH.replace(':6543/', ':5432/')
 IS_POSTGRES = DB_PATH.startswith("postgres")
 
 if IS_POSTGRES:
