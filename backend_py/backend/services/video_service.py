@@ -110,7 +110,8 @@ def init_bilingual_cache():
 
 def get_from_transcript_cache_helper(video_id: str):
     try:
-        conn = sqlite3.connect("transcript_cache.db")
+        from backend.core.db import get_db_connection
+        conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT data FROM transcript_cache WHERE video_id = ?", (video_id,))
         row = cur.fetchone()

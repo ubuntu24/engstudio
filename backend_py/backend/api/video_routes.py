@@ -158,16 +158,18 @@ def get_video_bilingual():
                 raw_lines = auto_transcribe_audio_helper(video_id, url_or_id)
                 if raw_lines:
                     try:
-                        TRANSCRIPT_DB_PATH = os.environ.get("TRANSCRIPT_DB_PATH", os.path.join(os.path.dirname(DB_PATH) if not DB_PATH.startswith("postgres") else "/app/database", "transcript_cache.db"))
-                        conn_tc = sqlite3.connect(TRANSCRIPT_DB_PATH)
-                        conn_tc.execute(
-                            "INSERT OR REPLACE INTO transcript_cache (video_id, data, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
-                            (video_id, json.dumps(raw_lines, ensure_ascii=False))
-                        )
+                        from backend.core.db import get_db_connection
+                        conn_tc = get_db_connection()
+                        cur_tc = conn_tc.cursor()
+                        cur_tc.execute("SELECT video_id FROM transcript_cache WHERE video_id = ?", (video_id,))
+                        if cur_tc.fetchone():
+                            cur_tc.execute("UPDATE transcript_cache SET data=?, updated_at=CURRENT_TIMESTAMP WHERE video_id=?", (json.dumps(raw_lines, ensure_ascii=False), video_id))
+                        else:
+                            cur_tc.execute("INSERT INTO transcript_cache (video_id, data) VALUES (?, ?)", (video_id, json.dumps(raw_lines, ensure_ascii=False)))
                         conn_tc.commit()
                         conn_tc.close()
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print("Transcript cache save error:", e)
             if not raw_lines:
                 return jsonify({
                     'error': f'Video từ {channel} ({title}) không tìm thấy phụ đề hoặc giọng nói tiếng Anh.',
@@ -249,18 +251,20 @@ def get_video_bilingual():
         conn.close()
     except Exception as e:
         print("Save bilingual cache error:", e)
-
     try:
-        TRANSCRIPT_DB_PATH = os.path.join(os.path.dirname(DB_PATH), "transcript_cache.db")
-        conn = sqlite3.connect(TRANSCRIPT_DB_PATH)
-        conn.execute(
-            "INSERT OR REPLACE INTO transcript_cache (video_id, data) VALUES (?, ?)",
-            (video_id, json.dumps([{'start': l['start'], 'duration': l['duration'], 'text': l['en']} for l in lines], ensure_ascii=False))
-        )
-        conn.commit()
-        conn.close()
-    except Exception:
-        pass
+        from backend.core.db import get_db_connection
+        conn_tc = get_db_connection()
+        cur_tc = conn_tc.cursor()
+        t_data = json.dumps([{'start': l['start'], 'duration': l['duration'], 'text': l['en']} for l in lines], ensure_ascii=False)
+        cur_tc.execute("SELECT video_id FROM transcript_cache WHERE video_id = ?", (video_id,))
+        if cur_tc.fetchone():
+            cur_tc.execute("UPDATE transcript_cache SET data=?, updated_at=CURRENT_TIMESTAMP WHERE video_id=?", (t_data, video_id))
+        else:
+            cur_tc.execute("INSERT INTO transcript_cache (video_id, data) VALUES (?, ?)", (video_id, t_data))
+        conn_tc.commit()
+        conn_tc.close()
+    except Exception as e:
+        print("Transcript cache save error:", e)
 
     return jsonify({
         'video_id': video_id,
@@ -334,18 +338,20 @@ def post_video_bilingual_custom():
         )
         conn.commit()
     conn.close()
-
     try:
-        TRANSCRIPT_DB_PATH = os.path.join(os.path.dirname(DB_PATH), "transcript_cache.db")
-        conn = sqlite3.connect(TRANSCRIPT_DB_PATH)
-        conn.execute(
-            "INSERT OR REPLACE INTO transcript_cache (video_id, data) VALUES (?, ?)",
-            (video_id, json.dumps([{'start': l['start'], 'duration': l['duration'], 'text': l['en']} for l in lines], ensure_ascii=False))
-        )
-        conn.commit()
-        conn.close()
-    except Exception:
-        pass
+        from backend.core.db import get_db_connection
+        conn_tc = get_db_connection()
+        cur_tc = conn_tc.cursor()
+        t_data = json.dumps([{'start': l['start'], 'duration': l['duration'], 'text': l['en']} for l in lines], ensure_ascii=False)
+        cur_tc.execute("SELECT video_id FROM transcript_cache WHERE video_id = ?", (video_id,))
+        if cur_tc.fetchone():
+            cur_tc.execute("UPDATE transcript_cache SET data=?, updated_at=CURRENT_TIMESTAMP WHERE video_id=?", (t_data, video_id))
+        else:
+            cur_tc.execute("INSERT INTO transcript_cache (video_id, data) VALUES (?, ?)", (video_id, t_data))
+        conn_tc.commit()
+        conn_tc.close()
+    except Exception as e:
+        print("Transcript cache save error:", e)
 
     return jsonify({
         'video_id': video_id,
@@ -462,18 +468,20 @@ def post_video_auto_transcribe():
     )
     conn.commit()
     conn.close()
-
     try:
-        TRANSCRIPT_DB_PATH = os.path.join(os.path.dirname(DB_PATH), "transcript_cache.db")
-        conn = sqlite3.connect(TRANSCRIPT_DB_PATH)
-        conn.execute(
-            "INSERT OR REPLACE INTO transcript_cache (video_id, data) VALUES (?, ?)",
-            (video_id, json.dumps([{'start': l['start'], 'duration': l['duration'], 'text': l['en']} for l in lines], ensure_ascii=False))
-        )
-        conn.commit()
-        conn.close()
-    except Exception:
-        pass
+        from backend.core.db import get_db_connection
+        conn_tc = get_db_connection()
+        cur_tc = conn_tc.cursor()
+        t_data = json.dumps([{'start': l['start'], 'duration': l['duration'], 'text': l['en']} for l in lines], ensure_ascii=False)
+        cur_tc.execute("SELECT video_id FROM transcript_cache WHERE video_id = ?", (video_id,))
+        if cur_tc.fetchone():
+            cur_tc.execute("UPDATE transcript_cache SET data=?, updated_at=CURRENT_TIMESTAMP WHERE video_id=?", (t_data, video_id))
+        else:
+            cur_tc.execute("INSERT INTO transcript_cache (video_id, data) VALUES (?, ?)", (video_id, t_data))
+        conn_tc.commit()
+        conn_tc.close()
+    except Exception as e:
+        print("Transcript cache save error:", e)
 
     return jsonify({
         'video_id': video_id,
