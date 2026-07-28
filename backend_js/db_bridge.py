@@ -22,9 +22,13 @@ def main():
     ]
     db_path = candidates[2]
     for c in candidates:
-        if c and os.path.exists(c) and os.path.getsize(c) > 50000:
+        if c and os.path.exists(c):
             db_path = c
             break
+    
+    # Force use env_db if provided
+    if env_db:
+        db_path = env_db
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
