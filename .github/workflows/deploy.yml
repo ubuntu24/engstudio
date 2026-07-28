@@ -71,7 +71,7 @@ jobs:
           python -m py_compile app.py
 
   # ============================================================
-  # JOB 2: Build & Push Docker Images lên GHCR (GitHub hosted)
+  # JOB 2: Build & Push Docker Images lên GHCR (GitHub hosted) x
   # ============================================================
   build-and-push:
     name: 🐳 Build & Push Images
