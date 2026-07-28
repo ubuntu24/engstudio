@@ -123,7 +123,8 @@ def get_video_bilingual():
         stream_url = f"/api/video/stream?url={urllib.parse.quote(url_or_id)}"
 
     _init_bilingual_cache()
-    conn = sqlite3.connect(DB_PATH)
+    from backend.core.db import get_db_connection
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT title, channel, duration, lines_json FROM bilingual_video_cache WHERE video_id = ?", (cache_key,))
     row = cur.fetchone()
@@ -157,7 +158,7 @@ def get_video_bilingual():
                 raw_lines = auto_transcribe_audio_helper(video_id, url_or_id)
                 if raw_lines:
                     try:
-                        TRANSCRIPT_DB_PATH = os.path.join(os.path.dirname(DB_PATH), "transcript_cache.db")
+                        TRANSCRIPT_DB_PATH = os.environ.get("TRANSCRIPT_DB_PATH", os.path.join(os.path.dirname(DB_PATH) if not DB_PATH.startswith("postgres") else "/app/database", "transcript_cache.db"))
                         conn_tc = sqlite3.connect(TRANSCRIPT_DB_PATH)
                         conn_tc.execute(
                             "INSERT OR REPLACE INTO transcript_cache (video_id, data, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
@@ -309,12 +310,21 @@ def post_video_bilingual_custom():
     cache_key = f"{video_id}_vip" if request.json.get('vip', False) else video_id
     
     _init_bilingual_cache()
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        "INSERT OR REPLACE INTO bilingual_video_cache (video_id, title, channel, duration, lines_json, updated_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
-        (cache_key, title, channel, 0, json.dumps(lines, ensure_ascii=False))
-    )
-    conn.commit()
+    from backend.core.db import get_db_connection
+    conn = get_db_connection()
+    if conn.__class__.__name__ == 'PostgresConnectionWrapper':
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO bilingual_video_cache (video_id, title, channel, duration, lines_json, updated_at) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP) ON CONFLICT (video_id) DO UPDATE SET lines_json = EXCLUDED.lines_json, updated_at = CURRENT_TIMESTAMP",
+            (cache_key, title, channel, 0, json.dumps(lines, ensure_ascii=False))
+        )
+        conn.commit()
+    else:
+        conn.execute(
+            "INSERT OR REPLACE INTO bilingual_video_cache (video_id, title, channel, duration, lines_json, updated_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
+            (cache_key, title, channel, 0, json.dumps(lines, ensure_ascii=False))
+        )
+        conn.commit()
     conn.close()
 
     try:
@@ -479,7 +489,8 @@ def download_video_srt():
     cache_key = f"{video_id}_vip" if is_vip else video_id
 
     _init_bilingual_cache()
-    conn = sqlite3.connect(DB_PATH)
+    from backend.core.db import get_db_connection
+    conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT lines_json FROM bilingual_video_cache WHERE video_id = ?", (cache_key,))
     row = cur.fetchone()
