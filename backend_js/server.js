@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:5001';
 
 // Security Headers & CORS
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 

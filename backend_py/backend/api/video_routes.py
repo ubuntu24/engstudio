@@ -234,13 +234,21 @@ def get_video_bilingual():
 
     lines = smart_format_and_translate_lines(lines, is_vip=is_vip)
 
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        "INSERT OR REPLACE INTO bilingual_video_cache (video_id, title, channel, duration, lines_json, updated_at) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)",
-        (cache_key, title, channel, duration, json.dumps(lines, ensure_ascii=False))
-    )
-    conn.commit()
-    conn.close()
+    from backend.core.db import get_db_connection
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT video_id FROM bilingual_video_cache WHERE video_id = ?", (cache_key,))
+        if cur.fetchone():
+            cur.execute("UPDATE bilingual_video_cache SET title=?, channel=?, duration=?, lines_json=?, updated_at=CURRENT_TIMESTAMP WHERE video_id=?", 
+                (title, channel, duration, json.dumps(lines, ensure_ascii=False), cache_key))
+        else:
+            cur.execute("INSERT INTO bilingual_video_cache (video_id, title, channel, duration, lines_json) VALUES (?, ?, ?, ?, ?)",
+                (cache_key, title, channel, duration, json.dumps(lines, ensure_ascii=False)))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print("Save bilingual cache error:", e)
 
     try:
         TRANSCRIPT_DB_PATH = os.path.join(os.path.dirname(DB_PATH), "transcript_cache.db")

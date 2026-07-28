@@ -519,7 +519,11 @@ export default function GrammarPage() {
                   </div>
                 )}
               </div>
-            ) : null}
+            ) : (
+              <div className="p-12 text-center text-slate-400 font-bold bg-[#09150d] rounded-3xl border border-[#1b3e28]">
+                <HelpCircle className="w-8 h-8 mx-auto mb-3 text-slate-500 opacity-50" /> Không có câu hỏi nào.
+              </div>
+            )}
           </div>
         )}
 
