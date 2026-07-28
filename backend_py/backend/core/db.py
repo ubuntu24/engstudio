@@ -3,9 +3,11 @@ import os
 from flask import request, session as flask_session
 
 DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(__file__), "..", "..", "..", "database", "english_learning.db"))
-if not os.path.exists(DB_PATH):
-    # Fallback for old setups
-    DB_PATH = "/home/MRS/english/english_learning.db"
+
+# Ensure directory exists so sqlite3 doesn't crash
+db_dir = os.path.dirname(DB_PATH)
+if db_dir and not os.path.exists(db_dir):
+    os.makedirs(db_dir, exist_ok=True)
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
