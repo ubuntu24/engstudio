@@ -162,6 +162,7 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           printf 'GHCR_REPO=%s\n'           "$GHCR_REPO"           > .env
           printf 'IMAGE_TAG=%s\n'           "$IMAGE_TAG"           >> .env
@@ -170,6 +171,7 @@ jobs:
           printf 'NEXT_PUBLIC_API_URL=%s\n' "$NEXT_PUBLIC_API_URL" >> .env
           printf 'CF_TUNNEL_TOKEN=%s\n'     "$CF_TUNNEL_TOKEN"     >> .env
           printf 'SUPABASE_URL=%s\n'        "$SUPABASE_URL"        >> .env
+          printf 'GEMINI_API_KEY=%s\n'      "$GEMINI_API_KEY"      >> .env
 
       - name: Pull new images
         run: docker compose -f docker-compose.prod.yml pull

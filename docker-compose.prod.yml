@@ -52,6 +52,7 @@ services:
       - SUPABASE_URL=${SUPABASE_URL}
       - DB_PATH=/app/database/english_learning.db
       - TRANSCRIPT_DB_PATH=/app/database/transcript_cache.db
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
 
   cloudflared:
     image: cloudflare/cloudflared:latest
