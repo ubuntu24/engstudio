@@ -221,10 +221,10 @@ export default function PracticePage() {
                         setSelectedCategory("All");
                         setCurrentSampleIndex(0);
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                         selectedCategory === "All"
-                          ? "bg-primary-500 text-text-primary-fg font-black"
-                          : "bg-bg-surface text-text-muted hover:text-text-main border border-border-main"
+                          ? "bg-primary-500 border-primary-500 text-text-primary-fg shadow-sm"
+                          : "bg-bg-surface border-border-main text-text-muted hover:border-primary-400 hover:text-text-main"
                       }`}
                     >
                       Tất Cả
@@ -236,10 +236,10 @@ export default function PracticePage() {
                           setSelectedCategory(cat);
                           setCurrentSampleIndex(0);
                         }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                           selectedCategory === cat
-                            ? "bg-primary-500 text-text-primary-fg font-black"
-                            : "bg-bg-surface text-text-muted hover:text-text-main border border-border-main"
+                            ? "bg-primary-500 border-primary-500 text-text-primary-fg shadow-sm"
+                            : "bg-bg-surface border-border-main text-text-muted hover:border-primary-400 hover:text-text-main"
                         }`}
                       >
                         {cat}
