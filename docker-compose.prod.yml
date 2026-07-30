@@ -22,6 +22,9 @@ services:
     ports:
       - "5000:5000"
     restart: unless-stopped
+    depends_on:
+      backend_py:
+        condition: service_healthy
     volumes:
       - ./database:/app/database
     environment:
@@ -36,6 +39,12 @@ services:
     ports:
       - "5001:5001"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5001/api/health\")' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     volumes:
       - ./database:/app/database
     environment:

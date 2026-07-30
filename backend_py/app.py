@@ -30,6 +30,10 @@ def create_app():
     # Đăng ký toàn bộ blueprints
     register_blueprints(app)
 
+    @app.route('/api/health')
+    def health():
+        return jsonify({"status": "ok", "service": "backend_py"})
+
     @app.after_request
     def after_request(response):
         # Hide server version for security (Fix for Finding 8)
