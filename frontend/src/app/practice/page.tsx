@@ -508,14 +508,14 @@ export default function PracticePage() {
                                 {err.suggestion ? (
                                   <button
                                     onClick={() => handleApplyFix(err)}
-                                    className="px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-text-main font-bold text-xs shadow-lg shadow-primary-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-text-primary-fg font-bold text-xs shadow-lg shadow-primary-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
                                   >
                                     <Check className="w-3.5 h-3.5" /> Sửa Ngay
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => handleDeleteWord(err)}
-                                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-text-main font-bold text-xs shadow transition-all flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow transition-all flex items-center gap-1.5 cursor-pointer"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" /> Xóa Từ
                                   </button>

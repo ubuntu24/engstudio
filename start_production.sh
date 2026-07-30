@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Thiết lập thư mục gốc
-ROOT_DIR="/home/MRS/english/deploy"
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DB_PATH="${ROOT_DIR}/database/english_learning.db"
 TRANSCRIPT_DB_PATH="${ROOT_DIR}/database/transcript_cache.db"
 
@@ -10,6 +10,9 @@ export NODE_ENV=production
 echo "=================================================="
 echo "🚀 Đang khởi động hệ thống English Vault (Production)"
 echo "=================================================="
+
+# Đảm bảo thư mục database tồn tại (nếu pull code mà git không theo dõi thư mục rỗng)
+mkdir -p "${ROOT_DIR}/database"
 
 cleanup() {
     echo ""
