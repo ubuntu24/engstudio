@@ -15,6 +15,8 @@ const isPostgres = !!(supabaseUrl && (supabaseUrl.startsWith('postgres://') || s
 let pool = null;       // pg Pool (Postgres/Supabase)
 let sqliteDb = null;   // sql.js Database (local SQLite)
 
+console.log(`[db] Mode: ${isPostgres ? 'PostgreSQL (Supabase)' : 'SQLite'}`);
+
 // ─── Initialize ───────────────────────────────────────────────────────────────
 if (isPostgres) {
   const { Pool } = require('pg');
@@ -27,6 +29,15 @@ if (isPostgres) {
     connectionTimeoutMillis: 5000,
     query_timeout: 10000,
     idleTimeoutMillis: 10000
+  });
+  pool.on('error', (err) => {
+    console.error('[db] ❌ PostgreSQL pool error:', err.message);
+  });
+  // Test connection on startup
+  pool.query('SELECT 1').then(() => {
+    console.log('[db] ✅ PostgreSQL connected successfully');
+  }).catch(err => {
+    console.error('[db] ❌ PostgreSQL connection failed:', err.message);
   });
 } else {
   // sql.js: WebAssembly SQLite, no native bindings needed on any OS

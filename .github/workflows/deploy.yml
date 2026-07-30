@@ -179,7 +179,11 @@ jobs:
 
       - name: Print backend_py logs on failure
         if: failure()
-        run: docker logs engstudio-backend_py-1
+        run: docker logs engstudio-backend_py-1 || true
+
+      - name: Print backend_js logs on failure
+        if: failure()
+        run: docker logs engstudio-backend_js-1 || true
 
       - name: Prune old images
         if: always()
