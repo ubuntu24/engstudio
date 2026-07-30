@@ -214,20 +214,33 @@ def practice_advanced_check():
             'extra_words': []
         })
 
-    # Obtain reference translation via MarianMT AI
+    # Obtain reference translation - Priority: Google Translate API → sample list → fallback
     reference_en = ''
-    try:
-        if _ensure_translation_model():
-            reference_en = translate_vi_en(vi_text)
-    except Exception:
-        pass
 
+    # 1. Try Google Translate via deep-translator (fast, reliable, no model needed)
+    try:
+        from deep_translator import GoogleTranslator
+        reference_en = GoogleTranslator(source='vi', target='en').translate(vi_text)
+    except Exception as e:
+        print(f"[practice] Google Translate failed: {e}", flush=True)
+
+    # 2. Fallback: match in PRACTICE_SAMPLE_TOPICS list
     if not reference_en:
         matched_sample = next((s for s in PRACTICE_SAMPLE_TOPICS if s['original_vi'] == vi_text), None)
         if matched_sample:
             reference_en = matched_sample['reference_en']
-        else:
-            reference_en = vi_text
+
+    # 3. Fallback: try MarianMT local model (only if transformers is installed)
+    if not reference_en:
+        try:
+            if _ensure_translation_model():
+                reference_en = translate_vi_en(vi_text)
+        except Exception:
+            pass
+
+    # 4. Last resort: use vi_text itself
+    if not reference_en:
+        reference_en = vi_text
 
     # Try Primary Engine: GPT-4o AI Grammar Engine
     try:
