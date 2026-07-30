@@ -20,7 +20,7 @@ if (isPostgres) {
   const { Pool } = require('pg');
   // For Node.js pg, Transaction mode (6543) can cause statement timeouts with extended query protocol.
   // Switch to Session mode (5432) for stable long-lived connections.
-  const sessionUrl = supabaseUrl.replace(':6543/', ':5432/');
+  const sessionUrl = supabaseUrl;
   pool = new Pool({
     connectionString: sessionUrl,
     ssl: { rejectUnauthorized: false },   // Required for Supabase
