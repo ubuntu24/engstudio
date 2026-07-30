@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 import sys
 import re
 import json
+import os
+import requests
 from backend.core.auth import optional_login
 from backend.services.ai_manager import (
     correct_grammar, 
