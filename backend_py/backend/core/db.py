@@ -82,7 +82,10 @@ class PostgresConnectionWrapper:
 
 def get_db_connection():
     if IS_POSTGRES:
-        conn = psycopg2.connect(DB_PATH)
+        kwargs = {}
+        if "supabase" in DB_PATH.lower() and "sslmode" not in DB_PATH.lower():
+            kwargs['sslmode'] = 'require'
+        conn = psycopg2.connect(DB_PATH, **kwargs)
         return PostgresConnectionWrapper(conn)
     else:
         conn = sqlite3.connect(DB_PATH)
