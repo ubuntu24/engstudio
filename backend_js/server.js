@@ -5,28 +5,41 @@ const helmet = require('helmet');
 
 const app = express();
 app.disable('x-powered-by');
+// Trust Cloudflare proxy (required for express-rate-limit and correct IP detection)
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:5001';
 
 // Security Headers & CORS
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  process.env.NEXT_PUBLIC_API_URL,
+  'https://www.engstudio.dpdns.org',
+  'https://engstudio.dpdns.org',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'http://192.168.1.47:3000'
+  'http://192.168.1.47:3000',
+  'http://frontend:3000',
 ].filter(Boolean);
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({
   origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy violation'), false);
-    }
-    return callback(null, true);
+    // Allow any origin in allowedOrigins list
+    if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+    // Allow any *.dpdns.org or *.ngrok.io in development
+    if (/\.(dpdns\.org|ngrok\.io|trycloudflare\.com)$/.test(origin)) return callback(null, true);
+    console.warn('[CORS] Blocked origin:', origin);
+    return callback(new Error('CORS policy violation'), false);
   },
   credentials: true
 }));
+
+// Rate Limiters (after trust proxy is set)
+const { apiLimiter } = require('./middlewares/rateLimiter.middleware');
+app.use('/api/', apiLimiter);
 
 // Simple Cookie Parser Middleware
 app.use((req, res, next) => {
@@ -44,10 +57,6 @@ app.use((req, res, next) => {
 // Parsers
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
-
-// Rate Limiters
-const { apiLimiter } = require('./middlewares/rateLimiter.middleware');
-app.use('/api/', apiLimiter);
 
 // Import Routes
 const authRoutes = require('./routes/auth.routes');
