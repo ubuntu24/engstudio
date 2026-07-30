@@ -5,8 +5,7 @@ const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:5001';
 
 function proxyToAIService(req, res, targetPath) {
   const url = new URL(targetPath || req.originalUrl, AI_SERVICE_URL);
-  const token = req.cookies && req.cookies.auth_token;
-  const userId = verifyToken(token);
+  const userId = req.userId;
   
   const headers = { ...req.headers, host: `${url.hostname}:${url.port}` };
   if (userId) {

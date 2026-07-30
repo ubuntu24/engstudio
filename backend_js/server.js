@@ -1,3 +1,4 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -8,9 +9,24 @@ const PORT = process.env.PORT || 5000;
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:5001';
 
 // Security Headers & CORS
-app.set('trust proxy', true);
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://192.168.1.47:3000'
+].filter(Boolean);
+
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy violation'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 
 // Simple Cookie Parser Middleware
 app.use((req, res, next) => {
@@ -53,6 +69,16 @@ app.use('/', proxyRoutes); // Proxy routes include /translate, /correct
 // Health check endpoint (for K8s liveness & readiness probes)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'backend-js', timestamp: new Date().toISOString() });
+});
+
+// Global Error Handler — ngăn stack trace bị lộ ra client
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('[Unhandled Error]', err);
+  const isProd = process.env.NODE_ENV === 'production';
+  res.status(err.status || 500).json({
+    error: isProd ? 'Lỗi hệ thống, vui lòng thử lại sau.' : err.message
+  });
 });
 
 app.listen(PORT, () => {

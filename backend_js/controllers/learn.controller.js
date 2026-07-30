@@ -1,6 +1,8 @@
 const { dbQueryAll, dbQueryGet, dbRun } = require('../utils/db');
 const { escapeHtml } = require('../utils/helpers');
 
+const reviewLocks = new Set();
+
 async function getProgress(req, res) {
   try {
     if (!req.userId) {
@@ -150,8 +152,17 @@ async function createSession(req, res) {
 async function submitReview(req, res) {
   try {
     const { word_id, rating, session_id } = req.body || {};
-    if (!word_id || !['again', 'hard', 'good', 'easy'].includes(rating)) {
-      return res.status(400).json({ error: 'Payload không hợp lệ' });
+    if (!word_id || typeof word_id !== 'number' || !Number.isInteger(word_id) || word_id < 1) {
+      return res.status(400).json({ error: 'word_id không hợp lệ' });
+    }
+    if (!['again', 'hard', 'good', 'easy'].includes(rating)) {
+      return res.status(400).json({ error: 'rating không hợp lệ' });
+    }
+
+    // Validate word_id tồn tại trong vocabulary (chống IDOR)
+    const wordExists = await dbQueryGet('SELECT id FROM vocabulary WHERE id = $1', [word_id]);
+    if (!wordExists) {
+      return res.status(404).json({ error: 'Từ vựng không tồn tại' });
     }
 
     if (!req.userId) {
@@ -165,8 +176,15 @@ async function submitReview(req, res) {
       });
     }
 
-    const now = new Date();
-    const nowStr = now.toISOString().replace('T', ' ').slice(0, 19);
+    const lockKey = `${req.userId}:${word_id}`;
+    if (reviewLocks.has(lockKey)) {
+      return res.status(429).json({ error: 'Đang xử lý yêu cầu' });
+    }
+    reviewLocks.add(lockKey);
+
+    try {
+      const now = new Date();
+      const nowStr = now.toISOString().replace('T', ' ').slice(0, 19);
 
     const row = await dbQueryGet('SELECT * FROM learning_progress WHERE user_id = $1 AND word_id = $2', [req.userId, word_id]);
 
@@ -236,8 +254,12 @@ async function submitReview(req, res) {
       interval_days: interval,
       due_date: dueStr,
     });
+    } finally {
+      reviewLocks.delete(lockKey);
+    }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('[Learn submitReview Error]:', err);
+    res.status(500).json({ error: process.env.NODE_ENV === 'production' ? 'Lỗi hệ thống' : err.message });
   }
 }
 

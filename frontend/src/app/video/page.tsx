@@ -192,20 +192,20 @@ export default function VideoPage() {
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12">
       {/* Top Header */}
-      <div className="border-b border-[#16271c] pb-6">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-center gap-3">
-          <Video className="w-9 h-9 text-emerald-400" />
+      <div className="border-b border-border-main pb-6">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-text-main tracking-tight flex items-center gap-3">
+          <Video className="w-9 h-9 text-primary-400" />
           Trình Phát Video Phụ Đề Song Ngữ (YouTube & TikTok)
         </h1>
-        <p className="text-base text-slate-400 mt-1 font-medium">
+        <p className="text-base text-text-muted mt-1 font-medium">
           Khung video cực to, rõ nét với chữ phụ đề lớn dễ nhìn, tự động khớp 100% thời gian thực
         </p>
       </div>
 
       {/* Input URL Bar */}
-      <div className="p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-5 shadow-xl">
+      <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-5 shadow-xl">
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-300">
+          <label className="block text-sm font-semibold text-text-muted">
             Dán đường dẫn Video YouTube hoặc TikTok:
           </label>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -214,12 +214,12 @@ export default function VideoPage() {
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=... hoặc https://www.tiktok.com/@..."
-              className="flex-1 px-4 py-3.5 rounded-2xl bg-[#060a08] border border-[#172b1f] text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 text-sm font-medium"
+              className="flex-1 px-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium"
             />
             <button
               onClick={() => handleLoadSubtitles()}
               disabled={loading}
-              className="px-7 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-slate-950 font-black text-sm shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="px-7 py-3.5 rounded-2xl bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />} Tải Video & Phụ Đề
             </button>
@@ -228,7 +228,7 @@ export default function VideoPage() {
 
         {/* Quick Sample Links */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-          <span className="text-slate-400 font-semibold shrink-0">Video Mẫu:</span>
+          <span className="text-text-muted font-semibold shrink-0">Video Mẫu:</span>
           {sampleVideos.map((sample, idx) => (
             <button
               key={idx}
@@ -236,7 +236,7 @@ export default function VideoPage() {
                 setVideoUrl(sample.url);
                 handleLoadSubtitles();
               }}
-              className="px-3.5 py-2 rounded-xl bg-[#060a08] border border-[#172b1f] hover:border-emerald-500/50 text-slate-300 hover:text-white transition-all whitespace-nowrap shrink-0 font-medium cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-bg-surface border border-border-main hover:border-primary-500/50 text-text-muted hover:text-text-main transition-all whitespace-nowrap shrink-0 font-medium cursor-pointer"
             >
               {sample.name}
             </button>
@@ -255,7 +255,7 @@ export default function VideoPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* LEFT COLUMN: Video Player (8 Cols) */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-[#060a08] border border-[#172b1f] shadow-2xl flex items-center justify-center">
+          <div className="relative aspect-video w-full rounded-3xl overflow-hidden bg-bg-surface border border-border-main shadow-2xl flex items-center justify-center">
             {videoReady && videoId && platform === 'youtube' ? (
               <iframe
                 ref={iframeRef}
@@ -271,15 +271,16 @@ export default function VideoPage() {
                 src={streamUrl}
                 controls
                 autoPlay
+                playsInline
                 onTimeUpdate={(e) => updateActiveSubtitle(e.currentTarget.currentTime)}
                 className="w-full h-full object-contain"
               />
             ) : (
               <div className="text-center p-8 space-y-3">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
+                <div className="w-16 h-16 rounded-full bg-primary-500/10 border border-primary-500/20 flex items-center justify-center mx-auto text-primary-400">
                   <Play className="w-8 h-8 ml-1" />
                 </div>
-                <p className="text-sm font-semibold text-slate-400 max-w-sm mx-auto">
+                <p className="text-sm font-semibold text-text-muted max-w-sm mx-auto">
                   Dán đường dẫn Video ở trên và bấm &quot;Tải Video & Phụ Đề&quot; để bắt đầu trải nghiệm xem video song ngữ.
                 </p>
               </div>
@@ -288,12 +289,12 @@ export default function VideoPage() {
             {/* Subtitle Overlay Bar on Player */}
             {videoReady && showVideoCaption && activeSub && (
               <div className="absolute bottom-2 inset-x-2 sm:bottom-6 sm:inset-x-6 z-20 pointer-events-none text-center">
-                <div className="inline-block max-w-2xl px-3 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-black/85 backdrop-blur-md border border-white/10 text-white shadow-2xl space-y-0.5 sm:space-y-1">
-                  <p className="text-xs sm:text-lg font-bold tracking-wide text-emerald-300">
+                <div className="inline-block max-w-2xl px-3 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl bg-bg-card/90 backdrop-blur-md border border-border-main shadow-2xl space-y-0.5 sm:space-y-1">
+                  <p className="text-xs sm:text-lg font-bold tracking-wide text-primary-500">
                     {activeSub.text}
                   </p>
                   {activeSub.translation && (
-                    <p className="text-[10px] sm:text-sm text-slate-200 font-medium italic">
+                    <p className="text-[10px] sm:text-sm text-text-muted font-medium italic">
                       {activeSub.translation}
                     </p>
                   )}
@@ -304,13 +305,13 @@ export default function VideoPage() {
 
           {/* Video Title & Actions Bar */}
           {videoReady && (
-            <div className="p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-4 shadow-xl">
+            <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-sm sm:text-lg font-bold text-white leading-snug line-clamp-1 sm:line-clamp-2" title={videoTitle}>
+                  <h2 className="text-sm sm:text-lg font-bold text-text-main leading-snug line-clamp-1 sm:line-clamp-2" title={videoTitle}>
                     {videoTitle}
                   </h2>
-                  <p className="text-xs text-slate-400 mt-1 font-medium">
+                  <p className="text-xs text-text-muted mt-1 font-medium">
                     Tổng số {subtitles.length} câu thoại song ngữ được đồng bộ
                   </p>
                 </div>
@@ -318,15 +319,15 @@ export default function VideoPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowVideoCaption(!showVideoCaption)}
-                    className="px-3.5 py-2 rounded-xl bg-[#060a08] border border-[#172b1f] text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-bg-surface border border-border-main text-xs font-semibold text-text-muted hover:text-text-main transition-all flex items-center gap-1.5 cursor-pointer"
                   >
-                    {showVideoCaption ? <EyeOff className="w-4 h-4 text-emerald-400" /> : <Eye className="w-4 h-4 text-slate-400" />}
+                    {showVideoCaption ? <EyeOff className="w-4 h-4 text-primary-400" /> : <Eye className="w-4 h-4 text-text-muted" />}
                     {showVideoCaption ? 'Ẩn Phụ Đề Trên Video' : 'Hiện Phụ Đề Trên Video'}
                   </button>
 
                   <button
                     onClick={handleDownloadSRT}
-                    className="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-primary-600/20 hover:bg-primary-600/30 text-primary-400 border border-primary-500/30 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <Download className="w-4 h-4" /> Tải File SRT
                   </button>
@@ -338,26 +339,26 @@ export default function VideoPage() {
 
         {/* RIGHT COLUMN: Interactive Subtitle Transcript Stream (4 Cols) */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="p-5 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-4 shadow-xl flex flex-col h-[540px]">
-            <div className="flex items-center justify-between border-b border-[#16271c] pb-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Languages className="w-4 h-4 text-emerald-400" />
+          <div className="p-5 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl flex flex-col h-[540px]">
+            <div className="flex items-center justify-between border-b border-border-main pb-3">
+              <h3 className="text-sm font-bold text-text-main flex items-center gap-2">
+                <Languages className="w-4 h-4 text-primary-400" />
                 Danh Sách Câu Thoại
               </h3>
-              <span className="text-xs font-bold text-[#4ade80] bg-[#0e2116] px-2.5 py-0.5 rounded-full border border-[#1d462f]">
+              <span className="text-xs font-bold text-primary-400 bg-bg-surface-hover px-2.5 py-0.5 rounded-full border border-border-hover">
                 {subtitles.length} câu
               </span>
             </div>
 
             {/* Search Filter Box */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <Search className="w-4 h-4 text-text-muted absolute left-3 top-3" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm từ vựng trong phụ đề..."
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#060a08] border border-[#172b1f] text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-bg-surface border border-border-main text-xs text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500"
               />
             </div>
 
@@ -378,15 +379,15 @@ export default function VideoPage() {
                         }}
                         className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${
                           isActive
-                            ? 'bg-[#0e2116] border-[#1d462f] text-white shadow-md'
-                            : 'bg-[#060a08] border-[#172b1f] text-slate-300 hover:bg-[#0e1d14] hover:text-white'
+                            ? 'bg-bg-surface-hover border-border-hover text-text-main shadow-md'
+                            : 'bg-bg-surface border-border-main text-text-muted hover:bg-bg-surface-hover hover:text-text-main'
                         }`}
                       >
-                        <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono mb-1">
-                          <span className={isActive ? 'text-[#4ade80] font-bold' : ''}>
+                        <div className="flex items-center justify-between text-[11px] text-text-muted font-mono mb-1">
+                          <span className={isActive ? 'text-primary-400 font-bold' : ''}>
                             {formatSRTTime(sub.start || 0).split(',')[0]}
                           </span>
-                          {isActive && <span className="text-[10px] font-bold text-[#4ade80] uppercase">Đang phát</span>}
+                          {isActive && <span className="text-[10px] font-bold text-primary-400 uppercase">Đang phát</span>}
                         </div>
                         <p className="text-xs font-bold leading-relaxed">
                           {sub.text.split(' ').map((word, wIdx) => (
@@ -396,14 +397,14 @@ export default function VideoPage() {
                                 e.stopPropagation();
                                 handleWordClick(word);
                               }}
-                              className="hover:text-emerald-300 hover:underline cursor-pointer"
+                              className="hover:text-primary-400 hover:underline cursor-pointer"
                             >
                               {word}{' '}
                             </span>
                           ))}
                         </p>
                         {sub.translation && (
-                          <p className="text-[11px] text-slate-400 italic mt-1 font-medium">
+                          <p className="text-[11px] text-text-muted italic mt-1 font-medium">
                             {sub.translation}
                           </p>
                         )}

@@ -37,11 +37,17 @@ export default function LearnPage() {
   ) => {
     setLoading(true);
     setCompletedCount(0);
-    const data = await fetchLearnSession(20, topic, vidOnly);
-    setWords(data.cards);
-    setCurrentIndex(0);
-    setIsFlipped(false);
-    setLoading(false);
+    try {
+      const data = await fetchLearnSession(20, topic, vidOnly);
+      setWords(data.cards);
+      setCurrentIndex(0);
+      setIsFlipped(false);
+    } catch (err) {
+      console.error('Failed to load session:', err);
+      setWords([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -83,7 +89,7 @@ export default function LearnPage() {
   if (loading && !topics.length) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500" />
       </div>
     );
   }
@@ -93,27 +99,27 @@ export default function LearnPage() {
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
-            <BookOpen className="w-8 h-8 text-emerald-400" />
+          <h1 className="text-3xl font-extrabold text-text-main tracking-tight flex items-center gap-2.5">
+            <BookOpen className="w-8 h-8 text-primary-400" />
             Học Từ Vựng Flashcard
           </h1>
-          <p className="text-sm text-slate-400 mt-1 font-medium">
+          <p className="text-sm text-text-muted mt-1 font-medium">
             Phân loại theo Chủ đề
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-full bg-[#0e2116] text-[#4ade80] border border-[#1d462f] text-xs font-semibold">
+          <div className="px-3.5 py-1.5 rounded-full bg-bg-surface-hover text-primary-400 border border-border-hover text-xs font-semibold">
             Còn lại:{" "}
-            <span className="text-[#4ade80] font-bold">{words.length}</span> thẻ
+            <span className="text-primary-400 font-bold">{words.length}</span> thẻ
           </div>
         </div>
       </div>
 
       {/* Topic Selection Bar */}
-      <div className="bg-[#0f1712] border border-[#192b1f] p-4 rounded-3xl space-y-3 shadow-xl">
-        <div className="flex items-center justify-between text-xs font-bold text-slate-300">
+      <div className="bg-bg-card border border-border-main p-4 rounded-3xl space-y-3 shadow-xl">
+        <div className="flex items-center justify-between text-xs font-bold text-text-muted">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-emerald-400" />
+            <Filter className="w-4 h-4 text-primary-400" />
             <span>Chọn Chủ Đề Học Tập:</span>
           </div>
           <button
@@ -125,7 +131,7 @@ export default function LearnPage() {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
               videoOnly
                 ? "bg-rose-500/20 border-rose-500/50 text-rose-400"
-                : "bg-[#060a08] border-[#172b1f] text-slate-400 hover:text-white"
+                : "bg-bg-surface border-border-main text-text-muted hover:text-text-main"
             }`}
           >
             <Video className="w-3.5 h-3.5" />
@@ -141,13 +147,13 @@ export default function LearnPage() {
                 onClick={() => handleSelectTopic(t.name)}
                 className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                   isSelected
-                    ? "bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 border border-emerald-400 font-black"
-                    : "bg-[#060a08] text-slate-300 hover:bg-[#0e1d14] hover:text-white border border-[#172b1f]"
+                    ? "bg-primary-500 text-text-primary-fg shadow-lg shadow-primary-500/20 border border-primary-400 font-black"
+                    : "bg-bg-surface text-text-muted hover:bg-bg-surface-hover hover:text-text-main border border-border-main"
                 }`}
               >
                 <span>{t.name}</span>
                 <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] ${isSelected ? "bg-slate-950 text-emerald-400" : "bg-[#0b140f] text-slate-400"}`}
+                  className={`px-2 py-0.5 rounded-full text-[10px] ${isSelected ? "bg-slate-950 text-primary-400" : "bg-bg-surface-hover text-text-muted"}`}
                 >
                   {t.count}
                 </span>
@@ -159,24 +165,24 @@ export default function LearnPage() {
 
       {/* Empty Queue State */}
       {!loading && !words.length ? (
-        <div className="max-w-2xl mx-auto text-center py-16 px-6 bg-[#0f1712] rounded-3xl border border-[#192b1f] space-y-6 shadow-2xl">
-          <div className="w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+        <div className="max-w-2xl mx-auto text-center py-16 px-6 bg-bg-card rounded-3xl border border-border-main space-y-6 shadow-2xl">
+          <div className="w-20 h-20 bg-primary-500/10 text-primary-400 rounded-full flex items-center justify-center mx-auto border border-primary-500/30">
             <Trophy className="w-10 h-10 text-amber-400 animate-bounce" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-3xl font-extrabold text-white">
+            <h2 className="text-3xl font-extrabold text-text-main">
               {videoOnly
                 ? `Không có Video nào trong "${selectedTopic}"`
                 : `Hoàn Thành Chuỗi Từ Chủ Đề "${selectedTopic}"!`}
             </h2>
-            <p className="text-slate-400 text-sm max-w-md mx-auto font-medium">
+            <p className="text-text-muted text-sm max-w-md mx-auto font-medium">
               {videoOnly
                 ? "Chưa có từ vựng nào trong chủ đề này được gắn kèm video YouTube. Bạn hãy thử chọn chủ đề khác nhé!"
                 : "Tuyệt vời! Bạn đã học hết tất cả các từ vựng thuộc chủ đề này trong lượt hiện tại."}
             </p>
           </div>
           {completedCount > 0 && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/10 border border-primary-500/30 text-primary-400 text-sm font-semibold">
               <CheckCircle2 className="w-4 h-4" /> Đã ôn thành công{" "}
               {completedCount} thẻ
             </div>
@@ -184,7 +190,7 @@ export default function LearnPage() {
           <div className="pt-4 flex justify-center gap-4">
             <button
               onClick={() => loadSession(selectedTopic, videoOnly)}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" /> Kiểm tra lượt học tiếp theo
             </button>
@@ -195,7 +201,7 @@ export default function LearnPage() {
         <>
           {loading ? (
             <div className="flex items-center justify-center min-h-[360px]">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500" />
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500" />
             </div>
           ) : (
             <div className="perspective-1000 min-h-[360px]">
@@ -206,11 +212,11 @@ export default function LearnPage() {
                 }`}
               >
                 {/* Front Side */}
-                <div className="absolute inset-0 w-full h-full rounded-3xl bg-gradient-to-b from-[#0f1a14] to-[#070d0a] border border-[#1d3d2a] p-8 flex flex-col justify-between shadow-2xl backface-hidden">
-                  <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
-                    <span className="px-3 py-1 rounded-full bg-[#08140d] text-emerald-300 border border-[#173824]">
+                <div className="absolute inset-0 w-full h-full rounded-3xl bg-gradient-to-b from-bg-surface to-bg-base border border-border-hover p-8 flex flex-col justify-between shadow-2xl backface-hidden">
+                  <div className="flex items-center justify-between text-xs font-semibold text-text-muted">
+                    <span className="px-3 py-1 rounded-full bg-bg-surface text-primary-400 border border-border-main">
                       Chủ đề:{" "}
-                      <span className="text-white font-bold">
+                      <span className="text-text-main font-bold">
                         {currentWord?.topic || selectedTopic}
                       </span>
                     </span>
@@ -221,17 +227,17 @@ export default function LearnPage() {
                         <Video className="w-3 h-3" /> Có Video
                       </span>
                     )}
-                    <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                    <span className="text-primary-400 flex items-center gap-1 font-bold">
                       <RotateCw className="w-3.5 h-3.5" /> Chạm để xem nghĩa
                     </span>
                   </div>
 
                   <div className="text-center space-y-3 py-8">
-                    <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+                    <h2 className="text-4xl sm:text-5xl font-black text-text-main tracking-tight">
                       {currentWord?.word}
                     </h2>
                     {currentWord?.pronunciation && (
-                      <p className="text-lg text-emerald-400 font-medium">
+                      <p className="text-lg text-primary-400 font-medium">
                         /{currentWord.pronunciation}/
                       </p>
                     )}
@@ -240,54 +246,54 @@ export default function LearnPage() {
                         e.stopPropagation();
                         if (currentWord?.word) playAudio(currentWord.word);
                       }}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-sm font-semibold transition-colors border border-emerald-500/30 mt-2"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 text-sm font-semibold transition-colors border border-primary-500/30 mt-2"
                     >
-                      <Volume2 className="w-4 h-4 text-emerald-400" /> Nghe phát
+                      <Volume2 className="w-4 h-4 text-primary-400" /> Nghe phát
                       âm
                     </button>
                   </div>
 
-                  <div className="text-xs text-center text-slate-400">
+                  <div className="text-xs text-center text-text-muted">
                     Cấp độ:{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-text-main font-semibold">
                       {currentWord?.cefr_level || "A2-B1"}
                     </span>
                   </div>
                 </div>
 
                 {/* Back Side */}
-                <div className="absolute inset-0 w-full h-full rounded-3xl bg-[#0a120e] border border-[#1d3d2a] p-8 flex flex-col justify-between shadow-2xl rotate-y-180 backface-hidden">
-                  <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
-                    <span className="text-[#4ade80] font-bold">
+                <div className="absolute inset-0 w-full h-full rounded-3xl bg-bg-surface border border-border-hover p-8 flex flex-col justify-between shadow-2xl rotate-y-180 backface-hidden">
+                  <div className="flex items-center justify-between text-xs font-semibold text-text-muted">
+                    <span className="text-primary-400 font-bold">
                       Ý Nghĩa Tiếng Việt
                     </span>
-                    <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                    <span className="text-primary-400 flex items-center gap-1 font-bold">
                       <RotateCw className="w-3.5 h-3.5" /> Quay lại mặt trước
                     </span>
                   </div>
 
                   <div className="space-y-4 py-4 text-center">
-                    <h3 className="text-3xl font-bold text-[#4ade80]">
+                    <h3 className="text-3xl font-bold text-primary-400">
                       {currentWord?.meaning_vi ||
                         currentWord?.vietnamese_meaning ||
                         "Chưa có nghĩa tiếng Việt"}
                     </h3>
                     {currentWord?.definition && (
-                      <p className="text-sm text-slate-300 italic max-w-lg mx-auto">
+                      <p className="text-sm text-text-muted italic max-w-lg mx-auto">
                         {currentWord.definition}
                       </p>
                     )}
                     {(currentWord?.example_en ||
                       currentWord?.example ||
                       currentWord?.context) && (
-                      <div className="bg-[#060a08] p-4 rounded-2xl border border-[#172b1f] space-y-1.5 text-sm text-left max-w-xl mx-auto">
-                        <p className="text-slate-200 font-medium">
+                      <div className="bg-bg-surface p-4 rounded-2xl border border-border-main space-y-1.5 text-sm text-left max-w-xl mx-auto">
+                        <p className="text-text-main font-medium">
                           {currentWord.example_en ||
                             currentWord.example ||
                             currentWord.context}
                         </p>
                         {currentWord.example_vi && (
-                          <p className="text-slate-400 italic text-xs">
+                          <p className="text-text-muted italic text-xs">
                             {currentWord.example_vi}
                           </p>
                         )}
@@ -305,19 +311,19 @@ export default function LearnPage() {
 
           {/* Embedded Video Context Player */}
           {isFlipped && (currentWord?.embed_url || currentWord?.video_id) && (
-            <div className="p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-4 shadow-xl animate-fade-in">
+            <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl animate-fade-in">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm font-bold text-white">
+                <div className="flex items-center gap-2 text-sm font-bold text-text-main">
                   <Video className="w-5 h-5 text-rose-400" />
                   <span>Video Ngữ Cảnh Thực Tế</span>
                 </div>
                 {currentWord.channel && (
-                  <span className="text-xs text-slate-400 bg-[#060a08] px-3 py-1 rounded-full font-medium border border-[#172b1f]">
+                  <span className="text-xs text-text-muted bg-bg-surface px-3 py-1 rounded-full font-medium border border-border-main">
                     {currentWord.channel}
                   </span>
                 )}
               </div>
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-[#172b1f] shadow-inner">
+              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-border-main shadow-inner">
                 <iframe
                   src={
                     (
@@ -360,7 +366,7 @@ export default function LearnPage() {
               </button>
               <button
                 onClick={() => handleReview("easy")}
-                className="py-3 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 font-bold text-xs text-center transition-all cursor-pointer shadow-lg shadow-emerald-500/10"
+                className="py-3 px-2 rounded-xl bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 border border-primary-500/40 font-bold text-xs text-center transition-all cursor-pointer shadow-lg shadow-primary-500/10"
               >
                 Rất rõ (Easy)
               </button>

@@ -67,7 +67,7 @@ async function saveWord(req, res) {
 
     const row = await dbQueryGet('SELECT id FROM vocabulary WHERE word = ?', [word]);
     if (row) {
-      await dbRun('INSERT OR IGNORE INTO learning_progress (user_id, word_id, status) VALUES (?, ?, "new")', [req.userId, row.id]);
+      await dbRun('INSERT OR IGNORE INTO learning_progress (user_id, word_id, status) VALUES (?, ?, \'new\')', [req.userId, row.id]);
     }
     res.json({ ok: true, word });
   } catch (err) {

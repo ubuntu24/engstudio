@@ -12,6 +12,7 @@ import {
   logoutUser,
 } from "@/lib/api";
 import { User } from "@/types";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const navItems = [
   { href: "/", label: "Trang chủ" },
@@ -42,12 +43,12 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#0a0f0c]/90 border-b border-[#15271c] text-slate-100 shadow-xl">
+    <header className="sticky top-0 z-50 backdrop-blur-xl bg-bg-base/90 border-b border-border-main text-text-main shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-md shadow-emerald-500/20 border border-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-md shadow-primary-500/20 border border-primary-500/20 group-hover:scale-105 transition-transform duration-300">
               <Image
                 src="/logo.png"
                 alt="English Vault"
@@ -56,10 +57,10 @@ export default function Navbar() {
               />
             </div>
             <div>
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-white block leading-tight">
+              <span className="font-extrabold text-base sm:text-lg tracking-tight text-text-main block leading-tight">
                 English Studio
               </span>
-              <span className="block text-[8px] sm:text-[9px] font-bold tracking-widest text-emerald-400 uppercase"></span>
+              <span className="block text-[8px] sm:text-[9px] font-bold tracking-widest text-primary-400 uppercase"></span>
             </div>
           </Link>
 
@@ -73,8 +74,8 @@ export default function Navbar() {
                   href={item.href}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
                     isActive
-                      ? "bg-[#0e2116] text-[#4ade80] border border-[#1d462f] font-bold shadow-inner"
-                      : "text-slate-300 hover:text-white hover:bg-[#0f1d14]"
+                      ? "bg-bg-surface-hover text-primary-400 border border-border-hover font-bold shadow-inner"
+                      : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
                   }`}
                 >
                   {item.label}
@@ -85,22 +86,24 @@ export default function Navbar() {
 
           {/* User Auth Section & Mobile Toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeSwitcher />
+
             {currentUser ? (
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 bg-[#0d1611] border border-[#162a1e] px-2.5 sm:px-3 py-1.5 rounded-full hover:border-[#224430] transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 bg-bg-surface border border-border-main px-2.5 sm:px-3 py-1.5 rounded-full hover:border-border-hover transition-colors cursor-pointer"
                 >
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xs font-bold">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center text-primary-400 text-xs font-bold">
                     {(currentUser.display_name || currentUser.username || "U")
                       .charAt(0)
                       .toUpperCase()}
                   </div>
-                  <span className="text-xs font-bold text-slate-200 max-w-[80px] sm:max-w-[120px] truncate">
+                  <span className="text-xs font-bold text-text-main max-w-[80px] sm:max-w-[120px] truncate">
                     {currentUser.display_name || currentUser.username || "demo"}
                   </span>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-3.5 h-3.5 text-text-muted transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
@@ -110,7 +113,7 @@ export default function Navbar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setIsDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-[#0d1611] border border-[#183123] rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
+                    <div className="absolute right-0 mt-2 w-48 bg-bg-surface border border-border-main rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
@@ -125,7 +128,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-primary-600 hover:bg-primary-500 text-text-primary-fg font-black text-xs shadow-md transition-all cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 Đăng Nhập
@@ -134,7 +137,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle Button */}
             <button
-              className="lg:hidden p-2 rounded-full bg-[#0d1611] border border-[#162a1e] text-slate-300 hover:text-white"
+              className="lg:hidden p-2 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -149,7 +152,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Dropdown */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-[#0d1611] border-t border-[#15271c] px-4 py-4 space-y-2 animate-fade-in shadow-xl">
+        <div className="lg:hidden bg-bg-surface border-t border-border-main px-4 py-4 space-y-2 animate-fade-in shadow-xl">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -159,8 +162,8 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`block px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                   isActive
-                    ? "bg-[#0e2116] text-[#4ade80] border border-[#1d462f] font-bold"
-                    : "text-slate-300 hover:text-white hover:bg-[#122319]"
+                    ? "bg-bg-surface-hover text-primary-400 border border-border-hover font-bold"
+                    : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
                 }`}
               >
                 {item.label}

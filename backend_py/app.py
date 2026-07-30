@@ -1,5 +1,7 @@
 import os
 import sys
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
 import threading
 from flask import Flask, request, jsonify, session as flask_session, Response, redirect, make_response, send_file
 from backend.core.extensions import cache, limiter

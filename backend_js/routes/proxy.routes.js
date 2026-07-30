@@ -4,13 +4,14 @@ const { proxyToAIService } = require('../middlewares/proxy.middleware');
 const { aiLimiter } = require('../middlewares/rateLimiter.middleware');
 
 const { apiLimiter } = require('../middlewares/rateLimiter.middleware');
+const { requireAuth, optionalAuth } = require('../middlewares/auth.middleware');
 
-router.post('/translate', aiLimiter, (req, res) => proxyToAIService(req, res, '/translate'));
-router.post('/correct', aiLimiter, (req, res) => proxyToAIService(req, res, '/correct'));
-router.all('/video/*', aiLimiter, (req, res) => proxyToAIService(req, res));
+router.post('/translate', requireAuth, aiLimiter, (req, res) => proxyToAIService(req, res, '/translate'));
+router.post('/correct', requireAuth, aiLimiter, (req, res) => proxyToAIService(req, res, '/correct'));
+router.all('/video/*', optionalAuth, aiLimiter, (req, res) => proxyToAIService(req, res));
 router.get('/grammar/questions', apiLimiter, (req, res) => proxyToAIService(req, res));
-router.post('/grammar/ai_explain', aiLimiter, (req, res) => proxyToAIService(req, res));
-router.post('/practice/advanced_check', aiLimiter, (req, res) => proxyToAIService(req, res, '/api/practice/advanced_check'));
+router.post('/grammar/ai_explain', requireAuth, aiLimiter, (req, res) => proxyToAIService(req, res));
+router.post('/practice/advanced_check', requireAuth, aiLimiter, (req, res) => proxyToAIService(req, res, '/api/practice/advanced_check'));
 router.get('/practice/topics', apiLimiter, (req, res) => proxyToAIService(req, res, '/api/practice/topics'));
 
 module.exports = router;

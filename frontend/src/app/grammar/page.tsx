@@ -239,31 +239,31 @@ export default function GrammarPage() {
   const currentQ = questions[currentIndex];
 
   return (
-    <div className="min-h-screen bg-[#050b07] text-white p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-bg-base text-text-main p-4 md:p-8 font-sans">
       <div className="max-w-5xl mx-auto space-y-6">
         
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#09150d] p-6 rounded-3xl border border-[#1b3e28] shadow-2xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-bg-surface p-6 rounded-3xl border border-border-main shadow-2xl">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/30 text-primary-400 text-xs font-bold mb-2">
               <GraduationCap className="w-4 h-4" /> TOEIC Part 5 Master Hub
             </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-black text-text-main tracking-tight">
               Lý Thuyết & Ví Dụ Ngữ Pháp TOEIC
             </h1>
-            <p className="text-xs md:text-sm text-slate-400 font-medium mt-1">
+            <p className="text-xs md:text-sm text-text-muted font-medium mt-1">
               Hệ thống hóa toàn bộ công thức cốt lõi, dấu hiệu nhận biết và câu hỏi ví dụ tự học.
             </p>
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-[#050b07] p-1.5 rounded-2xl border border-[#173322]">
+          <div className="flex items-center bg-bg-base p-1.5 rounded-2xl border border-border-main">
             <button
               onClick={() => setActiveTab('theory')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'theory'
-                  ? 'bg-emerald-500 text-black font-extrabold shadow-lg shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-primary-500 text-text-primary-fg font-extrabold shadow-lg shadow-primary-500/20'
+                  : 'text-text-muted hover:text-text-main'
               }`}
             >
               <BookOpen className="w-4 h-4" /> 📚 Lý Thuyết & Ví Dụ
@@ -272,8 +272,8 @@ export default function GrammarPage() {
               onClick={() => setActiveTab('quiz')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'quiz'
-                  ? 'bg-emerald-500 text-black font-extrabold shadow-lg shadow-emerald-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-primary-500 text-text-primary-fg font-extrabold shadow-lg shadow-primary-500/20'
+                  : 'text-text-muted hover:text-text-main'
               }`}
             >
               <Target className="w-4 h-4" /> ✍️ Tự Làm Bài Tập
@@ -287,38 +287,38 @@ export default function GrammarPage() {
             {THEORY_TOPICS.map((topic) => (
               <div
                 key={topic.id}
-                className="bg-[#09150d] rounded-3xl border border-[#1b3e28] p-6 md:p-8 space-y-6 shadow-xl"
+                className="bg-bg-surface rounded-3xl border border-border-main p-6 md:p-8 space-y-6 shadow-xl"
               >
                 {/* Topic Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#142e1d] pb-4">
-                  <h2 className="text-lg md:text-xl font-black text-emerald-300 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-emerald-400" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-border-main pb-4">
+                  <h2 className="text-lg md:text-xl font-black text-primary-400 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-primary-400" />
                     {topic.title}
                   </h2>
-                  <span className="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-bold self-start md:self-auto">
+                  <span className="px-3 py-1 rounded-full bg-primary-950/60 border border-primary-500/30 text-primary-400 text-xs font-bold self-start md:self-auto">
                     {topic.badge}
                   </span>
                 </div>
 
                 {/* Core Formula Box */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Công thức ngữ pháp cốt lõi:
                   </span>
-                  <div className="bg-[#030805] p-4 rounded-2xl border border-[#12291b] font-mono text-sm font-bold text-emerald-300">
+                  <div className="bg-bg-base p-4 rounded-2xl border border-border-main font-mono text-sm font-bold text-primary-400">
                     {topic.formula}
                   </div>
                 </div>
 
                 {/* Rules List */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Bookmark className="w-3.5 h-3.5 text-emerald-400" /> Quy tắc & Định lý cần nhớ:
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                    <Bookmark className="w-3.5 h-3.5 text-primary-400" /> Quy tắc & Định lý cần nhớ:
                   </span>
-                  <div className="bg-[#030805] p-4 rounded-2xl border border-[#12291b] space-y-2.5">
+                  <div className="bg-bg-base p-4 rounded-2xl border border-border-main space-y-2.5">
                     {topic.rules.map((rule, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-xs text-slate-200 font-medium leading-relaxed">
-                        <Check className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-start gap-2.5 text-xs text-text-main font-medium leading-relaxed">
+                        <Check className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
                         <span>{rule}</span>
                       </div>
                     ))}
@@ -327,14 +327,14 @@ export default function GrammarPage() {
 
                 {/* Signal Words */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
                     <Lightbulb className="w-3.5 h-3.5 text-amber-400" /> Từ khóa dấu hiệu nhận biết nhanh:
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {topic.signalWords.map((sw, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 rounded-xl bg-emerald-950/40 border border-emerald-500/20 text-emerald-300 font-mono text-xs font-semibold"
+                        className="px-3 py-1 rounded-xl bg-primary-950/40 border border-primary-500/20 text-primary-400 font-mono text-xs font-semibold"
                       >
                         {sw}
                       </span>
@@ -344,15 +344,15 @@ export default function GrammarPage() {
 
                 {/* Examples Section */}
                 <div className="space-y-3 pt-2">
-                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-primary-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Award className="w-4 h-4 text-amber-400" /> Câu hỏi ví dụ tự luyện mẫu:
                   </span>
 
                   <div className="grid grid-cols-1 gap-4">
                     {topic.examples.map((ex, exIdx) => (
-                      <div key={exIdx} className="bg-[#030805] p-5 rounded-2xl border border-[#12291b] space-y-3 text-xs">
-                        <p className="font-bold text-slate-100 leading-relaxed text-sm">
-                          <span className="text-emerald-400 font-mono">Ví dụ {exIdx + 1}:</span> &quot;{ex.question}&quot;
+                      <div key={exIdx} className="bg-bg-base p-5 rounded-2xl border border-border-main space-y-3 text-xs">
+                        <p className="font-bold text-text-main leading-relaxed text-sm">
+                          <span className="text-primary-400 font-mono">Ví dụ {exIdx + 1}:</span> &quot;{ex.question}&quot;
                         </p>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 font-mono font-semibold">
@@ -361,8 +361,8 @@ export default function GrammarPage() {
                               key={oIdx}
                               className={`p-2.5 rounded-xl border text-center ${
                                 opt === ex.answer
-                                  ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold'
-                                  : 'bg-[#060e08] border-[#13281b] text-slate-400'
+                                  ? 'bg-primary-500/20 border-primary-500/50 text-primary-400 font-bold'
+                                  : 'bg-bg-surface border-border-main text-text-muted'
                               }`}
                             >
                               {opt}
@@ -370,16 +370,16 @@ export default function GrammarPage() {
                           ))}
                         </div>
 
-                        <div className="bg-[#08150c] p-3.5 rounded-xl border border-[#163321] space-y-2">
-                          <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
-                            <CheckCircle className="w-4 h-4 text-emerald-400" />
+                        <div className="bg-bg-surface p-3.5 rounded-xl border border-border-main space-y-2">
+                          <div className="flex items-center gap-1.5 text-primary-400 font-bold">
+                            <CheckCircle className="w-4 h-4 text-primary-400" />
                             <span>Đáp án đúng: {ex.answer}</span>
                           </div>
-                          <p className="text-slate-300 leading-relaxed font-medium">{ex.explanation}</p>
+                          <p className="text-text-muted leading-relaxed font-medium">{ex.explanation}</p>
                           
                           {/* Vietnamese Translation Box */}
-                          <div className="pt-2 border-t border-[#12271a] flex items-start gap-2 text-emerald-300">
-                            <Languages className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                          <div className="pt-2 border-t border-border-main flex items-start gap-2 text-primary-400">
+                            <Languages className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
                             <p className="italic font-medium leading-relaxed">
                               Dịch nghĩa: &quot;{ex.translation}&quot;
                             </p>
@@ -398,23 +398,23 @@ export default function GrammarPage() {
         {activeTab === 'quiz' && (
           <div className="space-y-6 animate-fade-in">
             {loading ? (
-              <div className="p-12 text-center text-emerald-400 font-bold animate-pulse bg-[#09150d] rounded-3xl border border-[#1b3e28]">
+              <div className="p-12 text-center text-primary-400 font-bold animate-pulse bg-bg-surface rounded-3xl border border-border-main">
                 <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" /> Đang tải bài tập tự làm...
               </div>
             ) : currentQ ? (
-              <div className="bg-[#09150d] rounded-3xl border border-[#1b3e28] p-6 md:p-8 space-y-6 shadow-2xl">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-400 border-b border-[#142e1d] pb-4">
-                  <span className="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400">
+              <div className="bg-bg-surface rounded-3xl border border-border-main p-6 md:p-8 space-y-6 shadow-2xl">
+                <div className="flex items-center justify-between text-xs font-bold text-text-muted border-b border-border-main pb-4">
+                  <span className="px-3 py-1 rounded-full bg-primary-950/60 border border-primary-500/30 text-primary-400">
                     Chủ đề: {currentQ.category}
                   </span>
                   <span>Câu {currentIndex + 1} / {questions.length}</span>
                 </div>
 
-                <div className="space-y-3 bg-[#030805] p-6 rounded-2xl border border-[#12291b]">
-                  <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">
+                <div className="space-y-3 bg-bg-base p-6 rounded-2xl border border-border-main">
+                  <span className="text-[10px] font-black text-primary-400 uppercase tracking-widest block">
                     TOEIC PART 5 FILL-IN-THE-BLANK:
                   </span>
-                  <p className="text-base md:text-lg font-bold text-white leading-relaxed">
+                  <p className="text-base md:text-lg font-bold text-text-main leading-relaxed">
                     {currentQ.question}
                   </p>
                 </div>
@@ -426,10 +426,10 @@ export default function GrammarPage() {
                     const isSelected = selectedOption === option;
                     const isCorrect = option === currentQ.correct_answer;
 
-                    let btnStyle = 'bg-[#030805] border-[#12291b] hover:border-emerald-500/50 text-slate-200';
+                    let btnStyle = 'bg-bg-base border-border-main hover:border-primary-500/50 text-text-main';
                     if (isAnswered) {
                       if (isCorrect) {
-                        btnStyle = 'bg-emerald-500/20 border-emerald-500/60 text-white font-bold';
+                        btnStyle = 'bg-primary-500/20 border-primary-500/60 text-text-main font-bold';
                       } else if (isSelected && !isCorrect) {
                         btnStyle = 'bg-rose-500/20 border-rose-500/60 text-rose-300 font-bold animate-[shake_0.4s_ease-in-out]';
                       }
@@ -443,12 +443,12 @@ export default function GrammarPage() {
                         className={`p-4 rounded-2xl border text-left text-sm font-bold transition-all flex items-center justify-between ${btnStyle} cursor-pointer`}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 rounded-xl bg-[#0b1810] border border-[#1b3d27] text-emerald-400 text-xs font-black flex items-center justify-center">
+                          <span className="w-7 h-7 rounded-xl bg-bg-surface border border-border-main text-primary-400 text-xs font-black flex items-center justify-center">
                             {label}
                           </span>
-                          <span className="text-white">{option}</span>
+                          <span className="text-text-main">{option}</span>
                         </div>
-                        {isAnswered && isCorrect && <CheckCircle className="w-5 h-5 text-emerald-400" />}
+                        {isAnswered && isCorrect && <CheckCircle className="w-5 h-5 text-primary-400" />}
                         {isAnswered && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-400" />}
                       </button>
                     );
@@ -457,23 +457,23 @@ export default function GrammarPage() {
 
                 {/* Answer Explanation & Vietnamese Translation Box */}
                 {isAnswered && (
-                  <div className="p-6 rounded-2xl bg-[#08140c] border border-[#1b3d27] space-y-4 animate-fade-in shadow-xl">
-                    <div className="flex items-center justify-between border-b border-[#142d1e] pb-3">
-                      <span className="text-sm font-bold text-emerald-400 flex items-center gap-2">
-                        <Bot className="w-5 h-5 text-emerald-400" /> Giải Thích Chi Tiết
+                  <div className="p-6 rounded-2xl bg-bg-surface border border-border-main space-y-4 animate-fade-in shadow-xl">
+                    <div className="flex items-center justify-between border-b border-border-main pb-3">
+                      <span className="text-sm font-bold text-primary-400 flex items-center gap-2">
+                        <Bot className="w-5 h-5 text-primary-400" /> Giải Thích Chi Tiết
                       </span>
-                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${selectedOption === currentQ.correct_answer ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}`}>
+                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${selectedOption === currentQ.correct_answer ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}`}>
                         {selectedOption === currentQ.correct_answer ? 'Chính xác! (+10 điểm)' : 'Chưa đúng'}
                       </span>
                     </div>
 
                     {/* Prominent Vietnamese Sentence Translation */}
                     {currentQ.translation_vi && (
-                      <div className="bg-[#030805] p-4 rounded-xl border border-emerald-500/40 space-y-1">
-                        <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
-                          <Languages className="w-4 h-4 text-emerald-400" /> Dịch nghĩa câu hoàn chỉnh:
+                      <div className="bg-bg-base p-4 rounded-xl border border-primary-500/40 space-y-1">
+                        <span className="text-[11px] font-bold text-primary-400 flex items-center gap-1.5 uppercase tracking-wider">
+                          <Languages className="w-4 h-4 text-primary-400" /> Dịch nghĩa câu hoàn chỉnh:
                         </span>
-                        <p className="text-sm font-semibold text-slate-100 italic leading-relaxed">
+                        <p className="text-sm font-semibold text-text-main italic leading-relaxed">
                           &quot;{currentQ.translation_vi}&quot;
                         </p>
                       </div>
@@ -481,37 +481,37 @@ export default function GrammarPage() {
 
                     {aiAnalysis ? (
                       <>
-                        <div className="text-xs text-slate-200 leading-relaxed font-medium bg-[#030805] p-3.5 rounded-xl border border-[#12291b]">
+                        <div className="text-xs text-text-main leading-relaxed font-medium bg-bg-base p-3.5 rounded-xl border border-border-main">
                           {aiAnalysis.why_correct}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                           {aiAnalysis.options_breakdown.map((item, i) => (
-                            <div key={i} className="bg-[#030805] p-3 rounded-xl border border-[#12291b] space-y-1">
+                            <div key={i} className="bg-bg-base p-3 rounded-xl border border-border-main space-y-1">
                               <div className="flex items-center justify-between font-bold">
-                                <span className="text-slate-100">{item.letter}. {item.option}</span>
-                                <span className={item.status.includes('ĐÚNG') ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                                <span className="text-text-main">{item.letter}. {item.option}</span>
+                                <span className={item.status.includes('ĐÚNG') ? 'text-primary-400 font-bold' : 'text-rose-400 font-bold'}>
                                   {item.status}
                                 </span>
                               </div>
-                              <p className="text-[11px] text-slate-300 leading-normal">{item.reason}</p>
+                              <p className="text-[11px] text-text-muted leading-normal">{item.reason}</p>
                             </div>
                           ))}
                         </div>
                       </>
                     ) : (
                       currentQ.explanation && (
-                        <div className="text-sm text-slate-200 leading-relaxed font-medium bg-[#030805] p-4 rounded-xl border border-[#12291b] whitespace-pre-wrap font-sans">
+                        <div className="text-sm text-text-main leading-relaxed font-medium bg-bg-base p-4 rounded-xl border border-border-main whitespace-pre-wrap font-sans">
                           {currentQ.explanation}
                         </div>
                       )
                     )}
 
                     {/* Next Question Button */}
-                    <div className="pt-3 border-t border-[#142d1e] flex justify-end">
+                    <div className="pt-3 border-t border-border-main flex justify-end">
                       <button
                         onClick={handleNextQuestion}
-                        className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
+                        className="px-6 py-3 rounded-xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-extrabold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-500/20"
                       >
                         Câu tiếp theo <ChevronRight className="w-4 h-4" />
                       </button>
@@ -520,7 +520,7 @@ export default function GrammarPage() {
                 )}
               </div>
             ) : (
-              <div className="p-12 text-center text-slate-400 font-bold bg-[#09150d] rounded-3xl border border-[#1b3e28]">
+              <div className="p-12 text-center text-text-muted font-bold bg-bg-surface rounded-3xl border border-border-main">
                 <HelpCircle className="w-8 h-8 mx-auto mb-3 text-slate-500 opacity-50" /> Không có câu hỏi nào.
               </div>
             )}

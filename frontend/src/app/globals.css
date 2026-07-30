@@ -1,5 +1,117 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-200: var(--primary-200);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-900: var(--primary-900);
+  --color-primary-950: var(--primary-950);
+  
+  --color-bg-base: var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-hover: var(--bg-surface-hover);
+  --color-bg-card: var(--bg-card);
+  
+  --color-border-main: var(--border-main);
+  --color-border-hover: var(--border-hover);
+  
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-text-primary-fg: var(--text-primary-fg);
+}
+
+:root, [data-theme="light"] {
+  /* Primary scale inverted for light mode (black/slate as primary) */
+  --primary-200: #020617; /* slate-950 */
+  --primary-400: #334155; /* slate-700 */
+  --primary-500: #0f172a; /* slate-900 (Main buttons) */
+  --primary-600: #475569; /* slate-600 */
+  --primary-900: #f1f5f9; /* slate-100 */
+  --primary-950: #ffffff; /* white */
+
+  --bg-base: #f8fafc; /* slate-50 */
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f1f5f9; /* slate-100 */
+  --bg-card: #ffffff;
+
+  --border-main: #e2e8f0; /* slate-200 */
+  --border-hover: #cbd5e1; /* slate-300 */
+
+  --text-main: #0f172a; /* slate-900 */
+  --text-muted: #64748b; /* slate-500 */
+  --text-primary-fg: #ffffff; /* white text on dark primary buttons in light mode */
+}
+
+[data-theme="emerald"] {
+  --primary-200: #a7f3d0;
+  --primary-400: #34d399; /* emerald-400 */
+  --primary-500: #10b981; /* emerald-500 */
+  --primary-600: #059669; /* emerald-600 */
+  --primary-900: #064e3b;
+  --primary-950: #022c22;
+
+  --bg-base: #0a0f0c; /* Body background */
+  --bg-surface: #0d1611; /* Header, modals */
+  --bg-surface-hover: #0e2116; /* Hover elements */
+  --bg-card: #0f1712; /* Cards */
+
+  --border-main: #15271c; /* Main borders */
+  --border-hover: #1d462f; /* Hover borders */
+
+  --text-main: #f1f5f9; /* Slate 100 */
+  --text-muted: #cbd5e1; /* Slate 300 */
+  --text-primary-fg: #020617; /* Slate 950 for dark theme primary buttons */
+}
+
+[data-theme="teal"] {
+  --primary-200: #AAE0E3;
+  --primary-400: #00ADB5;
+  --primary-500: #00ADB5;
+  --primary-600: #008C94;
+  --primary-900: #004A4D;
+  --primary-950: #003133;
+
+  --bg-base: #222831;
+  --bg-surface: #393E46;
+  --bg-surface-hover: #40464f;
+  --bg-card: #393E46;
+
+  --border-main: #4a515a;
+  --border-hover: #00ADB5;
+
+  --text-main: #EEEEEE;
+  --text-muted: #BDBDBD;
+  --text-primary-fg: #020617;
+}
+
+[data-theme="ice"] {
+  --primary-200: #1a4d50; 
+  --primary-400: #337a7e; 
+  --primary-500: #71C9CE; 
+  --primary-600: #55a8ad;
+  --primary-900: #CBF1F5;
+  --primary-950: #E3FDFD;
+
+  --bg-base: #E3FDFD;
+  --bg-surface: #CBF1F5;
+  --bg-surface-hover: #A6E3E9;
+  --bg-card: #CBF1F5;
+
+  --border-main: #A6E3E9;
+  --border-hover: #71C9CE;
+
+  --text-main: #1e293b; 
+  --text-muted: #475569;
+  --text-primary-fg: #020617;
+}
+
+
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 @layer utilities {
   .perspective-1000 {
     perspective: 1000px;
@@ -23,11 +135,26 @@
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #070b09;
+  background: var(--color-bg-surface-hover);
+  border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #182e21;
+  background: var(--color-primary-600);
   border-radius: 9999px;
+}
+
+/* View Transitions API */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
 }

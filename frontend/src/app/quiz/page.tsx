@@ -103,24 +103,24 @@ export default function QuizPage() {
   if (mode === null) {
     return (
       <div className="max-w-3xl mx-auto space-y-8 pb-12">
-        <div className="border-b border-[#16271c] pb-6">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-center gap-3">
-            <Brain className="w-9 h-9 text-emerald-400" />
+        <div className="border-b border-border-main pb-6">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-text-main tracking-tight flex items-center gap-3">
+            <Brain className="w-9 h-9 text-primary-400" />
             Bài Kiểm Tra Từ Vựng
           </h1>
-          <p className="text-base text-slate-400 mt-1">
+          <p className="text-base text-text-muted mt-1">
             Chọn chủ đề và chế độ kiểm tra phù hợp với mục tiêu học tập của bạn
           </p>
         </div>
 
-        <div className="bg-[#0f1712] p-6 rounded-3xl border border-[#192b1f] shadow-xl space-y-4">
-          <label className="text-sm font-bold text-slate-300 block uppercase tracking-wide">
+        <div className="bg-bg-card p-6 rounded-3xl border border-border-main shadow-xl space-y-4">
+          <label className="text-sm font-bold text-text-muted block uppercase tracking-wide">
             Chọn Chủ Đề:
           </label>
           <select
             value={selectedTopic}
             onChange={(e) => setSelectedTopic(e.target.value)}
-            className="w-full bg-[#060a08] border border-[#1d462f] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-colors font-medium appearance-none"
+            className="w-full bg-bg-surface border border-border-hover rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary-500 transition-colors font-medium appearance-none"
             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2334d399'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path সংশ%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.2em' }}
           >
             {topics.map(t => (
@@ -133,18 +133,18 @@ export default function QuizPage() {
           {/* Mode 1: Ôn lại từ đã học */}
           <button
             onClick={() => startQuiz('review')}
-            className="group p-8 rounded-3xl bg-[#0f1712] border border-[#192b1f] hover:border-emerald-500/50 text-left space-y-4 transition-all shadow-xl hover:scale-[1.02] cursor-pointer"
+            className="group p-8 rounded-3xl bg-bg-card border border-border-main hover:border-primary-500/50 text-left space-y-4 transition-all shadow-xl hover:scale-[1.02] cursor-pointer"
           >
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-all border border-emerald-500/30">
-              <BookOpen className="w-7 h-7 text-emerald-400" />
+            <div className="w-14 h-14 rounded-2xl bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500/30 transition-all border border-primary-500/30">
+              <BookOpen className="w-7 h-7 text-primary-400" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white mb-1">Ôn Lại Từ Đã Học</h2>
-              <p className="text-sm text-slate-400 leading-relaxed font-medium">
+              <h2 className="text-xl font-extrabold text-text-main mb-1">Ôn Lại Từ Đã Học</h2>
+              <p className="text-sm text-text-muted leading-relaxed font-medium">
                 Kiểm tra lại những từ vựng bạn đã lưu. Củng cố trí nhớ dài hạn. (10 thẻ)
               </p>
             </div>
-            <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold">
+            <div className="flex items-center gap-2 text-primary-400 text-sm font-bold">
               <CheckCircle className="w-4 h-4" />
               <span>Phù hợp để ôn tập hàng ngày</span>
             </div>
@@ -153,14 +153,14 @@ export default function QuizPage() {
           {/* Mode 2: Kiểm tra từ mới */}
           <button
             onClick={() => startQuiz('new')}
-            className="group p-8 rounded-3xl bg-[#0f1712] border border-[#192b1f] hover:border-amber-500/50 text-left space-y-4 transition-all shadow-xl hover:scale-[1.02] cursor-pointer"
+            className="group p-8 rounded-3xl bg-bg-card border border-border-main hover:border-amber-500/50 text-left space-y-4 transition-all shadow-xl hover:scale-[1.02] cursor-pointer"
           >
             <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-all border border-amber-500/30">
               <Sparkles className="w-7 h-7 text-amber-400" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-white mb-1">Kiểm Tra Từ Mới</h2>
-              <p className="text-sm text-slate-400 leading-relaxed font-medium">
+              <h2 className="text-xl font-extrabold text-text-main mb-1">Kiểm Tra Từ Mới</h2>
+              <p className="text-sm text-text-muted leading-relaxed font-medium">
                 Thử thách bản thân với các từ vựng mới để mở rộng vốn từ. (10 thẻ)
               </p>
             </div>
@@ -178,8 +178,8 @@ export default function QuizPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500" />
-        <p className="text-slate-400 font-semibold">Đang tạo bài kiểm tra...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500" />
+        <p className="text-text-muted font-semibold">Đang tạo bài kiểm tra...</p>
       </div>
     );
   }
@@ -189,11 +189,11 @@ export default function QuizPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center">
         <XCircle className="w-16 h-16 text-rose-500 mb-2" />
-        <h2 className="text-2xl font-bold text-white">Oops!</h2>
-        <p className="text-slate-300 font-medium">{errorMsg}</p>
+        <h2 className="text-2xl font-bold text-text-main">Oops!</h2>
+        <p className="text-text-muted font-medium">{errorMsg}</p>
         <button
           onClick={() => { setMode(null); setErrorMsg(null); }}
-          className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+          className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" /> Chọn chủ đề khác
         </button>
@@ -205,30 +205,30 @@ export default function QuizPage() {
   if (isComplete) {
     const pct = Math.round((score / questions.length) * 100);
     return (
-      <div className="max-w-xl mx-auto text-center py-12 px-6 bg-[#0f1712] rounded-3xl border border-[#192b1f] space-y-6 shadow-2xl">
-        <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+      <div className="max-w-xl mx-auto text-center py-12 px-6 bg-bg-card rounded-3xl border border-border-main space-y-6 shadow-2xl">
+        <div className="w-20 h-20 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto border border-primary-500/30">
           <Award className="w-10 h-10 text-amber-400" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-3xl font-extrabold text-white">Kết Quả Bài Kiểm Tra</h2>
-          <p className="text-slate-400 text-sm">
+          <h2 className="text-3xl font-extrabold text-text-main">Kết Quả Bài Kiểm Tra</h2>
+          <p className="text-text-muted text-sm">
             Bạn đã hoàn thành bài kiểm tra ({mode === 'review' ? 'Ôn tập' : 'Từ mới'})
           </p>
         </div>
-        <div className="text-5xl font-black text-[#4ade80] tracking-tight">{pct}%</div>
-        <p className="text-sm text-slate-300 font-bold">
+        <div className="text-5xl font-black text-primary-400 tracking-tight">{pct}%</div>
+        <p className="text-sm text-text-muted font-bold">
           Trả lời đúng {score} / {questions.length} câu hỏi
         </p>
         <div className="pt-4 flex justify-center gap-4">
           <button
             onClick={() => { if (mode) startQuiz(mode); }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
           >
             <Brain className="w-4 h-4" /> Học tiếp
           </button>
           <button
             onClick={() => setMode(null)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-transparent border border-emerald-500/30 hover:border-emerald-500 text-emerald-400 font-bold text-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-transparent border border-primary-500/30 hover:border-primary-500 text-primary-400 font-bold text-sm transition-all cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" /> Trở lại
           </button>
@@ -241,19 +241,19 @@ export default function QuizPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header Info */}
-      <div className="flex items-center justify-between bg-[#0f1712] p-4 rounded-2xl border border-[#192b1f] shadow-lg">
-        <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">
+      <div className="flex items-center justify-between bg-bg-card p-4 rounded-2xl border border-border-main shadow-lg">
+        <span className="text-xs font-extrabold text-primary-400 uppercase tracking-wider">
           Câu {currentIndex + 1} / {questions.length}
         </span>
-        <div className="flex items-center gap-2 text-xs font-bold text-[#4ade80]">
-          <Star className="w-4 h-4 fill-emerald-400 text-emerald-400" />
+        <div className="flex items-center gap-2 text-xs font-bold text-primary-400">
+          <Star className="w-4 h-4 fill-primary-400 text-primary-400" />
           <span>Điểm số: {score}</span>
         </div>
       </div>
 
       {/* Question Card */}
-      <div className="bg-[#0f1712] p-8 rounded-3xl border border-[#192b1f] space-y-6 shadow-2xl">
-        <h2 className="text-2xl font-black text-white leading-snug">
+      <div className="bg-bg-card p-8 rounded-3xl border border-border-main space-y-6 shadow-2xl">
+        <h2 className="text-2xl font-black text-text-main leading-snug">
           {currentQ?.question}
         </h2>
 
@@ -262,10 +262,10 @@ export default function QuizPage() {
             const isSelected = selectedOption === option;
             const isCorrect = option === currentQ.correct_answer;
 
-            let btnStyle = 'bg-[#060a08] border-[#172b1f] text-slate-300 hover:bg-[#0e2116] hover:border-[#1d462f]';
+            let btnStyle = 'bg-bg-surface border-border-main text-text-muted hover:bg-bg-surface-hover hover:border-border-hover';
             if (isAnswered) {
               if (isCorrect) {
-                btnStyle = 'bg-emerald-500/20 border-emerald-500/50 text-[#4ade80] font-bold';
+                btnStyle = 'bg-primary-500/20 border-primary-500/50 text-primary-400 font-bold';
               } else if (isSelected && !isCorrect) {
                 btnStyle = 'bg-rose-500/20 border-rose-500/50 text-rose-400 font-bold animate-[shake_0.4s_ease-in-out]';
               }
@@ -279,7 +279,7 @@ export default function QuizPage() {
                 className={`w-full p-4 rounded-2xl border text-left font-bold text-sm transition-all flex items-center justify-between ${btnStyle} cursor-pointer`}
               >
                 <span>{option}</span>
-                {isAnswered && isCorrect && <CheckCircle className="w-5 h-5 text-[#4ade80]" />}
+                {isAnswered && isCorrect && <CheckCircle className="w-5 h-5 text-primary-400" />}
                 {isAnswered && isSelected && !isCorrect && <XCircle className="w-5 h-5 text-rose-400" />}
               </button>
             );
@@ -288,9 +288,9 @@ export default function QuizPage() {
 
         {/* Explanation box */}
         {isAnswered && (
-          <div className="p-4 rounded-2xl bg-[#0e2116] border border-[#1d462f] space-y-1 animate-fade-in">
-            <p className="text-xs font-bold text-emerald-400">Giải thích:</p>
-            <p className="text-sm text-slate-200 font-medium">{currentQ?.explanation || 'Không có giải thích.'}</p>
+          <div className="p-4 rounded-2xl bg-bg-surface-hover border border-border-hover space-y-1 animate-fade-in">
+            <p className="text-xs font-bold text-primary-400">Giải thích:</p>
+            <p className="text-sm text-text-main font-medium">{currentQ?.explanation || 'Không có giải thích.'}</p>
           </div>
         )}
 
@@ -299,7 +299,7 @@ export default function QuizPage() {
           <div className="flex justify-end pt-2">
             <button
               onClick={handleNextQuestion}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
             >
               <span>{currentIndex < questions.length - 1 ? 'Câu tiếp theo' : 'Xem kết quả'}</span>
               <ArrowRight className="w-4 h-4" />

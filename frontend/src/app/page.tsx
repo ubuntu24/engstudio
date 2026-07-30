@@ -74,19 +74,19 @@ export default function Home() {
   return (
     <div className="space-y-10">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-[#0f1712] p-8 md:p-12 border border-[#192b1f] shadow-2xl">
+      <section className="relative overflow-hidden rounded-3xl bg-bg-card p-8 md:p-12 border border-border-main shadow-2xl">
         <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0e2116] border border-[#1d462f] text-[#4ade80] text-xs font-bold">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-bg-surface-hover border border-border-hover text-primary-400 text-xs font-bold">
+            <Sparkles className="w-4 h-4 text-primary-400" />
             Hệ Thống Học Tiếng Anh Thông Minh Studio
           </div>
 
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-black text-text-main tracking-tight leading-tight">
             Nâng Tầm Tiếng Anh Với <br />
-            <span className="text-white">Flashcard 3D</span>
+            <span className="text-text-main">Flashcard 3D</span>
           </h1>
 
-          <p className="text-base text-slate-300 leading-relaxed max-w-2xl font-medium">
+          <p className="text-base text-text-muted leading-relaxed max-w-2xl font-medium">
             Tối ưu ghi nhớ từ vựng bằng Flashcard, phát hiện chính xác lỗi gõ
             thừa/lặp từ và luyện phát âm ngữ cảnh qua video.
           </p>
@@ -94,14 +94,14 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
               href="/learn"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-lg shadow-emerald-500/20 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all"
             >
               <span>Bắt Đầu Học Ngay</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#060a08] hover:bg-[#0c1610] text-slate-200 font-bold text-sm border border-[#172b1f] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-bg-surface hover:bg-bg-surface-hover text-text-main font-bold text-sm border border-border-main transition-all"
             >
               <span>Xem Thống Kê Tiến Độ</span>
             </Link>
@@ -111,42 +111,42 @@ export default function Home() {
 
       {/* Overview Stats Bar with Pure White Numbers */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-[#0f1712] border border-[#192b1f] space-y-1">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-            <Flame className="w-4 h-4 text-emerald-400" />
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main space-y-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-text-muted">
+            <Flame className="w-4 h-4 text-primary-400" />
             Chuỗi Ngày Học
           </div>
-          <div className="text-2xl font-black text-white">
+          <div className="text-2xl font-black text-text-main">
             {stats.streak_days} Ngày
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#0f1712] border border-[#192b1f] space-y-1">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-            <Target className="w-4 h-4 text-emerald-400" />
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main space-y-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-text-muted">
+            <Target className="w-4 h-4 text-primary-400" />
             Tổng Kho Từ Vựng
           </div>
-          <div className="text-2xl font-black text-white">
+          <div className="text-2xl font-black text-text-main">
             {stats.total_words || 3312} Từ
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#0f1712] border border-[#192b1f] space-y-1">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-            <Trophy className="w-4 h-4 text-[#4ade80]" />
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main space-y-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-text-muted">
+            <Trophy className="w-4 h-4 text-primary-400" />
             Từ Đã Thành Thục
           </div>
-          <div className="text-2xl font-black text-white">
+          <div className="text-2xl font-black text-text-main">
             {stats.mastered_words} Từ
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-[#0f1712] border border-[#192b1f] space-y-1">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main space-y-1">
+          <div className="flex items-center gap-2 text-xs font-bold text-text-muted">
             <Sparkles className="w-4 h-4 text-teal-400" />
             Độ Chính Xác
           </div>
-          <div className="text-2xl font-black text-white">
+          <div className="text-2xl font-black text-text-main">
             {stats.accuracy_rate}%
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function Home() {
 
       {/* Feature Grid */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-extrabold text-white tracking-tight">
+        <h2 className="text-2xl font-extrabold text-text-main tracking-tight">
           Các Tính Năng Học Tập Chính
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -164,27 +164,27 @@ export default function Home() {
               <Link
                 key={feat.href}
                 href={feat.href}
-                className="group p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] hover:border-emerald-500/40 transition-all duration-300 shadow-xl hover:scale-[1.02] flex flex-col justify-between"
+                className="group p-6 rounded-3xl bg-bg-card border border-border-main hover:border-primary-500/40 transition-all duration-300 shadow-xl hover:scale-[1.02] flex flex-col justify-between"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-[#060a08] px-2.5 py-1 rounded-full border border-[#172b1f]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted bg-bg-surface px-2.5 py-1 rounded-full border border-border-main">
                       {feat.tag}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
+                    <h3 className="text-lg font-bold text-text-main group-hover:text-primary-400 transition-colors">
                       {feat.title}
                     </h3>
-                    <p className="text-xs text-slate-400 leading-relaxed mt-2 font-medium">
+                    <p className="text-xs text-text-muted leading-relaxed mt-2 font-medium">
                       {feat.desc}
                     </p>
                   </div>
                 </div>
-                <div className="pt-6 flex items-center gap-2 text-xs font-bold text-emerald-400">
+                <div className="pt-6 flex items-center gap-2 text-xs font-bold text-primary-400">
                   <span>Trải nghiệm ngay</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>

@@ -23,9 +23,11 @@ if (isPostgres) {
   const sessionUrl = supabaseUrl.replace(':6543/', ':5432/');
   pool = new Pool({
     connectionString: sessionUrl,
-    ssl: { rejectUnauthorized: false }   // Required for Supabase
+    ssl: { rejectUnauthorized: false },   // Required for Supabase
+    connectionTimeoutMillis: 5000,
+    query_timeout: 10000,
+    idleTimeoutMillis: 10000
   });
-  console.log('[db] ✅ Using Supabase (PostgreSQL) on Session Pooler (5432)');
 } else {
   // sql.js: WebAssembly SQLite, no native bindings needed on any OS
   const initSqlJs = require('sql.js');
@@ -51,7 +53,7 @@ if (isPostgres) {
 
   const _persist = () => {
     if (sqliteDb && sqliteDb._dbPath) {
-      try { fs.writeFileSync(sqliteDb._dbPath, Buffer.from(sqliteDb.export())); } catch (_) {}
+      try { fs.writeFileSync(sqliteDb._dbPath, Buffer.from(sqliteDb.export())); } catch (_) { }
     }
   };
   process.on('exit', _persist);
@@ -105,7 +107,7 @@ function _sqliteRun(sql, params) {
   const changes = changesRow ? Number(changesRow.n) : 0;
   // Persist to disk after every write
   if (sqliteDb._dbPath) {
-    try { fs.writeFileSync(sqliteDb._dbPath, Buffer.from(sqliteDb.export())); } catch (_) {}
+    try { fs.writeFileSync(sqliteDb._dbPath, Buffer.from(sqliteDb.export())); } catch (_) { }
   }
   return { changes, lastID };
 }

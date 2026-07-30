@@ -141,13 +141,13 @@ export default function PracticePage() {
 
       const errText = userInput.substring(err.start, err.end);
       let underlineClass =
-        "underline decoration-wavy decoration-rose-500 underline-offset-4 decoration-2 text-white";
+        "underline decoration-wavy decoration-rose-500 underline-offset-4 decoration-2 text-text-main";
       if (err.type === "meaning") {
         underlineClass =
-          "underline decoration-wavy decoration-amber-500 underline-offset-4 decoration-2 text-white";
+          "underline decoration-wavy decoration-amber-500 underline-offset-4 decoration-2 text-text-main";
       } else if (err.type === "style") {
         underlineClass =
-          "underline decoration-dashed decoration-amber-400 underline-offset-4 decoration-2 text-white";
+          "underline decoration-dashed decoration-amber-400 underline-offset-4 decoration-2 text-text-main";
       }
 
       elements.push(
@@ -173,12 +173,12 @@ export default function PracticePage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12">
       {/* Top Header */}
-      <div className="border-b border-[#16271c] pb-6">
-        <h1 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-          <Zap className="w-8 h-8 text-emerald-400" />
+      <div className="border-b border-border-main pb-6">
+        <h1 className="text-3xl font-extrabold text-text-main tracking-tight flex items-center gap-3">
+          <Zap className="w-8 h-8 text-primary-400" />
           Luyện Đặt Câu Dịch Tiếng Anh Real-Time
         </h1>
-        <p className="text-sm text-slate-400 mt-1 font-medium">
+        <p className="text-sm text-text-muted mt-1 font-medium">
           Đọc câu tiếng Việt ➔ Đặt câu dịch tiếng Anh tương ứng với sự trợ giúp
           phân tích từ AI
         </p>
@@ -187,10 +187,10 @@ export default function PracticePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* LEFT COLUMN */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-6 shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#16271c] pb-4">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-emerald-400" />
+          <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-6 shadow-xl">
+            <div className="flex items-center justify-between border-b border-border-main pb-4">
+              <h2 className="text-base font-bold text-text-main flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-primary-400" />
                 Nguồn Câu Tiếng Việt
               </h2>
 
@@ -202,7 +202,7 @@ export default function PracticePage() {
                   setRevealedErrors({});
                   setShowAnswer(false);
                 }}
-                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#0e2116] text-[#4ade80] border border-[#1d462f] hover:bg-emerald-950/40 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-bg-surface-hover text-primary-400 border border-border-hover hover:bg-primary-950/40 transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Sliders className="w-3.5 h-3.5" />
                 {isCustomMode ? "Xem Câu Theo Chủ Đề" : "Tự Nhập Câu"}
@@ -212,7 +212,7 @@ export default function PracticePage() {
             {!isCustomMode ? (
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">
                     Chọn Chủ Đề Luyện Tập:
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -223,8 +223,8 @@ export default function PracticePage() {
                       }}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         selectedCategory === "All"
-                          ? "bg-emerald-500 text-slate-950 font-black"
-                          : "bg-[#060a08] text-slate-300 hover:text-white border border-[#172b1f]"
+                          ? "bg-primary-500 text-text-primary-fg font-black"
+                          : "bg-bg-surface text-text-muted hover:text-text-main border border-border-main"
                       }`}
                     >
                       Tất Cả
@@ -238,8 +238,8 @@ export default function PracticePage() {
                         }}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           selectedCategory === cat
-                            ? "bg-emerald-500 text-slate-950 font-black"
-                            : "bg-[#060a08] text-slate-300 hover:text-white border border-[#172b1f]"
+                            ? "bg-primary-500 text-text-primary-fg font-black"
+                            : "bg-bg-surface text-text-muted hover:text-text-main border border-border-main"
                         }`}
                       >
                         {cat}
@@ -248,9 +248,9 @@ export default function PracticePage() {
                   </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-[#060a08] border border-[#172b1f] space-y-4 relative overflow-hidden shadow-inner">
-                  <div className="flex items-center justify-between text-xs text-emerald-400 font-bold">
-                    <span className="bg-[#0b1c12] px-2.5 py-1 rounded-md border border-[#1d462f]">
+                <div className="p-5 rounded-2xl bg-bg-surface border border-border-main space-y-4 relative overflow-hidden shadow-inner">
+                  <div className="flex items-center justify-between text-xs text-primary-400 font-bold">
+                    <span className="bg-bg-surface-hover px-2.5 py-1 rounded-md border border-border-hover">
                       {currentSample?.category || "Mẫu"}
                     </span>
                     <span>
@@ -258,17 +258,17 @@ export default function PracticePage() {
                     </span>
                   </div>
 
-                  <p className="text-lg font-bold text-white leading-relaxed">
+                  <p className="text-lg font-bold text-text-main leading-relaxed">
                     {targetVi}
                   </p>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-[#15271c]">
+                  <div className="flex items-center justify-between pt-2 border-t border-border-main">
                     <button
                       disabled={currentSampleIndex === 0}
                       onClick={() =>
                         setCurrentSampleIndex((prev) => Math.max(0, prev - 1))
                       }
-                      className="px-3 py-1.5 rounded-xl bg-[#0e1711] text-slate-300 hover:bg-[#15241b] text-xs font-semibold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-bg-surface-hover text-text-muted hover:bg-bg-surface-hover text-xs font-semibold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
                     >
                       <ChevronLeft className="w-4 h-4" /> Câu Trước
                     </button>
@@ -282,7 +282,7 @@ export default function PracticePage() {
                           Math.min(filteredSamples.length - 1, prev + 1),
                         )
                       }
-                      className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black disabled:opacity-40 flex items-center gap-1 shadow-md cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg text-xs font-black disabled:opacity-40 flex items-center gap-1 shadow-md cursor-pointer"
                     >
                       Câu Tiếp <ChevronRight className="w-4 h-4" />
                     </button>
@@ -292,7 +292,7 @@ export default function PracticePage() {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-slate-300">
+                  <label className="text-xs font-semibold text-text-muted">
                     Nhập câu tiếng Việt của bạn:
                   </label>
                   <textarea
@@ -302,21 +302,21 @@ export default function PracticePage() {
                       setTargetVi(e.target.value);
                     }}
                     placeholder="Gõ hoặc dán câu tiếng Việt cần luyện dịch vào đây..."
-                    className="w-full min-h-[120px] p-3.5 rounded-2xl bg-[#060a08] border border-[#172b1f] text-white text-sm focus:outline-none focus:border-emerald-500 font-medium"
+                    className="w-full min-h-[120px] p-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main text-sm focus:outline-none focus:border-primary-500 font-medium"
                   />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="p-5 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-3 shadow-md">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-              <Info className="w-4 h-4 text-emerald-400" />
+          <div className="p-5 rounded-3xl bg-bg-card border border-border-main space-y-3 shadow-md">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted flex items-center gap-2">
+              <Info className="w-4 h-4 text-primary-400" />
               Hướng Dẫn Luyện Tập Thông Minh
             </h3>
-            <div className="grid grid-cols-1 gap-2 text-xs font-medium text-slate-300">
+            <div className="grid grid-cols-1 gap-2 text-xs font-medium text-text-muted">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">
+                <span className="w-5 h-5 rounded-full bg-primary-500/20 text-primary-400 flex items-center justify-center font-bold text-[10px]">
                   1
                 </span>
                 <span>
@@ -339,14 +339,14 @@ export default function PracticePage() {
 
         {/* RIGHT COLUMN */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-4 shadow-xl relative">
+          <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl relative">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-bold text-slate-200 flex items-center gap-2">
-                <Wand2 className="w-4 h-4 text-emerald-400" />
+              <label className="text-sm font-bold text-text-main flex items-center gap-2">
+                <Wand2 className="w-4 h-4 text-primary-400" />
                 Nhập câu tiếng Anh tương ứng:
               </label>
               {isChecking && (
-                <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 animate-pulse">
+                <span className="text-xs text-primary-400 font-semibold flex items-center gap-1.5 animate-pulse">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                   Đang kiểm tra AI...
                 </span>
@@ -355,7 +355,7 @@ export default function PracticePage() {
 
             <div
               id="enInputPractice"
-              className="relative min-h-[160px] rounded-2xl bg-[#060a08] border border-[#172b1f] focus-within:border-emerald-500 shadow-inner overflow-hidden"
+              className="relative min-h-[160px] rounded-2xl bg-bg-surface border border-border-main focus-within:border-primary-500 shadow-inner overflow-hidden"
             >
               <div
                 aria-hidden="true"
@@ -369,12 +369,12 @@ export default function PracticePage() {
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 placeholder="Gõ câu tiếng Anh của bạn tại đây..."
-                className="w-full h-full min-h-[160px] p-4 bg-transparent text-white placeholder-slate-600 resize-y focus:outline-none text-base leading-relaxed relative z-10 font-sans"
+                className="w-full h-full min-h-[160px] p-4 bg-transparent text-text-main placeholder-slate-600 resize-y focus:outline-none text-base leading-relaxed relative z-10 font-sans"
                 style={{ caretColor: "white" }}
               />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center justify-between text-xs text-text-muted">
               <button
                 onClick={() => {
                   setUserInput("");
@@ -382,7 +382,7 @@ export default function PracticePage() {
                   setRevealedErrors({});
                   setShowAnswer(false);
                 }}
-                className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-text-muted hover:text-text-main transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Xóa gõ lại
               </button>
@@ -392,23 +392,23 @@ export default function PracticePage() {
 
           <div
             id="suggest-box"
-            className="p-6 rounded-3xl bg-[#0f1712] border border-[#192b1f] space-y-5 shadow-xl"
+            className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-5 shadow-xl"
           >
-            <div className="flex items-center justify-between border-b border-[#16271c] pb-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-emerald-400" />
+            <div className="flex items-center justify-between border-b border-border-main pb-4">
+              <h3 className="text-base font-bold text-text-main flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary-400" />
                 Kết Quả Phân Tích{" "}
               </h3>
 
               {checkResult && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-text-muted">
                     Độ chính xác:
                   </span>
                   <span
                     className={`text-sm font-extrabold px-3 py-1 rounded-full border ${
                       checkResult.score >= 80
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        ? "bg-primary-500/10 text-primary-400 border-primary-500/20"
                         : checkResult.score >= 50
                           ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
                           : "bg-rose-500/10 text-rose-400 border-rose-500/20"
@@ -423,8 +423,8 @@ export default function PracticePage() {
             {checkResult ? (
               <div className="space-y-4">
                 {checkResult.valid ? (
-                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm font-bold flex items-center gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
+                  <div className="p-4 rounded-2xl bg-primary-500/10 border border-primary-500/30 text-primary-400 text-sm font-bold flex items-center gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-primary-400 shrink-0" />
                     <div>
                       <p className="text-base">
                         Tuyệt vời! Bạn đã hoàn thành chính xác câu này 🎉
@@ -433,7 +433,7 @@ export default function PracticePage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                    <p className="text-xs font-semibold text-text-muted flex items-center gap-1.5">
                       <AlertCircle className="w-4 h-4 text-amber-400" />
                       Phát hiện {checkResult.errors.length} từ cần chỉnh sửa:
                     </p>
@@ -445,7 +445,7 @@ export default function PracticePage() {
                         return (
                           <div
                             key={err.id}
-                            className="p-4 rounded-2xl bg-[#060a08] border border-[#172b1f] space-y-3 transition-all"
+                            className="p-4 rounded-2xl bg-bg-surface border border-border-main space-y-3 transition-all"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-2 text-xs font-bold">
@@ -464,7 +464,7 @@ export default function PracticePage() {
                                       ? "🟠 Lỗi Dịch nghĩa"
                                       : "🟡 Văn phong"}
                                 </span>
-                                <span className="text-white text-sm">
+                                <span className="text-text-main text-sm">
                                   Từ{" "}
                                   <strong className="text-rose-400 font-mono underline decoration-wavy decoration-rose-500">
                                     &quot;{err.matched_text}&quot;
@@ -484,23 +484,23 @@ export default function PracticePage() {
                               )}
                             </div>
 
-                            <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
-                              <span className="font-bold flex items-center gap-1.5 text-emerald-300">
+                            <div className="p-3.5 rounded-xl bg-primary-500/10 border border-primary-500/20 text-xs space-y-1">
+                              <span className="font-bold flex items-center gap-1.5 text-primary-400">
                                 <Lightbulb className="w-3.5 h-3.5 text-amber-400" />{" "}
                                 Hướng dẫn gợi ý:
                               </span>
-                              <p className="text-emerald-200 leading-relaxed font-medium">
+                              <p className="text-primary-200 leading-relaxed font-medium">
                                 {err.hint || err.message}
                               </p>
                             </div>
 
                             {isRevealed && (
-                              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs flex items-center justify-between gap-3 animate-in fade-in duration-150">
+                              <div className="p-3.5 rounded-xl bg-primary-500/10 border border-primary-500/20 text-xs flex items-center justify-between gap-3 animate-in fade-in duration-150">
                                 <div>
-                                  <span className="text-slate-400 font-semibold">
+                                  <span className="text-text-muted font-semibold">
                                     Từ chính xác nên dùng:{" "}
                                   </span>
-                                  <strong className="text-emerald-400 text-sm font-bold ml-1 font-mono">
+                                  <strong className="text-primary-400 text-sm font-bold ml-1 font-mono">
                                     {err.suggestion || "(Từ này bị dư thừa)"}
                                   </strong>
                                 </div>
@@ -508,14 +508,14 @@ export default function PracticePage() {
                                 {err.suggestion ? (
                                   <button
                                     onClick={() => handleApplyFix(err)}
-                                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-text-main font-bold text-xs shadow-lg shadow-primary-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
                                   >
                                     <Check className="w-3.5 h-3.5" /> Sửa Ngay
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => handleDeleteWord(err)}
-                                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow transition-all flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-text-main font-bold text-xs shadow transition-all flex items-center gap-1.5 cursor-pointer"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" /> Xóa Từ
                                   </button>
@@ -540,10 +540,10 @@ export default function PracticePage() {
                   )}
 
                 {checkResult.reference_en && (
-                  <div className="pt-2 border-t border-[#16271c]">
+                  <div className="pt-2 border-t border-border-main">
                     <button
                       onClick={() => setShowAnswer(!showAnswer)}
-                      className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0e2116] border border-[#1d462f] transition-all cursor-pointer"
+                      className="text-xs font-bold text-primary-400 hover:text-primary-400 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bg-surface-hover border border-border-hover transition-all cursor-pointer"
                     >
                       {showAnswer ? (
                         <EyeOff className="w-3.5 h-3.5" />
@@ -556,11 +556,11 @@ export default function PracticePage() {
                     </button>
 
                     {showAnswer && (
-                      <div className="mt-3 p-4 rounded-2xl bg-[#060a08] border border-[#172b1f] space-y-1 animate-in fade-in duration-150">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      <div className="mt-3 p-4 rounded-2xl bg-bg-surface border border-border-main space-y-1 animate-in fade-in duration-150">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
                           Toàn Bộ Câu Tiếng Anh Chuẩn AI:
                         </span>
-                        <p className="text-sm font-semibold text-emerald-400">
+                        <p className="text-sm font-semibold text-primary-400">
                           {checkResult.reference_en}
                         </p>
                       </div>
@@ -570,7 +570,7 @@ export default function PracticePage() {
               </div>
             ) : (
               <div className="p-6 text-center space-y-2">
-                <p className="text-sm font-semibold text-slate-400">
+                <p className="text-sm font-semibold text-text-muted">
                   Bắt đầu gõ câu tiếng Anh ở khung trên để kích hoạt bộ phân
                   tích gợi ý AI.
                 </p>
