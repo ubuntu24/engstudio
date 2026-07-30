@@ -102,14 +102,20 @@ def get_default_user(conn):
     return cur.lastrowid
 
 def get_current_user_id(conn):
-    user_id_header = request.headers.get('X-User-Id')
-    if user_id_header and user_id_header.isdigit():
-        user_id = int(user_id_header)
-        cur = conn.cursor()
-        cur.execute("SELECT id FROM users WHERE id = ?", (user_id,))
-        row = cur.fetchone()
-        if row:
-            return row[0]
+    # SECURITY FIX (vuln-0004): Only trust X-User-Id if the request also carries
+    # the correct X-Internal-Secret, proving it came from the trusted Node.js proxy.
+    internal_secret = os.environ.get('INTERNAL_API_SECRET', '')
+    request_secret = request.headers.get('X-Internal-Secret', '')
+    
+    if internal_secret and request_secret and request_secret == internal_secret:
+        user_id_header = request.headers.get('X-User-Id')
+        if user_id_header and user_id_header.isdigit():
+            user_id = int(user_id_header)
+            cur = conn.cursor()
+            cur.execute("SELECT id FROM users WHERE id = ?", (user_id,))
+            row = cur.fetchone()
+            if row:
+                return row[0]
             
     user_id = flask_session.get('user_id')
     if user_id:

@@ -8,8 +8,15 @@ function proxyToAIService(req, res, targetPath) {
   const userId = req.userId;
   
   const headers = { ...req.headers, host: `${url.hostname}:${url.port}` };
+  // SECURITY FIX (vuln-0004): Inject a shared secret so the Python backend
+  // can verify that X-User-Id originates from the trusted Node.js proxy,
+  // not from an untrusted external client.
+  const internalSecret = process.env.INTERNAL_API_SECRET;
   if (userId) {
     headers['x-user-id'] = userId.toString();
+    if (internalSecret) {
+      headers['x-internal-secret'] = internalSecret;
+    }
   }
 
   const options = {

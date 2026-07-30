@@ -1,5 +1,5 @@
 const { dbQueryGet, dbRun } = require('../utils/db');
-const { hashPassword, generateToken } = require('../utils/auth');
+const { hashPassword, generateToken, verifyPassword } = require('../utils/auth');
 const { escapeHtml } = require('../utils/helpers');
 const { blacklistToken } = require('../middlewares/auth.middleware');
 
@@ -21,7 +21,7 @@ async function register(req, res) {
     const existing = await dbQueryGet('SELECT id FROM users WHERE username = $1', [username]);
     if (existing) return res.status(400).json({ error: 'Đăng ký không thành công. Tên đăng nhập không hợp lệ hoặc đã tồn tại.' });
     
-    const hashed = hashPassword(password);
+    const hashed = await hashPassword(password);
     const result = await dbRun('INSERT INTO users (username, password_hash, display_name) VALUES ($1, $2, $3) RETURNING id', [username, hashed, display_name]);
     
     const userId = result.lastID;
@@ -48,8 +48,19 @@ async function login(req, res) {
     username = escapeHtml(username).trim();
     const user = await dbQueryGet('SELECT id, username, password_hash, display_name FROM users WHERE username = $1', [username]);
     
-    if (!user || user.password_hash !== hashPassword(password)) {
+    const { valid, needsRehash } = await verifyPassword(password, user ? user.password_hash : null);
+    if (!user || !valid) {
       return res.status(401).json({ error: 'Tên đăng nhập hoặc mật khẩu không chính xác' });
+    }
+
+    // Seamless migration: rehash legacy SHA-256 password to bcrypt on successful login
+    if (needsRehash) {
+      try {
+        const newHash = await hashPassword(password);
+        await dbRun('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, user.id]);
+      } catch (rehashErr) {
+        console.error('[Auth] Failed to rehash legacy password:', rehashErr);
+      }
     }
     
     const token = generateToken(user.id);

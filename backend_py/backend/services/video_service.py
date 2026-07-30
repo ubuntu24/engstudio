@@ -50,19 +50,32 @@ def fast_fetch_video_info(url_or_id: str, video_id: str, platform: str):
 
 def extract_vid_helper(url_or_id: str) -> str:
     url_or_id = (url_or_id or '').strip()
+    # Already a valid YouTube video ID
     if re.match(r'^[a-zA-Z0-9_-]{11}$', url_or_id):
         return url_or_id
     parsed = urlparse(url_or_id)
     if parsed.hostname in ('youtu.be', 'www.youtu.be'):
-        return parsed.path[1:]
+        # SECURITY FIX (vuln-0009): Validate the extracted path segment against
+        # a strict regex before returning. A malicious URL like
+        # youtu.be/../../../etc/passwd would otherwise return a traversal string.
+        candidate = parsed.path[1:] if parsed.path else ''
+        if re.match(r'^[a-zA-Z0-9_-]{11}$', candidate):
+            return candidate
+        # Invalid path — fall through to MD5 hash fallback below
     if parsed.hostname in ('youtube.com', 'www.youtube.com', 'm.youtube.com'):
         if parsed.path == '/watch':
             qs = parse_qs(parsed.query)
-            return qs.get('v', [''])[0]
+            vid = qs.get('v', [''])[0]
+            if re.match(r'^[a-zA-Z0-9_-]{11}$', vid):
+                return vid
         if parsed.path.startswith('/embed/'):
-            return parsed.path.split('/')[2]
+            candidate = parsed.path.split('/')[2] if len(parsed.path.split('/')) > 2 else ''
+            if re.match(r'^[a-zA-Z0-9_-]{11}$', candidate):
+                return candidate
         if parsed.path.startswith('/v/'):
-            return parsed.path.split('/')[2]
+            candidate = parsed.path.split('/')[2] if len(parsed.path.split('/')) > 2 else ''
+            if re.match(r'^[a-zA-Z0-9_-]{11}$', candidate):
+                return candidate
     m = re.search(r'(?:v=|\/)([0-9A-Za-z_-]{11}).*', url_or_id)
     if m and not any(x in url_or_id.lower() for x in ['tiktok.com', 'facebook.com', 'fb.watch', 'instagram.com', 'vimeo.com', '.mp4']):
         return m.group(1)

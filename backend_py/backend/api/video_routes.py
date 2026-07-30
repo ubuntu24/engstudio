@@ -6,6 +6,7 @@ import sqlite3
 import yt_dlp
 from youtube_transcript_api import YouTubeTranscriptApi
 from backend.core.db import DB_PATH
+from backend.core.auth import login_required
 from backend.utils.validators import is_allowed_video_url
 from backend.services.video_service import (
     fast_fetch_video_info,
@@ -279,6 +280,7 @@ def get_video_bilingual():
     })
 
 @video_bp.route('/api/video/bilingual_custom', methods=['POST'])
+@login_required
 def post_video_bilingual_custom():
     data = request.get_json(silent=True) or {}
     video_id = _extract_vid_helper(data.get('video_id', ''))
@@ -363,11 +365,16 @@ def post_video_bilingual_custom():
     })
 
 @video_bp.route('/api/video/auto_transcribe', methods=['POST'])
+@login_required
 def post_video_auto_transcribe():
     data = request.get_json(silent=True) or {}
     url = (data.get('url') or '').strip()
     if not url:
         return jsonify({'error': 'Vui lòng cung cấp link video.'}), 400
+
+    # SECURITY FIX (vuln-0006): Validate URL against allowlist before any processing
+    if not is_allowed_video_url(url):
+        return jsonify({'error': 'Vì lý do bảo mật, hệ thống chỉ hỗ trợ xử lý link từ chính chủ YouTube và TikTok.'}), 400
 
     video_id = _extract_vid_helper(url)
     os.makedirs("web_app/static/cache_audio", exist_ok=True)

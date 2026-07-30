@@ -157,6 +157,7 @@ def quiz_submit():
         conn.close()
 
 @quiz_bp.route('/api/quiz/<int:word_id>')
+@login_required
 def get_quiz_data(word_id):
     conn = get_db_connection()
     try:

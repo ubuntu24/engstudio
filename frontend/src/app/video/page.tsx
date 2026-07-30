@@ -60,13 +60,16 @@ export default function VideoPage() {
       interval = setInterval(() => {
         try {
           if (iframeRef.current?.contentWindow) {
-            iframeRef.current.contentWindow.postMessage('{"event":"listening","id":1}', '*');
+            // SECURITY FIX: Use specific target origin instead of wildcard '*'
+            iframeRef.current.contentWindow.postMessage('{"event":"listening","id":1}', 'https://www.youtube.com');
           }
         } catch (e) {}
       }, 500);
     }
 
     const handleWindowMessage = (event: MessageEvent) => {
+      // SECURITY FIX: Validate origin before processing messages
+      if (event.origin !== 'https://www.youtube.com') return;
       try {
         let data = event.data;
         if (typeof data === 'string') {
@@ -134,7 +137,7 @@ export default function VideoPage() {
           func: 'seekTo',
           args: [seconds, true],
         }),
-        '*'
+        'https://www.youtube.com'  // SECURITY FIX: specific target origin
       );
       iframeRef.current.contentWindow?.postMessage(
         JSON.stringify({
@@ -142,7 +145,7 @@ export default function VideoPage() {
           func: 'playVideo',
           args: [],
         }),
-        '*'
+        'https://www.youtube.com'  // SECURITY FIX: specific target origin
       );
     } else if (html5VideoRef.current) {
       html5VideoRef.current.currentTime = seconds;
