@@ -65,6 +65,7 @@ const learnRoutes = require('./routes/learn.routes');
 const quizRoutes = require('./routes/quiz.routes');
 const practiceRoutes = require('./routes/practice.routes');
 const proxyRoutes = require('./routes/proxy.routes');
+const leaderboardRoutes = require('./routes/leaderboard.routes');
 
 // Register Routes
 app.use('/api/auth', authRoutes);
@@ -72,6 +73,7 @@ app.use('/api', wordsRoutes);
 app.use('/api/learn', learnRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/practice', practiceRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api', proxyRoutes); // Proxy routes include /api/video, /api/grammar, etc.
 app.use('/', proxyRoutes); // Proxy routes include /translate, /correct
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { checkAdvancedPractice, fetchPracticeTopics } from "@/lib/api";
+import { checkAdvancedPractice, fetchPracticeTopics, getAiUsage } from "@/lib/api";
 import { WritingCheckResponse, WritingError, TopicSample } from "@/types";
 import {
   Sparkles,
@@ -23,6 +23,7 @@ import {
   HelpCircle,
   Lightbulb,
 } from "lucide-react";
+import confetti from "canvas-confetti";
 
 export default function PracticePage() {
   const [categories, setCategories] = useState<string[]>([]);
@@ -38,6 +39,7 @@ export default function PracticePage() {
   );
   const [userInput, setUserInput] = useState<string>("");
   const [isChecking, setIsChecking] = useState<boolean>(false);
+  const [checkMode, setCheckMode] = useState<"normal" | "ai">("normal");
   const [checkResult, setCheckResult] = useState<WritingCheckResponse | null>(
     null,
   );
@@ -45,6 +47,11 @@ export default function PracticePage() {
     {},
   );
   const [showAnswer, setShowAnswer] = useState<boolean>(false);
+  const [aiUsage, setAiUsage] = useState<{used: number, limit: number, remaining: number} | null>(null);
+
+  useEffect(() => {
+    getAiUsage().then(setAiUsage);
+  }, []);
 
   useEffect(() => {
     fetchPracticeTopics().then((res) => {
@@ -82,14 +89,25 @@ export default function PracticePage() {
 
     setIsChecking(true);
     const timer = setTimeout(() => {
-      checkAdvancedPractice(targetVi, userInput).then((res) => {
+      checkAdvancedPractice(targetVi, userInput, checkMode).then((res) => {
         setCheckResult(res);
         setIsChecking(false);
+        if (checkMode === "ai") {
+          getAiUsage().then(setAiUsage);
+        }
+        if (res && res.valid) {
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#3b82f6', '#10b981', '#f59e0b']
+          });
+        }
       });
     }, 600);
 
     return () => clearTimeout(timer);
-  }, [userInput, targetVi]);
+  }, [userInput, targetVi, checkMode]);
 
   const handleToggleReveal = (errorId: string) => {
     setRevealedErrors((prev) => ({
@@ -339,6 +357,32 @@ export default function PracticePage() {
 
         {/* RIGHT COLUMN */}
         <div className="lg:col-span-7 space-y-6">
+          <div className="flex items-center gap-2 p-1.5 bg-bg-surface border border-border-main rounded-2xl w-max shadow-sm mx-auto lg:mx-0">
+            <button
+              onClick={() => setCheckMode("normal")}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                checkMode === "normal"
+                  ? "bg-primary-500 text-text-primary-fg shadow-md"
+                  : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
+              }`}
+            >
+              Dịch Thông Thường
+            </button>
+            <button
+              onClick={() => setCheckMode("ai")}
+              disabled={aiUsage?.remaining === 0}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                aiUsage?.remaining === 0 
+                  ? "bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700" 
+                  : checkMode === "ai"
+                    ? "bg-amber-500 text-white shadow-md"
+                    : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Dịch bằng AI {aiUsage ? `(Còn ${aiUsage.remaining} lượt)` : ''}
+            </button>
+          </div>
+
           <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl relative">
             <div className="flex items-center justify-between">
               <label className="text-sm font-bold text-text-main flex items-center gap-2">

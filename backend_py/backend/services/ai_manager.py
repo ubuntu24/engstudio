@@ -78,7 +78,16 @@ except ImportError:
     pass
 
 def translate_vi_en(vietnamese_text):
-    # Ưu tiên sử dụng API Google Translate
+    # Ưu tiên sử dụng Gemini API
+    try:
+        from backend.services.llm_service import translate_vi_en_with_gemini
+        translated_gemini = translate_vi_en_with_gemini(vietnamese_text)
+        if translated_gemini:
+            return translated_gemini
+    except Exception as e:
+        print(f"Lỗi khi dịch bằng Gemini API: {e}", file=sys.stderr)
+
+    # Nếu Gemini thất bại, sử dụng API Google Translate
     if VIDEO_TOOLS_AVAILABLE:
         try:
             translated = GoogleTranslator(source='vi', target='en').translate(vietnamese_text)

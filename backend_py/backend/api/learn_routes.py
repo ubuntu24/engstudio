@@ -27,6 +27,23 @@ def row_to_word(w):
         'audio_path': w['audio_path'],
     }
 
+@learn_bp.route('/api/ai/usage', methods=['GET'])
+@optional_login
+def get_ai_usage():
+    from backend.core.db import get_ai_usage_info
+    conn = get_db_connection()
+    try:
+        user_id = get_current_user_id(conn)
+        usage_count, limit = get_ai_usage_info(conn, request, user_id)
+        remaining = max(0, limit - usage_count)
+        return jsonify({
+            'used': usage_count,
+            'limit': limit,
+            'remaining': remaining
+        })
+    finally:
+        conn.close()
+
 def srs_update(rating, ease, interval, consecutive):
     """Simple SM-2 style update. Returns (status, ease, interval_days, consecutive)."""
     correct = rating in ('good', 'easy', 'hard')
@@ -505,3 +522,33 @@ def save_word_custom():
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+@learn_bp.route('/api/ai/generate-example', methods=['POST'])
+def generate_ai_example():
+    """Sinh ra ví dụ ngữ cảnh bằng AI."""
+    data = request.get_json(silent=True) or {}
+    word = data.get('word')
+    meaning = data.get('meaning')
+    topic = data.get('topic')
+    
+    if not word or not meaning:
+        return jsonify({'error': 'Missing word or meaning'}), 400
+        
+    conn = get_db_connection()
+    try:
+        from backend.core.db import get_current_user_id, check_and_increment_ai_usage
+        user_id = get_current_user_id(conn)
+        allowed, limit = check_and_increment_ai_usage(conn, request, user_id)
+        if not allowed:
+            return jsonify({'error': f'Bạn đã đạt giới hạn dùng AI hôm nay ({limit} lần). Hãy thử lại vào ngày mai!'}), 429
+            
+        from backend.services.llm_service import generate_contextual_example
+        result = generate_contextual_example(word, meaning, topic)
+        return jsonify(result)
+    except Exception as e:
+        print("API /api/ai/generate-example error:", e)
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+

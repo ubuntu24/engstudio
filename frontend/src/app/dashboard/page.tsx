@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchDashboardStats } from '@/lib/api';
+import { fetchDashboardStats, fetchCurrentUser } from '@/lib/api';
 import { DashboardStats } from '@/types';
 import {
-  Flame, Target, Trophy, Zap
+  Flame, Target, Trophy, Zap, Medal
 } from 'lucide-react';
+import { User } from '@/types';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -17,13 +18,16 @@ export default function DashboardPage() {
     streak_days: 0,
     chart_data: []
   });
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchDashboardStats().then((data) => {
-      if (data) {
-        setStats(data);
-      }
+    Promise.all([
+      fetchDashboardStats(),
+      fetchCurrentUser()
+    ]).then(([statsData, userData]) => {
+      if (statsData) setStats(statsData);
+      if (userData) setUser(userData);
       setLoading(false);
     });
   }, []);
@@ -37,7 +41,7 @@ export default function DashboardPage() {
   }
 
   const unstartedCount = Math.max(0, stats.total_words - (stats.mastered_words + stats.learning_words));
-  const masteryPercentage = stats.total_words > 0 ? Math.round((stats.mastered_words / stats.total_words) * 100) : 18;
+  const masteryPercentage = stats.total_words > 0 ? Math.round((stats.mastered_words / stats.total_words) * 100) : 0;
 
   const chartData = stats.chart_data && stats.chart_data.length === 5 ? stats.chart_data : [
     { date: '', count: 0 }, { date: '', count: 0 }, { date: '', count: 0 }, { date: '', count: 0 }, { date: '', count: 0 }
@@ -263,6 +267,40 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Badges Section */}
+      {user && user.badges && user.badges.length > 0 && (
+        <div className="p-7 rounded-3xl bg-bg-card border border-border-main shadow-2xl space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
+              <Medal className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg font-bold text-text-main">
+              Thành Tựu Của Bạn
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {user.badges.map((badge, idx) => (
+              <div key={idx} className="p-4 rounded-2xl bg-bg-surface border border-amber-500/30 space-y-2 flex flex-col items-center justify-center text-center">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                  <Medal className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-text-main">
+                    {badge.badge_id === 'flashcard_novice' ? 'Tân Binh Flashcard' : 
+                     badge.badge_id === 'flashcard_pro' ? 'Chuyên Gia Flashcard' : 
+                     badge.badge_id}
+                  </div>
+                  <div className="text-[10px] text-text-muted mt-1">
+                    Đạt được ngày {new Date(badge.earned_at).toLocaleDateString('vi-VN')}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

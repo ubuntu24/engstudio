@@ -17,16 +17,19 @@ async function getProgress(req, res) {
     }
 
     const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
-    const learning = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'learning'", [req.userId]))?.c || 0;
-    const reviewing = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'reviewing'", [req.userId]))?.c || 0;
-    const known = (await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'known'", [req.userId]))?.c || 0;
+    const learningRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'learning'", [req.userId]);
+    const reviewingRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'reviewing'", [req.userId]);
+    const knownRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'known'", [req.userId]);
+    
+    const learning = learningRow ? parseInt(learningRow.c, 10) : 0;
+    const reviewing = reviewingRow ? parseInt(reviewingRow.c, 10) : 0;
+    const known = knownRow ? parseInt(knownRow.c, 10) : 0;
 
-    const due_now = (
-      await dbQueryGet(
-        "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND due_date <= $2 AND status IN ('learning', 'reviewing', 'known')",
-        [req.userId, nowStr]
-      )
-    )?.c || 0;
+    const dueRow = await dbQueryGet(
+      "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND due_date <= $2 AND status IN ('learning', 'reviewing', 'known')",
+      [req.userId, nowStr]
+    );
+    const due_now = dueRow ? parseInt(dueRow.c, 10) : 0;
 
     res.json({
       learning,
@@ -48,8 +51,8 @@ async function getTopics(req, res) {
     );
 
     const topics = [
-      { name: 'Tất cả', count: totalRow ? totalRow.c : 0 },
-      ...topicRows.map(r => ({ name: r.topic, count: r.c }))
+      { name: 'Tất cả', count: totalRow ? parseInt(totalRow.c, 10) : 0 },
+      ...topicRows.map(r => ({ name: r.topic, count: parseInt(r.c, 10) }))
     ];
 
     res.json({ topics });
@@ -151,7 +154,7 @@ async function createSession(req, res) {
 
 async function submitReview(req, res) {
   try {
-    const { word_id, rating, session_id } = req.body || {};
+    const { word_id, rating, session_id, time_spent_ms } = req.body || {};
     if (!word_id || typeof word_id !== 'number' || !Number.isInteger(word_id) || word_id < 1) {
       return res.status(400).json({ error: 'word_id không hợp lệ' });
     }
@@ -242,10 +245,62 @@ async function submitReview(req, res) {
     }
 
     await dbRun(
-      `INSERT INTO review_log (session_id, user_id, word_id, rating, reviewed_at)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [session_id || null, req.userId, word_id, rating, nowStr]
+      `INSERT INTO review_log (session_id, user_id, word_id, rating, response_time_ms, reviewed_at)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [session_id || null, req.userId, word_id, rating, time_spent_ms || 0, nowStr]
     );
+
+    let baseXp = 0;
+    if (rating === 'good') baseXp = 10;
+    else if (rating === 'easy') baseXp = 12;
+    else if (rating === 'hard') baseXp = 5;
+    else if (rating === 'again') baseXp = 1;
+
+    let xpAdded = 0;
+    let limitReached = false;
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    try {
+      const userRow = await dbQueryGet('SELECT xp, flashcard_xp_today, last_flashcard_date FROM users WHERE id = $1', [req.userId]);
+      if (userRow) {
+        let xpToday = userRow.flashcard_xp_today || 0;
+        const lastDate = userRow.last_flashcard_date;
+        
+        if (lastDate !== todayStr) {
+          xpToday = 0;
+        }
+
+        if (xpToday >= 500) {
+          limitReached = true;
+          xpAdded = 0;
+        } else {
+          xpAdded = Math.min(baseXp, 500 - xpToday);
+          xpToday += xpAdded;
+        }
+
+        const newXp = (userRow.xp || 0) + xpAdded;
+        const newLevel = Math.floor(newXp / 100) + 1;
+        await dbRun('UPDATE users SET xp = $1, level = $2, flashcard_xp_today = $3, last_flashcard_date = $4 WHERE id = $5', [newXp, newLevel, xpToday, todayStr, req.userId]);
+
+        // Badge Awarding Logic
+        const existingBadges = await dbQueryAll('SELECT badge_id FROM user_badges WHERE user_id = $1', [req.userId]);
+        const ownedBadges = new Set(existingBadges.map(b => b.badge_id));
+        
+        let earnedBadges = [];
+        if (newLevel >= 2 && !ownedBadges.has('flashcard_novice')) {
+          await dbRun('INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)', [req.userId, 'flashcard_novice']);
+          earnedBadges.push({ id: 'flashcard_novice', name: 'Tân binh Flashcard', description: 'Đạt Cấp 2 trong hệ thống Flashcard' });
+        }
+        if (newLevel >= 5 && !ownedBadges.has('flashcard_pro')) {
+          await dbRun('INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)', [req.userId, 'flashcard_pro']);
+          earnedBadges.push({ id: 'flashcard_pro', name: 'Chuyên gia Flashcard', description: 'Đạt Cấp 5 trong hệ thống Flashcard' });
+        }
+        
+        res.locals.earnedBadges = earnedBadges;
+      }
+    } catch (e) {
+      console.error('Error updating XP or Badges:', e);
+    }
 
     res.json({
       ok: true,
@@ -253,6 +308,9 @@ async function submitReview(req, res) {
       status,
       interval_days: interval,
       due_date: dueStr,
+      xp_added: xpAdded,
+      limit_reached: limitReached,
+      earned_badges: res.locals?.earnedBadges || []
     });
     } finally {
       reviewLocks.delete(lockKey);

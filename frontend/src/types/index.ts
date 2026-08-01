@@ -1,7 +1,15 @@
+export interface UserBadge {
+  badge_id: string;
+  earned_at: string;
+}
+
 export interface User {
   id: number;
   username: string;
   display_name: string;
+  xp?: number;
+  level?: number;
+  badges?: UserBadge[];
 }
 
 export interface Word {

@@ -90,17 +90,18 @@ export async function fetchLearnSession(count: number = 20, topic?: string, vide
   }
 }
 
-export async function submitReviewSession(wordId: number, rating: 'easy' | 'good' | 'hard' | 'again'): Promise<boolean> {
+export async function submitReviewSession(wordId: number, rating: 'easy' | 'good' | 'hard' | 'again', timeSpentMs?: number): Promise<{ok: boolean; earned_badges?: any[]; xp_added?: number; limit_reached?: boolean}> {
   try {
     const res = await fetch('/api/learn/review', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ word_id: wordId, rating }),
+      body: JSON.stringify({ word_id: wordId, rating, time_spent_ms: timeSpentMs }),
     });
-    return res.ok;
+    if (!res.ok) return { ok: false };
+    return await res.json();
   } catch (err) {
     console.error('Error submitting review:', err);
-    return false;
+    return { ok: false };
   }
 }
 
@@ -152,14 +153,31 @@ export async function checkPracticeRealtime(userInput: string, targetText: strin
   }
 }
 
-export async function checkAdvancedPractice(originalVi: string, translationEn: string): Promise<WritingCheckResponse> {
+export async function getAiUsage(): Promise<{used: number, limit: number, remaining: number}> {
+  try {
+    const res = await fetch('/api/ai/usage');
+    if (!res.ok) throw new Error('Failed to fetch AI usage');
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching AI usage:', err);
+    return { used: 0, limit: 5, remaining: 5 }; // default fallback
+  }
+}
+
+export async function checkAdvancedPractice(originalVi: string, translationEn: string, mode: "normal" | "ai" = "normal"): Promise<WritingCheckResponse> {
   try {
     const res = await fetch('/api/practice/advanced_check', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ original_vi: originalVi, translation_en: translationEn }),
+      body: JSON.stringify({ original_vi: originalVi, translation_en: translationEn, mode }),
     });
-    if (!res.ok) throw new Error('Failed advanced check');
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      if (res.status === 429) {
+        alert(errorData.error || "Bạn đã đạt giới hạn dùng AI hôm nay. Hãy thử lại vào ngày mai!");
+      }
+      throw new Error(errorData.error || 'Failed advanced check');
+    }
     return await res.json();
   } catch (err) {
     console.error('Error in advanced practice check:', err);
@@ -337,6 +355,14 @@ export async function fetchAiGrammarExplanation(
   return null;
 }
 
-
-
+export async function fetchLeaderboard(): Promise<{ users: User[] }> {
+  try {
+    const res = await fetch('/api/leaderboard');
+    if (!res.ok) throw new Error('Failed to fetch leaderboard');
+    return await res.json();
+  } catch (err) {
+    console.error('Error fetching leaderboard:', err);
+    return { users: [] };
+  }
+}
 

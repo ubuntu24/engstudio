@@ -7,6 +7,7 @@ import {
   Brain, CheckCircle, XCircle, RotateCcw, Award,
   ArrowRight, BookOpen, Sparkles, Star, Target
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type QuizMode = 'review' | 'new';
 
@@ -22,6 +23,15 @@ export default function QuizPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [topics, setTopics] = useState<string[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
+  const [floatingXps, setFloatingXps] = useState<{ id: number, text: string, color: string }[]>([]);
+
+  const showFloatingXp = (amount: number, text: string, color: string) => {
+    const id = Date.now();
+    setFloatingXps(prev => [...prev, { id, text, color }]);
+    setTimeout(() => {
+      setFloatingXps(prev => prev.filter(x => x.id !== id));
+    }, 2000);
+  };
 
   useEffect(() => {
     fetch('/api/learn/topics')
@@ -79,6 +89,9 @@ export default function QuizPage() {
       
       if (isCorrect) {
         setScore((prev) => prev + 1);
+        showFloatingXp(2, "+2 XP", "text-teal-400");
+      } else {
+        showFloatingXp(-5, "-5 XP", "text-rose-500");
       }
 
       if (currentQ?.id) {
@@ -239,7 +252,25 @@ export default function QuizPage() {
 
   // ACTIVE QUESTION SCREEN
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 relative">
+      {/* Floating XP Animations */}
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50">
+        <AnimatePresence>
+          {floatingXps.map((fxp) => (
+            <motion.div
+              key={fxp.id}
+              initial={{ opacity: 0, y: 0, scale: 0.5 }}
+              animate={{ opacity: 1, y: -100, scale: 1.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className={`absolute text-4xl font-black drop-shadow-xl whitespace-nowrap ${fxp.color}`}
+            >
+              {fxp.text}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       {/* Header Info */}
       <div className="flex items-center justify-between bg-bg-card p-4 rounded-2xl border border-border-main shadow-lg">
         <span className="text-xs font-extrabold text-primary-400 uppercase tracking-wider">

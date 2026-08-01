@@ -1,4 +1,4 @@
-const { dbQueryAll, dbQueryGet } = require('../utils/db');
+const { dbQueryAll, dbQueryGet, dbRun } = require('../utils/db');
 
 async function generateQuiz(req, res) {
   try {
@@ -84,6 +84,22 @@ async function submitQuiz(req, res) {
       if (!row) return res.status(404).json({ error: 'Grammar question not found' });
       
       const correct = row.correct_answer === answer;
+      
+      if (req.userId) {
+        try {
+          const userRow = await dbQueryGet('SELECT xp FROM users WHERE id = $1', [req.userId]);
+          if (userRow) {
+            const xpGain = correct ? 2 : -5;
+            let newXp = (userRow.xp || 0) + xpGain;
+            if (newXp < 0) newXp = 0;
+            const newLevel = Math.floor(newXp / 100) + 1;
+            await dbRun('UPDATE users SET xp = $1, level = $2 WHERE id = $3', [newXp, newLevel, req.userId]);
+          }
+        } catch (e) {
+          console.error('Error updating Quiz XP:', e);
+        }
+      }
+      
       let ai_analysis = null;
       if (row.ai_breakdown_json) {
         try {
@@ -103,6 +119,22 @@ async function submitQuiz(req, res) {
       const row = await dbQueryGet('SELECT vietnamese_meaning FROM vocabulary WHERE id = ?', [targetId]);
       if (!row) return res.status(404).json({ error: 'Word not found' });
       const correct = row.vietnamese_meaning === answer;
+
+      if (req.userId) {
+        try {
+          const userRow = await dbQueryGet('SELECT xp FROM users WHERE id = $1', [req.userId]);
+          if (userRow) {
+            const xpGain = correct ? 2 : -5;
+            let newXp = (userRow.xp || 0) + xpGain;
+            if (newXp < 0) newXp = 0;
+            const newLevel = Math.floor(newXp / 100) + 1;
+            await dbRun('UPDATE users SET xp = $1, level = $2 WHERE id = $3', [newXp, newLevel, req.userId]);
+          }
+        } catch (e) {
+          console.error('Error updating Quiz XP:', e);
+        }
+      }
+
       res.json({ correct, correct_answer: row.vietnamese_meaning });
     }
   } catch (err) {

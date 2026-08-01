@@ -136,6 +136,10 @@ def init_db():
                     username TEXT UNIQUE NOT NULL,
                     password_hash TEXT DEFAULT '',
                     display_name TEXT DEFAULT '',
+                    xp INTEGER DEFAULT 0,
+                    level INTEGER DEFAULT 1,
+                    flashcard_xp_today INTEGER DEFAULT 0,
+                    last_flashcard_date TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE TABLE IF NOT EXISTS vocabulary (
@@ -214,6 +218,13 @@ def init_db():
                     signal_words TEXT DEFAULT '',
                     translation_vi TEXT DEFAULT '',
                     ai_breakdown_json TEXT DEFAULT NULL
+                );
+                CREATE TABLE IF NOT EXISTS ai_usage (
+                    id SERIAL PRIMARY KEY,
+                    identifier TEXT NOT NULL,
+                    usage_date TEXT NOT NULL,
+                    usage_count INTEGER DEFAULT 0,
+                    UNIQUE(identifier, usage_date)
                 );
             """)
         else:
@@ -223,6 +234,8 @@ def init_db():
                     username TEXT UNIQUE NOT NULL,
                     password_hash TEXT DEFAULT '',
                     display_name TEXT DEFAULT '',
+                    xp INTEGER DEFAULT 0,
+                    level INTEGER DEFAULT 1,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE TABLE IF NOT EXISTS vocabulary (
@@ -302,10 +315,29 @@ def init_db():
                     translation_vi TEXT DEFAULT '',
                     ai_breakdown_json TEXT DEFAULT NULL
                 );
+                CREATE TABLE IF NOT EXISTS ai_usage (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    identifier TEXT NOT NULL,
+                    usage_date TEXT NOT NULL,
+                    usage_count INTEGER DEFAULT 0,
+                    UNIQUE(identifier, usage_date)
+                );
             """)
             
         try:
             conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT DEFAULT ''")
+            conn.commit()
+        except Exception:
+            pass
+            
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0")
+            conn.commit()
+        except Exception:
+            pass
+            
+        try:
+            conn.execute("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1")
             conn.commit()
         except Exception:
             pass
@@ -314,3 +346,49 @@ def init_db():
         conn.close()
     except Exception as e:
         print(f"CRITICAL ERROR in init_db: {e}", flush=True)
+
+def check_and_increment_ai_usage(conn, request, user_id=None):
+    """
+    Checks if the user/IP has exceeded their daily AI usage limit.
+    If not, increments the counter and returns (True, limit).
+    If exceeded, returns (False, limit).
+    """
+    import datetime
+    limit = 20 if user_id else 5
+    identifier = f"user_{user_id}" if user_id else f"ip_{request.headers.get('X-Forwarded-For', request.remote_addr)}"
+    today = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+    
+    cur = conn.cursor()
+    cur.execute("SELECT usage_count FROM ai_usage WHERE identifier = ? AND usage_date = ?", (identifier, today))
+    row = cur.fetchone()
+    
+    if row:
+        usage_count = row[0] if isinstance(row, tuple) else row['usage_count']
+        if usage_count >= limit:
+            return False, limit
+        else:
+            cur.execute("UPDATE ai_usage SET usage_count = usage_count + 1 WHERE identifier = ? AND usage_date = ?", (identifier, today))
+    else:
+        cur.execute("INSERT INTO ai_usage (identifier, usage_date, usage_count) VALUES (?, ?, 1)", (identifier, today))
+    
+    conn.commit()
+    return True, limit
+
+def get_ai_usage_info(conn, request, user_id=None):
+    """
+    Returns (usage_count, limit) for the current user/IP today.
+    """
+    import datetime
+    limit = 20 if user_id else 5
+    identifier = f"user_{user_id}" if user_id else f"ip_{request.headers.get('X-Forwarded-For', request.remote_addr)}"
+    today = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+    
+    cur = conn.cursor()
+    cur.execute("SELECT usage_count FROM ai_usage WHERE identifier = ? AND usage_date = ?", (identifier, today))
+    row = cur.fetchone()
+    
+    usage_count = 0
+    if row:
+        usage_count = row[0] if isinstance(row, tuple) else row['usage_count']
+        
+    return usage_count, limit

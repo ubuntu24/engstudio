@@ -36,6 +36,12 @@ if (isPostgres) {
   // Test connection on startup
   pool.query('SELECT 1').then(() => {
     console.log('[db] ✅ PostgreSQL connected successfully');
+    // Schema migration
+    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0;').catch(() => {});
+    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;').catch(() => {});
+    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS flashcard_xp_today INTEGER DEFAULT 0;').catch(() => {});
+    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_flashcard_date TEXT;').catch(() => {});
+    pool.query('CREATE TABLE IF NOT EXISTS user_badges (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, badge_id TEXT NOT NULL, earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, badge_id));').catch(() => {});
   }).catch(err => {
     console.error('[db] ❌ PostgreSQL connection failed:', err.message);
   });
@@ -62,6 +68,10 @@ if (isPostgres) {
         username TEXT UNIQUE NOT NULL,
         password_hash TEXT DEFAULT '',
         display_name TEXT DEFAULT '',
+        xp INTEGER DEFAULT 0,
+        level INTEGER DEFAULT 1,
+        flashcard_xp_today INTEGER DEFAULT 0,
+        last_flashcard_date TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
       CREATE TABLE IF NOT EXISTS vocabulary (
@@ -136,7 +146,18 @@ if (isPostgres) {
         translation_vi TEXT DEFAULT '',
         ai_breakdown_json TEXT DEFAULT NULL
       );
+      CREATE TABLE IF NOT EXISTS user_badges (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 1,
+        badge_id TEXT NOT NULL,
+        earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, badge_id)
+      );
     `);
+    // Alter table if they already exist
+    try { sqliteDb.run("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0;"); } catch (_) {}
+    try { sqliteDb.run("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1;"); } catch (_) {}
+    
     // Persist the newly created schema
     try { fs.writeFileSync(resolvedDbPath, Buffer.from(sqliteDb.export())); } catch (_) {}
     console.log('[db] ✅ Using sql.js SQLite at:', resolvedDbPath);

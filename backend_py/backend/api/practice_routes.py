@@ -205,6 +205,7 @@ def practice_advanced_check():
     data = request.get_json(silent=True) or {}
     vi_text = data.get('original_vi', '').strip()
     en_text = data.get('translation_en', '').strip()
+    mode = data.get('mode', 'normal').strip()
 
     if not vi_text or not en_text:
         return jsonify({
@@ -216,21 +217,11 @@ def practice_advanced_check():
             'extra_words': []
         })
 
-    # Obtain reference translation - Priority: Gemini AI → Google Translate → sample list → fallback
     reference_en = ''
-
-    # 1. Try Gemini AI (best quality translation)
-    gemini_api_key = os.environ.get('GEMINI_API_KEY', '')
-    if gemini_api_key:
-        try:
-            import google.generativeai as genai
-            genai.configure(api_key=gemini_api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            prompt = f"Translate this Vietnamese sentence to natural English. Return ONLY the English translation, no explanation:\n{vi_text}"
-            resp = model.generate_content(prompt)
-            reference_en = resp.text.strip().strip('"').strip("'")
-        except Exception as e:
-            print(f"[practice] Gemini translation failed: {e}", flush=True)
+    # 1. Fallback: match in PRACTICE_SAMPLE_TOPICS list
+    matched_sample = next((s for s in PRACTICE_SAMPLE_TOPICS if s['original_vi'] == vi_text), None)
+    if matched_sample:
+        reference_en = matched_sample['reference_en']
 
     # 2. Fallback: Google Translate via deep-translator
     if not reference_en:
@@ -238,23 +229,43 @@ def practice_advanced_check():
             from deep_translator import GoogleTranslator
             reference_en = GoogleTranslator(source='vi', target='en').translate(vi_text)
         except Exception as e:
-            print(f"[practice] Google Translate failed: {e}", flush=True)
+            pass
 
-    # 3. Fallback: match in PRACTICE_SAMPLE_TOPICS list
-    if not reference_en:
-        matched_sample = next((s for s in PRACTICE_SAMPLE_TOPICS if s['original_vi'] == vi_text), None)
-        if matched_sample:
-            reference_en = matched_sample['reference_en']
-
-    # 4. Last resort: use vi_text itself
     if not reference_en:
         reference_en = vi_text
 
-    # Try Primary Engine: GPT-4o AI Grammar Engine
-    try:
-        from g4f.client import Client
-        ai_client = Client()
-        prompt = f"""You are an expert English language teacher for Vietnamese learners.
+    # Mode: AI
+    if mode == 'ai':
+        from backend.core.db import get_db_connection, get_current_user_id, check_and_increment_ai_usage
+        conn = get_db_connection()
+        try:
+            user_id = get_current_user_id(conn)
+            allowed, limit = check_and_increment_ai_usage(conn, request, user_id)
+            if not allowed:
+                return jsonify({
+                    'valid': False,
+                    'score': 0,
+                    'errors': [{
+                        'id': 'limit-exceeded',
+                        'type': 'system',
+                        'start': 0,
+                        'end': len(en_text),
+                        'matched_text': en_text,
+                        'suggestion': '',
+                        'hint': f'Bạn đã đạt giới hạn dùng AI hôm nay ({limit} lần).',
+                        'message': 'Vui lòng quay lại vào ngày mai hoặc chuyển sang chế độ "Dịch thông thường".'
+                    }],
+                    'reference_en': reference_en,
+                    'missing_words': [],
+                    'extra_words': []
+                })
+        finally:
+            conn.close()
+            
+        from backend.services.llm_service import client, MODEL_NAME
+        if client:
+            try:
+                prompt = f"""You are an expert English language teacher for Vietnamese learners.
 Intended Vietnamese meaning: '{vi_text}'
 User English writing: '{en_text}'
 
@@ -279,29 +290,30 @@ Return ONLY a JSON object with this exact structure:
   ],
   "missing_words": ["missing_word_1"]
 }}"""
+                resp = client.chat.completions.create(
+                    model=MODEL_NAME,
+                    messages=[{'role': 'user', 'content': prompt}],
+                    timeout=15
+                )
+                ai_output = resp.choices[0].message.content.strip()
+                if "```" in ai_output:
+                    ai_output = re.sub(r"^```(json)?\n?", "", ai_output)
+                    ai_output = re.sub(r"\n?```$", "", ai_output).strip()
 
-        resp = ai_client.chat.completions.create(
-            model='gpt-4o-mini',
-            messages=[{'role': 'user', 'content': prompt}],
-            timeout=3.5
-        )
-        ai_output = resp.choices[0].message.content.strip()
-        if "```" in ai_output:
-            ai_output = re.sub(r"^```(json)?\n?", "", ai_output)
-            ai_output = re.sub(r"\n?```$", "", ai_output).strip()
+                parsed_json = json.loads(ai_output)
+                if isinstance(parsed_json, dict) and 'errors' in parsed_json:
+                    return jsonify({
+                        'valid': parsed_json.get('valid', len(parsed_json.get('errors', [])) == 0),
+                        'score': parsed_json.get('score', 100),
+                        'errors': parsed_json.get('errors', []),
+                        'reference_en': parsed_json.get('corrected_sentence', reference_en),
+                        'missing_words': parsed_json.get('missing_words', []),
+                        'extra_words': []
+                    })
+            except Exception as e:
+                print(f"[practice] AI Check failed: {e}", flush=True)
 
-        parsed_json = json.loads(ai_output)
-        if isinstance(parsed_json, dict) and 'errors' in parsed_json:
-            return jsonify({
-                'valid': parsed_json.get('valid', len(parsed_json.get('errors', [])) == 0),
-                'score': parsed_json.get('score', 100),
-                'errors': parsed_json.get('errors', []),
-                'reference_en': parsed_json.get('corrected_sentence', ''),
-                'missing_words': parsed_json.get('missing_words', []),
-                'extra_words': []
-            })
-    except Exception as gpt_err:
-        pass
+    # Mode: Normal (or Fallback if AI fails)
 
     # Secondary Fallback Engine: LanguageTool API + MarianMT
     errors = []
@@ -459,10 +471,20 @@ def translate():
     vietnamese_text = data.get('text', '')
     if not vietnamese_text.strip():
         return jsonify({'original': '', 'translated': '', 'error': 'Vui lòng nhập văn bản tiếng Việt.'})
+        
+    from backend.core.db import get_db_connection, get_current_user_id, check_and_increment_ai_usage
+    conn = get_db_connection()
     try:
+        user_id = get_current_user_id(conn)
+        allowed, limit = check_and_increment_ai_usage(conn, request, user_id)
+        if not allowed:
+            return jsonify({'original': vietnamese_text, 'translated': '', 'error': f'Bạn đã đạt giới hạn dùng AI hôm nay ({limit} lần). Hãy thử lại vào ngày mai!'})
+            
         return jsonify({
             'original': vietnamese_text,
             'translated': translate_vi_en(vietnamese_text),
         })
     except Exception as e:
         return jsonify({'original': vietnamese_text, 'translated': '', 'error': str(e)})
+    finally:
+        conn.close()

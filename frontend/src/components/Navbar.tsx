@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Sparkles, LogIn, LogOut, X, ChevronDown, Menu } from "lucide-react";
+import { Sparkles, LogIn, LogOut, X, ChevronDown, Menu, User as UserIcon } from "lucide-react";
 import {
   fetchCurrentUser,
   loginUser,
@@ -21,6 +21,7 @@ const navItems = [
   { href: "/quiz", label: "Bài Kiểm Tra" },
   { href: "/practice", label: "Luyện Đặt Câu" },
   { href: "/video", label: "Video Song Ngữ" },
+  { href: "/leaderboard", label: "Xếp Hạng" },
   { href: "/dashboard", label: "Thống Kê Tiến Độ" },
 ];
 
@@ -53,6 +54,7 @@ export default function Navbar() {
                 src="/logo.png"
                 alt="English Vault"
                 fill
+                sizes="(max-width: 768px) 40px, 44px"
                 className="object-cover"
               />
             </div>
@@ -114,6 +116,14 @@ export default function Navbar() {
                       onClick={() => setIsDropdownOpen(false)}
                     />
                     <div className="absolute right-0 mt-2 w-48 bg-bg-surface border border-border-main rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
+                      <Link
+                        href="/profile"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-bg-surface-hover transition-colors cursor-pointer border-b border-border-main"
+                      >
+                        <UserIcon className="w-4 h-4 text-primary-400" />
+                        Hồ sơ cá nhân
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"

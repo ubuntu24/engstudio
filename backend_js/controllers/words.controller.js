@@ -25,7 +25,7 @@ async function getWords(req, res) {
     const whereStr = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
 
     const countRow = await dbQueryGet(`SELECT COUNT(*) as total FROM vocabulary ${whereStr}`, params);
-    const total = countRow ? countRow.total : 0;
+    const total = countRow ? parseInt(countRow.total, 10) : 0;
 
     let order = 'ORDER BY word ASC';
     if (sort === 'za') order = 'ORDER BY word DESC';
@@ -77,11 +77,22 @@ async function saveWord(req, res) {
 
 async function getStats(req, res) {
   try {
+    const extractDateString = (val) => {
+      if (!val) return null;
+      if (typeof val === 'string') return val.split('T')[0];
+      if (val instanceof Date) {
+        const yyyy = val.getFullYear();
+        const mm = String(val.getMonth() + 1).padStart(2, '0');
+        const dd = String(val.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      return String(val);
+    };
     const token = req.cookies && req.cookies.auth_token;
     const userId = verifyToken(token);
     
     const totalRow = await dbQueryGet('SELECT COUNT(*) as total FROM vocabulary');
-    const total = totalRow ? totalRow.total : 0;
+    const total = totalRow ? parseInt(totalRow.total, 10) : 0;
 
     if (!userId) {
       return res.json({
@@ -104,16 +115,19 @@ async function getStats(req, res) {
       [userId, nowStr]
     );
 
-    const mastered = knownRow ? knownRow.c : 0;
-    const learning = learningRow ? learningRow.c : 0;
-    const due_today = dueRow ? dueRow.due_today : 0;
+    const mastered = knownRow ? parseInt(knownRow.c, 10) : 0;
+    const learning = learningRow ? parseInt(learningRow.c, 10) : 0;
+    const due_today = dueRow ? parseInt(dueRow.due_today, 10) : 0;
 
     // Accuracy Rate
     const totalReviewsRow = await dbQueryGet("SELECT COUNT(*) as c FROM review_log WHERE user_id = ?", [userId]);
     const correctReviewsRow = await dbQueryGet("SELECT COUNT(*) as c FROM review_log WHERE user_id = ? AND rating IN ('good', 'easy')", [userId]);
+    const totalReviews = totalReviewsRow ? parseInt(totalReviewsRow.c, 10) : 0;
+    const correctReviews = correctReviewsRow ? parseInt(correctReviewsRow.c, 10) : 0;
+    
     let accuracy_rate = 0;
-    if (totalReviewsRow && totalReviewsRow.c > 0) {
-      accuracy_rate = Math.round((correctReviewsRow.c / totalReviewsRow.c) * 100);
+    if (totalReviews > 0) {
+      accuracy_rate = Math.round((correctReviews / totalReviews) * 100);
     }
 
     // Streak Days
@@ -128,15 +142,19 @@ async function getStats(req, res) {
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
       const yesterday = yesterdayDate.toISOString().split('T')[0];
       
-      let currentDate = new Date(streakRows[0].d);
-      let expectedDateStr = streakRows[0].d;
+
+
+      // Ensure date is a string (SQLite returns string, Postgres pg driver returns local Date object at midnight)
+      let expectedDateStr = extractDateString(streakRows[0].d);
       
       if (expectedDateStr === today || expectedDateStr === yesterday) {
         streak_days = 1;
+        let currentDate = new Date(expectedDateStr);
         for (let i = 1; i < streakRows.length; i++) {
           currentDate.setDate(currentDate.getDate() - 1);
           const prevDayStr = currentDate.toISOString().split('T')[0];
-          if (streakRows[i].d === prevDayStr) {
+          const rowDateStr = extractDateString(streakRows[i].d);
+          if (rowDateStr === prevDayStr) {
             streak_days++;
           } else {
             break;
@@ -163,9 +181,10 @@ async function getStats(req, res) {
       [userId, fiveDaysAgoStr]
     );
 
-    for (let r of (recentLogs || [])) {
-      if (chartDataMap[r.d] !== undefined) {
-        chartDataMap[r.d] = r.c;
+    for (let row of (recentLogs || [])) {
+      const dStr = extractDateString(row.d);
+      if (chartDataMap[dStr] !== undefined) {
+        chartDataMap[dStr] = parseInt(row.c, 10);
       }
     }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchLearnSession, submitReviewSession, fetchTopics } from "@/lib/api";
+import { fetchLearnSession, submitReviewSession, fetchTopics, getAiUsage } from "@/lib/api";
 import { Word } from "@/types";
 import {
   Volume2,
@@ -12,7 +12,10 @@ import {
   RefreshCw,
   Trophy,
   Filter,
+  Medal,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 
 export default function LearnPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -23,6 +26,23 @@ export default function LearnPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
   const [completedCount, setCompletedCount] = useState(0);
+  const [cardShownAt, setCardShownAt] = useState<number>(0);
+  const [floatingXps, setFloatingXps] = useState<{ id: number, text: string, color: string }[]>([]);
+  const [aiExampleLoading, setAiExampleLoading] = useState(false);
+  const [aiExample, setAiExample] = useState<{english: string; vietnamese: string} | null>(null);
+  const [aiUsage, setAiUsage] = useState<{used: number, limit: number, remaining: number} | null>(null);
+
+  useEffect(() => {
+    getAiUsage().then(setAiUsage);
+  }, []);
+
+  const showFloatingXp = (amount: number, text: string, color: string) => {
+    const id = Date.now();
+    setFloatingXps(prev => [...prev, { id, text, color }]);
+    setTimeout(() => {
+      setFloatingXps(prev => prev.filter(x => x.id !== id));
+    }, 2000);
+  };
 
   const loadTopicsList = async () => {
     const list = await fetchTopics();
@@ -37,6 +57,7 @@ export default function LearnPage() {
   ) => {
     setLoading(true);
     setCompletedCount(0);
+    setAiExample(null);
     try {
       const data = await fetchLearnSession(20, topic, vidOnly);
       setWords(data.cards);
@@ -73,8 +94,31 @@ export default function LearnPage() {
   const handleReview = async (rating: "easy" | "good" | "hard" | "again") => {
     if (!currentWord) return;
 
-    await submitReviewSession(currentWord.id, rating);
+    const timeSpentMs = cardShownAt > 0 ? Date.now() - cardShownAt : 0;
+    const response = await submitReviewSession(currentWord.id, rating, timeSpentMs);
+    
+    if (response?.limit_reached) {
+      showFloatingXp(0, "+0 XP (Đạt giới hạn ngày)", "text-rose-400");
+    } else if (response?.xp_added && response.xp_added > 0) {
+      showFloatingXp(response.xp_added, `+${response.xp_added} XP`, "text-teal-400");
+    }
+
+    if (response?.earned_badges && response.earned_badges.length > 0) {
+      response.earned_badges.forEach((b: any, index: number) => {
+        setTimeout(() => {
+          showFloatingXp(0, `🏅 ${b.name}`, "text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]");
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }, index * 2500);
+      });
+    }
+
     setIsFlipped(false);
+    setCardShownAt(0);
+    setAiExample(null);
 
     if (rating === "again") {
       const remainingWords = words.filter((_, i) => i !== currentIndex);
@@ -94,8 +138,60 @@ export default function LearnPage() {
     );
   }
 
+  const generateAiExample = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!currentWord || aiExampleLoading) return;
+    setAiExampleLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/ai/generate-example`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ 
+          word: currentWord.word, 
+          meaning: currentWord.meaning_vi || currentWord.vietnamese_meaning,
+          topic: selectedTopic 
+        })
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        if (res.status === 429) {
+          alert(errorData.error || "Bạn đã đạt giới hạn dùng AI hôm nay. Hãy thử lại vào ngày mai!");
+        }
+        throw new Error(errorData.error || "Failed to fetch AI example");
+      }
+      const data = await res.json();
+      if (data && data.english) {
+        setAiExample(data);
+        getAiUsage().then(setAiUsage);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAiExampleLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 relative">
+      {/* Floating XP Animations */}
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50">
+        <AnimatePresence>
+          {floatingXps.map((fxp) => (
+            <motion.div
+              key={fxp.id}
+              initial={{ opacity: 0, y: 0, scale: 0.5 }}
+              animate={{ opacity: 1, y: -100, scale: 1.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className={`absolute text-4xl font-black drop-shadow-xl whitespace-nowrap ${fxp.color}`}
+            >
+              {fxp.text}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -205,11 +301,17 @@ export default function LearnPage() {
             </div>
           ) : (
             <div className="perspective-1000 min-h-[360px]">
-              <div
-                onClick={() => setIsFlipped(!isFlipped)}
-                className={`relative w-full min-h-[360px] rounded-3xl cursor-pointer transition-transform duration-700 transform-style-3d ${
-                  isFlipped ? "rotate-y-180" : ""
-                }`}
+              <motion.div
+                onClick={() => {
+                  if (!isFlipped) {
+                    setCardShownAt(Date.now());
+                  }
+                  setIsFlipped(!isFlipped);
+                }}
+                initial={false}
+                animate={{ rotateY: isFlipped ? 180 : 0 }}
+                transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+                className="relative w-full min-h-[360px] rounded-3xl cursor-pointer transform-style-3d"
               >
                 {/* Front Side */}
                 <div className="absolute inset-0 w-full h-full rounded-3xl bg-gradient-to-b from-bg-surface to-bg-base border border-border-hover p-8 flex flex-col justify-between shadow-2xl backface-hidden">
@@ -283,29 +385,64 @@ export default function LearnPage() {
                         {currentWord.definition}
                       </p>
                     )}
-                    {(currentWord?.example_en ||
-                      currentWord?.example ||
-                      currentWord?.context) && (
-                      <div className="bg-bg-surface p-4 rounded-2xl border border-border-main space-y-1.5 text-sm text-left max-w-xl mx-auto">
-                        <p className="text-text-main font-medium">
-                          {currentWord.example_en ||
-                            currentWord.example ||
-                            currentWord.context}
-                        </p>
-                        {currentWord.example_vi && (
-                          <p className="text-text-muted italic text-xs">
-                            {currentWord.example_vi}
+                    
+                    {/* Ví dụ tĩnh hoặc AI */}
+                    <div className="space-y-3">
+                      {(currentWord?.example_en ||
+                        currentWord?.example ||
+                        currentWord?.context) && (
+                        <div className="bg-bg-surface p-4 rounded-2xl border border-border-main space-y-1.5 text-sm text-left max-w-xl mx-auto">
+                          <p className="text-text-main font-medium">
+                            {currentWord.example_en ||
+                              currentWord.example ||
+                              currentWord.context}
                           </p>
-                        )}
-                      </div>
-                    )}
+                          {currentWord.example_vi && (
+                            <p className="text-text-muted italic text-xs">
+                              {currentWord.example_vi}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      
+                      {aiExample && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-primary-500/10 p-4 rounded-2xl border border-primary-500/30 space-y-1.5 text-sm text-left max-w-xl mx-auto"
+                        >
+                          <div className="text-[10px] font-bold text-primary-400 uppercase tracking-wider mb-1">✨ AI Generated Context</div>
+                          <p className="text-primary-300 font-medium">{aiExample.english}</p>
+                          <p className="text-text-muted italic text-xs">{aiExample.vietnamese}</p>
+                        </motion.div>
+                      )}
+
+                      {!aiExample && (
+                        <button
+                          onClick={generateAiExample}
+                          disabled={aiExampleLoading || aiUsage?.remaining === 0}
+                          className={`mx-auto flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                            aiUsage?.remaining === 0 
+                              ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed" 
+                              : "border-primary-500/30 bg-bg-surface text-primary-400 hover:bg-primary-500/10 disabled:opacity-50"
+                          }`}
+                        >
+                          {aiExampleLoading ? (
+                            <div className="animate-spin w-3 h-3 border-2 border-primary-400 border-t-transparent rounded-full" />
+                          ) : (
+                            <span className="text-base leading-none">✨</span>
+                          )}
+                          Sinh ví dụ ngữ cảnh với AI {aiUsage ? `(Còn ${aiUsage.remaining} lượt)` : ''}
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   <div className="text-xs text-slate-500 text-center">
                     Chọn mức độ nhớ
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           )}
 

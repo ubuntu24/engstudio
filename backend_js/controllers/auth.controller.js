@@ -1,4 +1,4 @@
-const { dbQueryGet, dbRun } = require('../utils/db');
+const { dbQueryGet, dbRun, dbQueryAll } = require('../utils/db');
 const { hashPassword, generateToken, verifyPassword } = require('../utils/auth');
 const { escapeHtml } = require('../utils/helpers');
 const { blacklistToken } = require('../middlewares/auth.middleware');
@@ -88,8 +88,10 @@ function logout(req, res) {
 
 async function getMe(req, res) {
   try {
-    const user = await dbQueryGet('SELECT id, username, display_name FROM users WHERE id = $1', [req.userId]);
+    const user = await dbQueryGet('SELECT id, username, display_name, xp, level FROM users WHERE id = $1', [req.userId]);
     if (!user) return res.status(404).json({ error: 'User not found' });
+    const badgeRows = await dbQueryAll('SELECT badge_id, earned_at FROM user_badges WHERE user_id = $1 ORDER BY earned_at DESC', [req.userId]);
+    user.badges = badgeRows || [];
     res.json({ user });
   } catch (err) {
     console.error('[Auth getMe Error]:', err);

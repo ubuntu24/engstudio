@@ -7,7 +7,8 @@ function blacklistToken(token) {
 }
 
 function requireAuth(req, res, next) {
-  const token = req.cookies && req.cookies.auth_token;
+  const token = (req.cookies && req.cookies.auth_token) || 
+                (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
   if (blacklistedTokens.has(token)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -20,7 +21,8 @@ function requireAuth(req, res, next) {
 }
 
 function optionalAuth(req, res, next) {
-  const token = req.cookies && req.cookies.auth_token;
+  const token = (req.cookies && req.cookies.auth_token) || 
+                (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
   if (blacklistedTokens.has(token)) {
     req.userId = null;
     return next();
