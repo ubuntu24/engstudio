@@ -41,6 +41,11 @@ def create_app():
         response.headers['X-Content-Type-Options'] = 'nosniff'
         return response
 
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        app.logger.error(f"[Unhandled Exception]: {e}")
+        return jsonify({"error": "Lỗi hệ thống Python Backend, vui lòng thử lại sau."}), 500
+
     return app
 
 app = create_app()

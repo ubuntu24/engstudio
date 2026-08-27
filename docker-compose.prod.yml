@@ -19,8 +19,6 @@ services:
 
   backend_js:
     image: ghcr.io/${GHCR_REPO}/english-studio-backend-js:${IMAGE_TAG:-latest}
-    ports:
-      - "5000:5000"
     restart: unless-stopped
     depends_on:
       backend_py:
@@ -36,8 +34,6 @@ services:
 
   backend_py:
     image: ghcr.io/${GHCR_REPO}/english-studio-backend-py:${IMAGE_TAG:-latest}
-    ports:
-      - "5001:5001"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://127.0.0.1:5001/api/health || exit 1"]

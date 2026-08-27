@@ -1,5 +1,6 @@
 const { dbQueryAll, dbQueryGet, dbRun } = require('../utils/db');
 const { escapeHtml } = require('../utils/helpers');
+const cache = require('../utils/cache');
 
 const reviewLocks = new Set();
 
@@ -16,28 +17,37 @@ async function getProgress(req, res) {
       });
     }
 
+    const cacheKey = `learn_progress:${req.userId}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json(cached);
+
     const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
-    const learningRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'learning'", [req.userId]);
-    const reviewingRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'reviewing'", [req.userId]);
-    const knownRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'known'", [req.userId]);
+
+    const [learningRow, reviewingRow, knownRow, dueRow] = await Promise.all([
+      dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'learning'", [req.userId]),
+      dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'reviewing'", [req.userId]),
+      dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND status = 'known'", [req.userId]),
+      dbQueryGet(
+        "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND due_date <= $2 AND status IN ('learning', 'reviewing', 'known')",
+        [req.userId, nowStr]
+      )
+    ]);
     
     const learning = learningRow ? parseInt(learningRow.c, 10) : 0;
     const reviewing = reviewingRow ? parseInt(reviewingRow.c, 10) : 0;
     const known = knownRow ? parseInt(knownRow.c, 10) : 0;
-
-    const dueRow = await dbQueryGet(
-      "SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1 AND due_date <= $2 AND status IN ('learning', 'reviewing', 'known')",
-      [req.userId, nowStr]
-    );
     const due_now = dueRow ? parseInt(dueRow.c, 10) : 0;
 
-    res.json({
+    const payload = {
       learning,
       reviewing,
       known,
       due_now,
       total_learned: learning + reviewing + known,
-    });
+    };
+
+    cache.set(cacheKey, payload, 15);
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -45,17 +55,55 @@ async function getProgress(req, res) {
 
 async function getTopics(req, res) {
   try {
-    const totalRow = await dbQueryGet('SELECT COUNT(*) as c FROM vocabulary');
-    const topicRows = await dbQueryAll(
+    const cacheKey = `learn_topics:${req.userId || 'guest'}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json(cached);
+
+    let totalRowPromise = dbQueryGet('SELECT COUNT(*) as c FROM vocabulary');
+    let topicRowsPromise = dbQueryAll(
       "SELECT topic, COUNT(*) as c FROM vocabulary WHERE topic IS NOT NULL AND topic != '' GROUP BY topic ORDER BY c DESC"
     );
 
+    let totalLearnedPromise = req.userId 
+      ? dbQueryGet('SELECT COUNT(*) as c FROM learning_progress WHERE user_id = $1', [req.userId])
+      : Promise.resolve(null);
+
+    let learnedTopicRowsPromise = req.userId
+      ? dbQueryAll(
+          `SELECT v.topic, COUNT(DISTINCT lp.word_id) as c
+           FROM learning_progress lp
+           JOIN vocabulary v ON v.id = lp.word_id
+           WHERE lp.user_id = $1 AND v.topic IS NOT NULL AND v.topic != ''
+           GROUP BY v.topic`,
+          [req.userId]
+        )
+      : Promise.resolve([]);
+
+    const [totalRow, topicRows, totalLearnedRow, learnedTopicRows] = await Promise.all([
+      totalRowPromise,
+      topicRowsPromise,
+      totalLearnedPromise,
+      learnedTopicRowsPromise
+    ]);
+
+    let totalLearned = totalLearnedRow ? parseInt(totalLearnedRow.c, 10) : 0;
+    const learnedMap = {};
+    (learnedTopicRows || []).forEach(r => {
+      learnedMap[r.topic] = parseInt(r.c, 10) || 0;
+    });
+
     const topics = [
-      { name: 'Tất cả', count: totalRow ? parseInt(totalRow.c, 10) : 0 },
-      ...topicRows.map(r => ({ name: r.topic, count: parseInt(r.c, 10) }))
+      { name: 'Tất cả', count: totalRow ? parseInt(totalRow.c, 10) : 0, learned: totalLearned },
+      ...topicRows.map(r => ({
+        name: r.topic,
+        count: parseInt(r.c, 10),
+        learned: learnedMap[r.topic] || 0
+      }))
     ];
 
-    res.json({ topics });
+    const payload = { topics, total_learned: totalLearned };
+    cache.set(cacheKey, payload, 60);
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -301,6 +349,10 @@ async function submitReview(req, res) {
     } catch (e) {
       console.error('Error updating XP or Badges:', e);
     }
+
+    cache.delPattern('user_stats');
+    cache.delPattern('learn_progress');
+    cache.delPattern('learn_topics');
 
     res.json({
       ok: true,

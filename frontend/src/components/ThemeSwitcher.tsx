@@ -56,7 +56,7 @@ export function ThemeSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:border-border-hover transition-colors shadow-sm"
+        className="p-2 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main hover:border-border-hover transition-colors shadow-sm active:scale-95"
         title="Đổi giao diện"
       >
         <Palette className="w-5 h-5" />
@@ -83,7 +83,7 @@ export function ThemeSwitcher() {
                 <button
                   key={t.id}
                   onClick={() => handleThemeChange(t.id)}
-                  className={`flex items-center justify-between px-3 py-2 text-sm rounded-xl transition-all ${
+                  className={`flex items-center justify-between px-3 py-2 text-sm rounded-xl transition ${
                     theme === t.id
                       ? "bg-bg-surface-hover text-primary-500 font-bold"
                       : "text-text-muted hover:bg-bg-surface-hover hover:text-text-main"

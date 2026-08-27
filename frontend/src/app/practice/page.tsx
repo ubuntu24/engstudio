@@ -23,6 +23,7 @@ import {
   HelpCircle,
   Lightbulb,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 
 export default function PracticePage() {
@@ -87,14 +88,13 @@ export default function PracticePage() {
       return;
     }
 
+    if (checkMode === "ai") return; // Ngăn auto-check ở chế độ AI
+
     setIsChecking(true);
     const timer = setTimeout(() => {
-      checkAdvancedPractice(targetVi, userInput, checkMode).then((res) => {
+      checkAdvancedPractice(targetVi, userInput, "normal").then((res) => {
         setCheckResult(res);
         setIsChecking(false);
-        if (checkMode === "ai") {
-          getAiUsage().then(setAiUsage);
-        }
         if (res && res.valid) {
           confetti({
             particleCount: 150,
@@ -108,6 +108,29 @@ export default function PracticePage() {
 
     return () => clearTimeout(timer);
   }, [userInput, targetVi, checkMode]);
+
+  const handleManualAiCheck = async () => {
+    if (!userInput.trim() || !targetVi.trim() || aiUsage?.remaining === 0) return;
+    setIsChecking(true);
+    setCheckResult(null);
+    setRevealedErrors({});
+    
+    try {
+      const res = await checkAdvancedPractice(targetVi, userInput, "ai");
+      setCheckResult(res);
+      getAiUsage().then(setAiUsage);
+      if (res && res.valid) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#f59e0b', '#8b5cf6', '#ec4899']
+        });
+      }
+    } finally {
+      setIsChecking(false);
+    }
+  };
 
   const handleToggleReveal = (errorId: string) => {
     setRevealedErrors((prev) => ({
@@ -220,7 +243,7 @@ export default function PracticePage() {
                   setRevealedErrors({});
                   setShowAnswer(false);
                 }}
-                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-bg-surface-hover text-primary-400 border border-border-hover hover:bg-primary-950/40 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-bg-surface-hover text-primary-400 border border-border-hover hover:bg-primary-950/40 transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95"
               >
                 <Sliders className="w-3.5 h-3.5" />
                 {isCustomMode ? "Xem Câu Theo Chủ Đề" : "Tự Nhập Câu"}
@@ -239,7 +262,7 @@ export default function PracticePage() {
                         setSelectedCategory("All");
                         setCurrentSampleIndex(0);
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition duration-200 ease-out cursor-pointer border ${
                         selectedCategory === "All"
                           ? "bg-primary-500 border-primary-500 text-text-primary-fg shadow-sm"
                           : "bg-bg-surface border-border-main text-text-muted hover:border-primary-400 hover:text-text-main"
@@ -254,7 +277,7 @@ export default function PracticePage() {
                           setSelectedCategory(cat);
                           setCurrentSampleIndex(0);
                         }}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition duration-200 ease-out cursor-pointer border ${
                           selectedCategory === cat
                             ? "bg-primary-500 border-primary-500 text-text-primary-fg shadow-sm"
                             : "bg-bg-surface border-border-main text-text-muted hover:border-primary-400 hover:text-text-main"
@@ -286,7 +309,7 @@ export default function PracticePage() {
                       onClick={() =>
                         setCurrentSampleIndex((prev) => Math.max(0, prev - 1))
                       }
-                      className="px-3 py-1.5 rounded-xl bg-bg-surface-hover text-text-muted hover:bg-bg-surface-hover text-xs font-semibold disabled:opacity-40 flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-bg-surface-hover text-text-muted hover:bg-bg-surface-hover text-xs font-semibold disabled:opacity-40 flex items-center gap-1 cursor-pointer active:scale-95"
                     >
                       <ChevronLeft className="w-4 h-4" /> Câu Trước
                     </button>
@@ -300,7 +323,7 @@ export default function PracticePage() {
                           Math.min(filteredSamples.length - 1, prev + 1),
                         )
                       }
-                      className="px-3 py-1.5 rounded-xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg text-xs font-black disabled:opacity-40 flex items-center gap-1 shadow-md cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg text-xs font-black disabled:opacity-40 flex items-center gap-1 shadow-md cursor-pointer active:scale-95"
                     >
                       Câu Tiếp <ChevronRight className="w-4 h-4" />
                     </button>
@@ -357,30 +380,38 @@ export default function PracticePage() {
 
         {/* RIGHT COLUMN */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="flex items-center gap-2 p-1.5 bg-bg-surface border border-border-main rounded-2xl w-max shadow-sm mx-auto lg:mx-0">
-            <button
-              onClick={() => setCheckMode("normal")}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                checkMode === "normal"
-                  ? "bg-primary-500 text-text-primary-fg shadow-md"
-                  : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
-              }`}
-            >
-              Dịch Thông Thường
-            </button>
-            <button
-              onClick={() => setCheckMode("ai")}
-              disabled={aiUsage?.remaining === 0}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                aiUsage?.remaining === 0 
-                  ? "bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700" 
-                  : checkMode === "ai"
-                    ? "bg-amber-500 text-white shadow-md"
-                    : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" /> Dịch bằng AI {aiUsage ? `(Còn ${aiUsage.remaining} lượt)` : ''}
-            </button>
+                    <div className="flex bg-bg-surface border border-border-main p-1.5 rounded-2xl w-full max-w-md mx-auto lg:mx-0 relative shadow-inner">
+            {['normal', 'ai'].map((mode) => (
+              <button
+                key={mode}
+                onClick={() => {
+                  setCheckMode(mode as "normal" | "ai");
+                  setUserInput('');
+                  setCheckResult(null);
+                  setRevealedErrors({});
+                  setShowAnswer(false);
+                }}
+                disabled={mode === 'ai' && aiUsage?.remaining === 0}
+                className={`relative flex-1 py-2.5 px-4 text-xs font-bold z-10 flex items-center justify-center gap-2 transition-colors duration-200 ease-out active:scale-[0.97] cursor-pointer ${
+                  (mode === 'ai' && aiUsage?.remaining === 0)
+                    ? "opacity-50 cursor-not-allowed"
+                    : checkMode === mode
+                      ? "text-white"
+                      : "text-text-muted hover:text-text-main"
+                }`}
+              >
+                {checkMode === mode && (
+                  <motion.div
+                    layoutId="activeTabBackground"
+                    className={`absolute inset-0 rounded-xl shadow-md -z-10 ${
+                      mode === 'normal' ? 'bg-primary-500' : 'bg-gradient-to-r from-amber-500 to-purple-600'
+                    }`}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                  />
+                )}
+                {mode === 'normal' ? 'Dịch Thông Thường' : <><Sparkles className="w-3.5 h-3.5" /> Dịch AI {aiUsage ? `(${aiUsage.remaining})` : ''}</>}
+              </button>
+            ))}
           </div>
 
           <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl relative">
@@ -397,10 +428,7 @@ export default function PracticePage() {
               )}
             </div>
 
-            <div
-              id="enInputPractice"
-              className="relative min-h-[160px] rounded-2xl bg-bg-surface border border-border-main focus-within:border-primary-500 shadow-inner overflow-hidden"
-            >
+            <div id="enInputPractice" className={`relative min-h-[160px] rounded-2xl bg-bg-surface border border-border-main  shadow-inner overflow-hidden focus-within:border-${checkMode === "ai" ? "amber-500" : "primary-500"} transition-[filter,opacity,border-color] duration-200 ease-out ${isChecking ? "filter blur-[2px] opacity-70" : ""}`}>
               <div
                 aria-hidden="true"
                 className="absolute inset-0 p-4 pointer-events-none text-base leading-relaxed font-sans whitespace-pre-wrap break-words text-transparent"
@@ -418,7 +446,7 @@ export default function PracticePage() {
               />
             </div>
 
-            <div className="flex items-center justify-between text-xs text-text-muted">
+            <div className="flex items-center justify-between text-xs text-text-muted mt-2">
               <button
                 onClick={() => {
                   setUserInput("");
@@ -426,11 +454,24 @@ export default function PracticePage() {
                   setRevealedErrors({});
                   setShowAnswer(false);
                 }}
-                className="flex items-center gap-1 text-text-muted hover:text-text-main transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-text-muted hover:text-text-main transition-colors duration-200 ease-out cursor-pointer active:scale-95"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Xóa gõ lại
               </button>
-              <span>{userInput.length} ký tự</span>
+              
+              <div className="flex items-center gap-4">
+                <span>{userInput.length} ký tự</span>
+                {checkMode === "ai" && (
+                  <button
+                    onClick={handleManualAiCheck}
+                    disabled={isChecking || !userInput.trim() || aiUsage?.remaining === 0}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-white font-bold rounded-xl shadow-md transition-transform duration-200 ease-out active:scale-95 disabled:opacity-50 cursor-pointer"
+                  >
+                    {isChecking ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+                    Kiểm tra bằng AI
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -440,8 +481,12 @@ export default function PracticePage() {
           >
             <div className="flex items-center justify-between border-b border-border-main pb-4">
               <h3 className="text-base font-bold text-text-main flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-primary-400" />
-                Kết Quả Phân Tích{" "}
+                {checkMode === 'ai' ? (
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                ) : (
+                  <BookOpen className="w-5 h-5 text-primary-400" />
+                )}
+                {checkMode === 'ai' ? "Phân Tích Bằng AI" : "Kết Quả Kiểm Tra"}
               </h3>
 
               {checkResult && (
@@ -489,7 +534,7 @@ export default function PracticePage() {
                         return (
                           <div
                             key={err.id}
-                            className="p-4 rounded-2xl bg-bg-surface border border-border-main space-y-3 transition-all"
+                            className="p-4 rounded-2xl bg-bg-surface border border-border-main space-y-3 transition duration-200 ease-out"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-2 text-xs font-bold">
@@ -520,7 +565,7 @@ export default function PracticePage() {
                               {!isRevealed && (
                                 <button
                                   onClick={() => handleToggleReveal(err.id)}
-                                  className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-bold text-xs flex items-center gap-1.5 transition-all shadow cursor-pointer"
+                                  className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-bold text-xs flex items-center gap-1.5 transition duration-200 ease-out shadow cursor-pointer active:scale-95"
                                 >
                                   <HelpCircle className="w-3.5 h-3.5" /> Xem Từ
                                   Đúng & Sửa
@@ -552,14 +597,14 @@ export default function PracticePage() {
                                 {err.suggestion ? (
                                   <button
                                     onClick={() => handleApplyFix(err)}
-                                    className="px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-text-primary-fg font-bold text-xs shadow-lg shadow-primary-600/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-text-primary-fg font-bold text-xs shadow-lg shadow-primary-600/20 transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95"
                                   >
                                     <Check className="w-3.5 h-3.5" /> Sửa Ngay
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => handleDeleteWord(err)}
-                                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow transition-all flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" /> Xóa Từ
                                   </button>
@@ -587,7 +632,7 @@ export default function PracticePage() {
                   <div className="pt-2 border-t border-border-main">
                     <button
                       onClick={() => setShowAnswer(!showAnswer)}
-                      className="text-xs font-bold text-primary-400 hover:text-primary-400 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bg-surface-hover border border-border-hover transition-all cursor-pointer"
+                      className="text-xs font-bold text-primary-400 hover:text-primary-400 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-bg-surface-hover border border-border-hover transition duration-200 ease-out cursor-pointer active:scale-95"
                     >
                       {showAnswer ? (
                         <EyeOff className="w-3.5 h-3.5" />

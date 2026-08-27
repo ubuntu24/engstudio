@@ -1,22 +1,53 @@
 import { Word, DashboardStats, PracticeCheckResponse, RealtimeCheckResponse, QuizQuestion, SubtitleItem, WritingCheckResponse, TopicSample, User, GrammarQuestion } from '../types';
 
-function cleanText(text?: string): string {
-  if (!text) return '';
+function cleanText(text?: any): string {
+  if (text === null || text === undefined) return '';
+  const str = String(text);
+  if (!str) return '';
   if (typeof window !== 'undefined') {
-    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const doc = new DOMParser().parseFromString(str, 'text/html');
     return doc.body.textContent || '';
   }
   // Fallback for SSR
-  return text.replace(/<[^>]*>?/g, '').replace(/&[^;]+;/g, '').replace(/\s+/g, ' ').trim();
+  return str.replace(/<[^>]*>?/g, '').replace(/&[^;]+;/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Fast client-side cache
+const clientCache = new Map<string, { data: any; expiry: number }>();
+
+function getClientCached<T>(key: string): T | null {
+  const item = clientCache.get(key);
+  if (!item) return null;
+  if (Date.now() > item.expiry) {
+    clientCache.delete(key);
+    return null;
+  }
+  return item.data;
+}
+
+function setClientCached(key: string, data: any, ttlSec: number = 30) {
+  clientCache.set(key, { data, expiry: Date.now() + ttlSec * 1000 });
+}
+
+export function invalidateClientCache(pattern?: string) {
+  if (!pattern) {
+    clientCache.clear();
+    return;
+  }
+  for (const key of Array.from(clientCache.keys())) {
+    if (key.includes(pattern)) clientCache.delete(key);
+  }
 }
 
 export async function fetchWords(): Promise<Word[]> {
+  const cached = getClientCached<Word[]>('words_all');
+  if (cached) return cached;
   try {
     const res = await fetch('/api/words');
     if (!res.ok) throw new Error('Failed to fetch words');
     const data = await res.json();
     const rawWords = data.words || (Array.isArray(data) ? data : []);
-    return rawWords.map((w: any) => ({
+    const result = rawWords.map((w: any) => ({
       ...w,
       word: cleanText(w.word),
       meaning_vi: cleanText(w.vietnamese_meaning || w.meaning_vi) || 'Chưa có nghĩa tiếng Việt',
@@ -24,6 +55,8 @@ export async function fetchWords(): Promise<Word[]> {
       example_en: cleanText(w.example || w.context || w.example_en),
       example_vi: cleanText(w.example_vi)
     }));
+    setClientCached('words_all', result, 60);
+    return result;
   } catch (err) {
     console.error('Error fetching words:', err);
     return [];
@@ -31,10 +64,14 @@ export async function fetchWords(): Promise<Word[]> {
 }
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
+  const cached = getClientCached<DashboardStats>('stats');
+  if (cached) return cached;
   try {
     const res = await fetch('/api/stats');
     if (!res.ok) throw new Error('Failed to fetch stats');
-    return await res.json();
+    const data = await res.json();
+    setClientCached('stats', data, 20);
+    return data;
   } catch (err) {
     console.error('Error fetching stats:', err);
     return {
@@ -49,11 +86,15 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function fetchTopics(): Promise<{ name: string; count: number }[]> {
+  const cached = getClientCached<{ name: string; count: number }[]>('topics');
+  if (cached) return cached;
   try {
     const res = await fetch('/api/learn/topics');
     if (!res.ok) throw new Error('Failed to fetch topics');
     const data = await res.json();
-    return data.topics || [];
+    const topics = data.topics || [];
+    setClientCached('topics', topics, 60);
+    return topics;
   } catch (err) {
     console.error('Error fetching topics:', err);
     return [];
@@ -105,30 +146,89 @@ export async function submitReviewSession(wordId: number, rating: 'easy' | 'good
   }
 }
 
-export async function generateQuiz(mode: 'new' | 'review' = 'review', topic: string = 'All'): Promise<QuizQuestion[]> {
+export interface QuizTopicInfo {
+  name: string;
+  display_name: string;
+  count: number;
+  learned: number;
+}
+
+export interface QuizInfoResponse {
+  total_vocabulary: number;
+  total_learned: number;
+  topics: QuizTopicInfo[];
+  is_guest: boolean;
+}
+
+export async function fetchQuizInfo(): Promise<QuizInfoResponse> {
+  try {
+    const res = await fetch('/api/quiz/info');
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    // ignore and fallback
+  }
+
+  try {
+    const resTopics = await fetch('/api/learn/topics');
+    if (resTopics.ok) {
+      const data = await resTopics.json();
+      const rawTopics = data.topics || [];
+      const totalLearned = data.total_learned || 0;
+      const allTopic = rawTopics.find((t: any) => t.name === 'All' || t.name === 'Tất cả');
+      const totalVocab = allTopic ? allTopic.count : (rawTopics.reduce((acc: number, t: any) => acc + (t.count || 0), 0));
+      return {
+        total_vocabulary: totalVocab,
+        total_learned: totalLearned,
+        topics: rawTopics.map((t: any) => ({
+          name: t.name === 'Tất cả' ? 'All' : t.name,
+          display_name: t.name,
+          count: t.count || 0,
+          learned: t.learned || 0
+        })),
+        is_guest: !Boolean(totalLearned)
+      };
+    }
+  } catch (e) {}
+
+  return {
+    total_vocabulary: 0,
+    total_learned: 0,
+    topics: [{ name: 'All', display_name: 'Tất cả chủ đề', count: 0, learned: 0 }],
+    is_guest: true
+  };
+}
+
+export async function generateQuiz(mode: 'new' | 'review' = 'review', topic: string = 'All'): Promise<{ questions: QuizQuestion[]; error?: string; total_questions?: number }> {
   try {
     const res = await fetch('/api/quiz/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ count: 10, mode, topic })
     });
-    if (!res.ok) throw new Error('Failed to generate quiz');
     const data = await res.json();
+    if (!res.ok || data.error) {
+      return { questions: [], error: data.error || 'Không thể tạo bài kiểm tra' };
+    }
     const raw = data.questions || [];
 
     // Map backend format { word, answer, options, correct_index, type:"mcq" }
     // to frontend QuizQuestion { id, type, question, options, correct_answer }
-    return raw.map((q: any, idx: number) => ({
+    const questions = raw.map((q: any, idx: number) => ({
       id: q.id || idx + 1,
       type: 'multiple_choice' as const,
-      question: `Nghĩa tiếng Việt của từ "${q.word}" là gì?`,
-      options: q.options || [],
-      correct_answer: q.answer || (q.options && q.options[q.correct_index]) || '',
-      explanation: `Đáp án đúng: ${q.answer}`
+      question: `Nghĩa tiếng Việt của từ "${cleanText(q.word)}" là gì?`,
+      options: (q.options || []).map((opt: string) => cleanText(opt)),
+      correct_answer: cleanText(q.answer || (q.options && q.options[q.correct_index]) || ''),
+      explanation: `Đáp án đúng: ${cleanText(q.answer)}`,
+      word_id: q.id
     }));
-  } catch (err) {
+
+    return { questions, total_questions: questions.length };
+  } catch (err: any) {
     console.error('Error generating quiz:', err);
-    return [];
+    return { questions: [], error: err.message || 'Lỗi kết nối máy chủ' };
   }
 }
 
@@ -304,11 +404,15 @@ export async function logoutUser(): Promise<boolean> {
 }
 
 export async function fetchGrammarQuestions(category: string = 'All'): Promise<GrammarQuestion[]> {
+  const cacheKey = `grammar_${category}`;
+  const cached = getClientCached<GrammarQuestion[]>(cacheKey);
+  if (cached) return cached;
   try {
     const res = await fetch(`/api/grammar/questions?category=${encodeURIComponent(category)}&limit=500`);
     if (res.ok) {
       const data = await res.json();
       if (data && data.questions && data.questions.length > 0) {
+        setClientCached(cacheKey, data.questions, 120);
         return data.questions;
       }
     }

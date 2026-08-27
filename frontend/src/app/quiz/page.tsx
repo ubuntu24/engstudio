@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateQuiz, submitReviewSession } from '@/lib/api';
+import Link from 'next/link';
+import { generateQuiz, submitReviewSession, fetchQuizInfo, QuizTopicInfo } from '@/lib/api';
 import { QuizQuestion } from '@/types';
 import {
   Brain, CheckCircle, XCircle, RotateCcw, Award,
-  ArrowRight, BookOpen, Sparkles, Star, Target
+  ArrowRight, BookOpen, Sparkles, Star, Target,
+  GraduationCap, AlertCircle, PlayCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,8 +23,9 @@ export default function QuizPage() {
   const [isComplete, setIsComplete] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [topics, setTopics] = useState<string[]>([]);
+  const [topicList, setTopicList] = useState<QuizTopicInfo[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
+  const [totalLearned, setTotalLearned] = useState<number>(0);
   const [floatingXps, setFloatingXps] = useState<{ id: number, text: string, color: string }[]>([]);
 
   const showFloatingXp = (amount: number, text: string, color: string) => {
@@ -33,17 +36,33 @@ export default function QuizPage() {
     }, 2000);
   };
 
+  const loadQuizInfo = async () => {
+    try {
+      const data = await fetchQuizInfo();
+      if (data) {
+        setTotalLearned(data.total_learned || 0);
+        setTopicList(data.topics || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch quiz info:', err);
+    }
+  };
+
   useEffect(() => {
-    fetch('/api/learn/topics')
-      .then(res => res.json())
-      .then(data => {
-        const topicList = data.topics ? data.topics.map((t: any) => t.name) : [];
-        setTopics(['All', ...topicList]);
-      })
-      .catch(err => console.error('Failed to fetch topics:', err));
+    loadQuizInfo();
   }, []);
 
-  const startQuiz = (selectedMode: QuizMode) => {
+  const currentTopicObj = topicList.find(t => t.name === selectedTopic) || {
+    name: selectedTopic,
+    display_name: selectedTopic === 'All' ? 'Tất cả chủ đề' : selectedTopic,
+    count: 0,
+    learned: totalLearned
+  };
+
+  const currentTopicLearned = selectedTopic === 'All' ? totalLearned : (currentTopicObj?.learned || 0);
+  const currentTopicTotal = currentTopicObj?.count || 0;
+
+  const startQuiz = async (selectedMode: QuizMode) => {
     setMode(selectedMode);
     setLoading(true);
     setErrorMsg(null);
@@ -53,15 +72,22 @@ export default function QuizPage() {
     setSelectedOption(null);
     setIsAnswered(false);
 
-    generateQuiz(selectedMode, selectedTopic).then((data) => {
-      if (data && data.length > 0) {
-        setQuestions(data);
+    try {
+      const res = await generateQuiz(selectedMode, selectedTopic);
+      if (res.error) {
+        setQuestions([]);
+        setErrorMsg(res.error);
+      } else if (res.questions && res.questions.length > 0) {
+        setQuestions(res.questions);
       } else {
         setQuestions([]);
-        setErrorMsg('Không tìm thấy từ vựng nào trong chủ đề này để làm quiz.');
+        setErrorMsg('Không tìm thấy từ vựng nào phù hợp để làm quiz.');
       }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Lỗi khi tải bài kiểm tra');
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   const currentQ = questions[currentIndex];
@@ -122,64 +148,142 @@ export default function QuizPage() {
             Bài Kiểm Tra Từ Vựng
           </h1>
           <p className="text-base text-text-muted mt-1">
-            Chọn chủ đề và chế độ kiểm tra phù hợp với mục tiêu học tập của bạn
+            Kiểm tra và củng cố trí nhớ với các từ vựng bạn đã học hoặc khám phá từ mới
           </p>
         </div>
 
+        {/* Real-time Learning Progress Banner */}
+        <div className="bg-gradient-to-r from-primary-500/10 via-primary-500/5 to-bg-card border border-primary-500/30 p-6 rounded-3xl shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary-500/20 flex items-center justify-center border border-primary-500/30">
+              <GraduationCap className="w-6 h-6 text-primary-400" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-primary-400 uppercase tracking-wider">Tiến trình học tập</div>
+              <div className="text-xl font-black text-text-main">
+                Bạn đã học: <span className="text-primary-400">{totalLearned}</span> từ vựng
+              </div>
+            </div>
+          </div>
+          <Link
+            href="/learn"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 text-xs font-bold border border-primary-500/40 transition duration-200 ease-out active:scale-95"
+          >
+            <BookOpen className="w-4 h-4" /> Học thêm Flashcard
+          </Link>
+        </div>
+
+        {/* Topic Selector */}
         <div className="bg-bg-card p-6 rounded-3xl border border-border-main shadow-xl space-y-4">
-          <label className="text-sm font-bold text-text-muted block uppercase tracking-wide">
-            Chọn Chủ Đề:
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-bold text-text-muted block uppercase tracking-wide">
+              Chọn Chủ Đề Kiểm Tra:
+            </label>
+            <span className="text-xs font-semibold text-primary-400 bg-primary-500/10 px-3 py-1 rounded-full border border-primary-500/20">
+              {selectedTopic === 'All'
+                ? `Tổng ${totalLearned} từ đã học`
+                : `Đã học ${currentTopicLearned} / ${currentTopicTotal} từ`}
+            </span>
+          </div>
+
           <select
             value={selectedTopic}
             onChange={(e) => setSelectedTopic(e.target.value)}
-            className="w-full bg-bg-surface border border-border-hover rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary-500 transition-colors font-medium appearance-none"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2334d399'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path সংশ%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.2em' }}
+            className="w-full bg-bg-surface border border-border-hover rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary-500 transition-colors duration-200 ease-out font-medium appearance-none"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2334d399'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.2em' }}
           >
-            {topics.map(t => (
-              <option key={t} value={t}>{t === 'All' ? 'Tất cả chủ đề' : t}</option>
-            ))}
+            {topicList.length > 0 ? (
+              topicList.map(t => (
+                <option key={t.name} value={t.name}>
+                  {t.display_name} {t.name === 'All' ? `(${t.learned} từ đã học)` : `(${t.learned}/${t.count} từ đã học)`}
+                </option>
+              ))
+            ) : (
+              <option value="All">Tất cả chủ đề</option>
+            )}
           </select>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Mode 1: Ôn lại từ đã học */}
-          <button
-            onClick={() => startQuiz('review')}
-            className="group p-8 rounded-3xl bg-bg-card border border-border-main hover:border-primary-500/50 text-left space-y-4 transition-all shadow-xl hover:scale-[1.02] cursor-pointer"
+          <div
+            onClick={() => {
+              if (currentTopicLearned > 0) {
+                startQuiz('review');
+              }
+            }}
+            className={`group p-8 rounded-3xl bg-bg-card border text-left space-y-4 transition duration-200 ease-out shadow-xl relative ${
+              currentTopicLearned > 0
+                ? "hover:border-primary-500/50 hover:scale-[1.02] cursor-pointer border-border-main active:scale-95"
+                : "border-border-main opacity-85"
+            }`}
           >
-            <div className="w-14 h-14 rounded-2xl bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500/30 transition-all border border-primary-500/30">
-              <BookOpen className="w-7 h-7 text-primary-400" />
+            <div className="flex items-center justify-between">
+              <div className="w-14 h-14 rounded-2xl bg-primary-500/20 flex items-center justify-center group-hover:bg-primary-500/30 transition duration-200 ease-out border border-primary-500/30">
+                <BookOpen className="w-7 h-7 text-primary-400" />
+              </div>
+              <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                currentTopicLearned > 0
+                  ? "bg-primary-500/20 text-primary-400 border-primary-500/40"
+                  : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+              }`}>
+                {currentTopicLearned > 0 ? `${currentTopicLearned} từ đã học` : "Chưa có từ"}
+              </span>
             </div>
+
             <div>
               <h2 className="text-xl font-extrabold text-text-main mb-1">Ôn Lại Từ Đã Học</h2>
               <p className="text-sm text-text-muted leading-relaxed font-medium">
-                Kiểm tra lại những từ vựng bạn đã lưu. Củng cố trí nhớ dài hạn. (10 thẻ)
+                Kiểm tra đúng những từ bạn đã lưu và học trong tiến trình. Củng cố trí nhớ dài hạn.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-primary-400 text-sm font-bold">
-              <CheckCircle className="w-4 h-4" />
-              <span>Phù hợp để ôn tập hàng ngày</span>
-            </div>
-          </button>
+
+            {currentTopicLearned > 0 ? (
+              <div className="flex items-center gap-2 text-primary-400 text-sm font-bold pt-2">
+                <CheckCircle className="w-4 h-4" />
+                <span>Sẵn sàng kiểm tra ({Math.min(10, currentTopicLearned)} câu)</span>
+              </div>
+            ) : (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>Bạn chưa học từ nào trong chủ đề này</span>
+                </div>
+                <Link
+                  href="/learn"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-500 text-text-primary-fg font-black text-xs shadow-md shadow-primary-500/20 hover:bg-primary-400 transition"
+                >
+                  <PlayCircle className="w-3.5 h-3.5" /> Học từ mới ngay
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Mode 2: Kiểm tra từ mới */}
           <button
             onClick={() => startQuiz('new')}
-            className="group p-8 rounded-3xl bg-bg-card border border-border-main hover:border-amber-500/50 text-left space-y-4 transition-all shadow-xl hover:scale-[1.02] cursor-pointer"
+            className="group p-8 rounded-3xl bg-bg-card border border-border-main hover:border-amber-500/50 text-left space-y-4 transition duration-200 ease-out shadow-xl hover:scale-[1.02] cursor-pointer active:scale-95"
           >
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-all border border-amber-500/30">
-              <Sparkles className="w-7 h-7 text-amber-400" />
+            <div className="flex items-center justify-between">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition duration-200 ease-out border border-amber-500/30">
+                <Sparkles className="w-7 h-7 text-amber-400" />
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40">
+                Kho từ mới
+              </span>
             </div>
+
             <div>
               <h2 className="text-xl font-extrabold text-text-main mb-1">Kiểm Tra Từ Mới</h2>
               <p className="text-sm text-text-muted leading-relaxed font-medium">
-                Thử thách bản thân với các từ vựng mới để mở rộng vốn từ. (10 thẻ)
+                Thử thách bản thân với các từ vựng mới trong kho dữ liệu để mở rộng vốn từ. (10 câu)
               </p>
             </div>
-            <div className="flex items-center gap-2 text-amber-400 text-sm font-bold">
+
+            <div className="flex items-center gap-2 text-amber-400 text-sm font-bold pt-2">
               <Target className="w-4 h-4" />
-              <span>Khám phá mức độ từ vựng</span>
+              <span>Khám phá từ vựng mới</span>
             </div>
           </button>
         </div>
@@ -206,7 +310,7 @@ export default function QuizPage() {
         <p className="text-text-muted font-medium">{errorMsg}</p>
         <button
           onClick={() => { setMode(null); setErrorMsg(null); }}
-          className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
+          className="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition duration-200 ease-out cursor-pointer active:scale-95"
         >
           <RotateCcw className="w-4 h-4" /> Chọn chủ đề khác
         </button>
@@ -235,13 +339,13 @@ export default function QuizPage() {
         <div className="pt-4 flex justify-center gap-4">
           <button
             onClick={() => { if (mode) startQuiz(mode); }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition duration-200 ease-out cursor-pointer active:scale-95"
           >
             <Brain className="w-4 h-4" /> Học tiếp
           </button>
           <button
             onClick={() => setMode(null)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-transparent border border-primary-500/30 hover:border-primary-500 text-primary-400 font-bold text-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-transparent border border-primary-500/30 hover:border-primary-500 text-primary-400 font-bold text-sm transition duration-200 ease-out cursor-pointer active:scale-95"
           >
             <RotateCcw className="w-4 h-4" /> Trở lại
           </button>
@@ -273,12 +377,21 @@ export default function QuizPage() {
 
       {/* Header Info */}
       <div className="flex items-center justify-between bg-bg-card p-4 rounded-2xl border border-border-main shadow-lg">
-        <span className="text-xs font-extrabold text-primary-400 uppercase tracking-wider">
-          Câu {currentIndex + 1} / {questions.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${
+            mode === 'review'
+              ? 'bg-primary-500/20 text-primary-400 border-primary-500/40'
+              : 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+          }`}>
+            {mode === 'review' ? '🎯 Ôn tập từ đã học' : '✨ Kiểm tra từ mới'}
+          </span>
+          <span className="text-xs font-extrabold text-primary-400 uppercase tracking-wider">
+            Câu {currentIndex + 1} / {questions.length}
+          </span>
+        </div>
         <div className="flex items-center gap-2 text-xs font-bold text-primary-400">
           <Star className="w-4 h-4 fill-primary-400 text-primary-400" />
-          <span>Điểm số: {score}</span>
+          <span>Điểm: {score}</span>
         </div>
       </div>
 
@@ -307,7 +420,7 @@ export default function QuizPage() {
                 key={option}
                 onClick={() => handleSelectOption(option)}
                 disabled={isAnswered}
-                className={`w-full p-4 rounded-2xl border text-left font-bold text-sm transition-all flex items-center justify-between ${btnStyle} cursor-pointer`}
+                className={`w-full p-4 rounded-2xl border text-left font-bold text-sm transition duration-200 ease-out flex items-center justify-between ${btnStyle} cursor-pointer`}
               >
                 <span>{option}</span>
                 {isAnswered && isCorrect && <CheckCircle className="w-5 h-5 text-primary-400" />}
@@ -319,7 +432,7 @@ export default function QuizPage() {
 
         {/* Explanation box */}
         {isAnswered && (
-          <div className="p-4 rounded-2xl bg-bg-surface-hover border border-border-hover space-y-1 animate-fade-in">
+          <div className="p-4 rounded-2xl bg-bg-surface-hover border border-border-hover space-y-1 animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
             <p className="text-xs font-bold text-primary-400">Giải thích:</p>
             <p className="text-sm text-text-main font-medium">{currentQ?.explanation || 'Không có giải thích.'}</p>
           </div>
@@ -330,7 +443,7 @@ export default function QuizPage() {
           <div className="flex justify-end pt-2">
             <button
               onClick={handleNextQuestion}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition duration-200 ease-out cursor-pointer active:scale-95"
             >
               <span>{currentIndex < questions.length - 1 ? 'Câu tiếp theo' : 'Xem kết quả'}</span>
               <ArrowRight className="w-4 h-4" />

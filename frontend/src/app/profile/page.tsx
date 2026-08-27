@@ -55,7 +55,7 @@ export default function ProfilePage() {
         </p>
         <Link
           href="/login"
-          className="inline-block px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg transition-all"
+          className="inline-block px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg transition duration-200 ease-out active:scale-95"
         >
           Đăng Nhập Ngay
         </Link>
@@ -69,7 +69,7 @@ export default function ProfilePage() {
   const progressPercent = Math.min(100, Math.max(0, xpCurrentLevel));
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-12">
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in zoom-in-[0.98] duration-300 ease-out pb-12">
       {/* Header Profile Card */}
       <div className="bg-bg-card border border-border-main p-8 sm:p-10 rounded-3xl shadow-2xl relative overflow-hidden">
         {/* Background Decorative */}
@@ -113,7 +113,7 @@ export default function ProfilePage() {
               </div>
               <div className="h-4 bg-bg-surface border border-border-hover rounded-full overflow-hidden shadow-inner">
                 <div
-                  className="h-full bg-gradient-to-r from-primary-500 to-teal-400 transition-all duration-1000 ease-out"
+                  className="h-full bg-gradient-to-r from-primary-500 to-teal-400 transition duration-1000 ease-out"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -127,8 +127,8 @@ export default function ProfilePage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors group">
-          <div className="w-12 h-12 bg-rose-500/10 text-rose-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors duration-200 ease-out group">
+          <div className="w-12 h-12 bg-rose-500/10 text-rose-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 ease-out">
             <Flame className="w-6 h-6" />
           </div>
           <div className="text-3xl font-black text-text-main">
@@ -139,8 +139,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors group">
-          <div className="w-12 h-12 bg-teal-500/10 text-teal-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors duration-200 ease-out group">
+          <div className="w-12 h-12 bg-teal-500/10 text-teal-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 ease-out">
             <Target className="w-6 h-6" />
           </div>
           <div className="text-3xl font-black text-text-main">
@@ -151,8 +151,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors group">
-          <div className="w-12 h-12 bg-primary-500/10 text-primary-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors duration-200 ease-out group">
+          <div className="w-12 h-12 bg-primary-500/10 text-primary-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 ease-out">
             <BookOpen className="w-6 h-6" />
           </div>
           <div className="text-3xl font-black text-text-main">
@@ -163,8 +163,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors group">
-          <div className="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+        <div className="bg-bg-card border border-border-main p-6 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center space-y-2 hover:border-primary-500/50 transition-colors duration-200 ease-out group">
+          <div className="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-200 ease-out">
             <Award className="w-6 h-6" />
           </div>
           <div className="text-3xl font-black text-text-main">

@@ -1,5 +1,6 @@
 const { dbQueryAll, dbQueryGet, dbRun } = require('../utils/db');
 const { verifyToken } = require('../utils/auth');
+const cache = require('../utils/cache');
 
 async function getWords(req, res) {
   try {
@@ -8,6 +9,10 @@ async function getWords(req, res) {
     const search = (req.query.search || '').trim().toLowerCase();
     const sort = req.query.sort || 'az';
     const filter = req.query.filter || 'all';
+
+    const cacheKey = `words_list:${page}:${perPage}:${search}:${sort}:${filter}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json(cached);
 
     let conditions = [];
     let params = [];
@@ -24,23 +29,29 @@ async function getWords(req, res) {
 
     const whereStr = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
 
-    const countRow = await dbQueryGet(`SELECT COUNT(*) as total FROM vocabulary ${whereStr}`, params);
-    const total = countRow ? parseInt(countRow.total, 10) : 0;
-
     let order = 'ORDER BY word ASC';
     if (sort === 'za') order = 'ORDER BY word DESC';
     else if (sort === 'video') order = "ORDER BY (CASE WHEN video_id IS NOT NULL AND video_id != '' THEN 0 ELSE 1 END), word ASC";
 
     const offset = (page - 1) * perPage;
-    const rows = await dbQueryAll(`SELECT * FROM vocabulary ${whereStr} ${order} LIMIT ? OFFSET ?`, [...params, perPage, offset]);
 
-    res.json({
+    const [countRow, rows] = await Promise.all([
+      dbQueryGet(`SELECT COUNT(*) as total FROM vocabulary ${whereStr}`, params),
+      dbQueryAll(`SELECT * FROM vocabulary ${whereStr} ${order} LIMIT ? OFFSET ?`, [...params, perPage, offset])
+    ]);
+
+    const total = countRow ? parseInt(countRow.total, 10) : 0;
+
+    const payload = {
       words: rows,
       total,
       page,
       per_page: perPage,
       total_pages: Math.ceil(total / perPage),
-    });
+    };
+
+    cache.set(cacheKey, payload, 60);
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -69,6 +80,8 @@ async function saveWord(req, res) {
     if (row) {
       await dbRun('INSERT OR IGNORE INTO learning_progress (user_id, word_id, status) VALUES (?, ?, \'new\')', [req.userId, row.id]);
     }
+    
+    cache.delPattern('user_stats');
     res.json({ ok: true, word });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -89,13 +102,18 @@ async function getStats(req, res) {
       return String(val);
     };
     const token = req.cookies && req.cookies.auth_token;
-    const userId = verifyToken(token);
-    
-    const totalRow = await dbQueryGet('SELECT COUNT(*) as total FROM vocabulary');
-    const total = totalRow ? parseInt(totalRow.total, 10) : 0;
+    const userId = req.userId || verifyToken(token);
+    const cacheKey = `user_stats:${userId || 'guest'}`;
 
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+    
     if (!userId) {
-      return res.json({
+      const totalRow = await dbQueryGet('SELECT COUNT(*) as total FROM vocabulary');
+      const total = totalRow ? parseInt(totalRow.total, 10) : 0;
+      const guestPayload = {
         total_words: total,
         mastered_words: 0,
         learning_words: 0,
@@ -103,38 +121,51 @@ async function getStats(req, res) {
         accuracy_rate: 0,
         streak_days: 0,
         chart_data: []
-      });
+      };
+      cache.set(cacheKey, guestPayload, 60);
+      return res.json(guestPayload);
     }
 
-    const knownRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'known'", [userId]);
-    const learningRow = await dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status IN ('learning', 'reviewing')", [userId]);
-    
     const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
-    const dueRow = await dbQueryGet(
-      "SELECT COUNT(*) as due_today FROM learning_progress WHERE user_id = ? AND due_date <= ? AND status IN ('learning', 'reviewing', 'known')",
-      [userId, nowStr]
-    );
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 4);
+    const fiveDaysAgoStr = fiveDaysAgo.toISOString().split('T')[0] + ' 00:00:00';
 
+    // Run all database queries in parallel
+    const [
+      totalRow,
+      knownRow,
+      learningRow,
+      dueRow,
+      totalReviewsRow,
+      correctReviewsRow,
+      streakRows,
+      recentLogs
+    ] = await Promise.all([
+      dbQueryGet('SELECT COUNT(*) as total FROM vocabulary'),
+      dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status = 'known'", [userId]),
+      dbQueryGet("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ? AND status IN ('learning', 'reviewing')", [userId]),
+      dbQueryGet("SELECT COUNT(*) as due_today FROM learning_progress WHERE user_id = ? AND due_date <= ? AND status IN ('learning', 'reviewing', 'known')", [userId, nowStr]),
+      dbQueryGet("SELECT COUNT(*) as c FROM review_log WHERE user_id = ?", [userId]),
+      dbQueryGet("SELECT COUNT(*) as c FROM review_log WHERE user_id = ? AND rating IN ('good', 'easy')", [userId]),
+      dbQueryAll("SELECT DISTINCT DATE(reviewed_at) as d FROM review_log WHERE user_id = ? ORDER BY d DESC LIMIT 30", [userId]),
+      dbQueryAll("SELECT DATE(reviewed_at) as d, COUNT(*) as c FROM review_log WHERE user_id = ? AND reviewed_at >= ? GROUP BY d", [userId, fiveDaysAgoStr])
+    ]);
+
+    const total = totalRow ? parseInt(totalRow.total, 10) : 0;
     const mastered = knownRow ? parseInt(knownRow.c, 10) : 0;
     const learning = learningRow ? parseInt(learningRow.c, 10) : 0;
     const due_today = dueRow ? parseInt(dueRow.due_today, 10) : 0;
 
     // Accuracy Rate
-    const totalReviewsRow = await dbQueryGet("SELECT COUNT(*) as c FROM review_log WHERE user_id = ?", [userId]);
-    const correctReviewsRow = await dbQueryGet("SELECT COUNT(*) as c FROM review_log WHERE user_id = ? AND rating IN ('good', 'easy')", [userId]);
     const totalReviews = totalReviewsRow ? parseInt(totalReviewsRow.c, 10) : 0;
     const correctReviews = correctReviewsRow ? parseInt(correctReviewsRow.c, 10) : 0;
-    
     let accuracy_rate = 0;
     if (totalReviews > 0) {
       accuracy_rate = Math.round((correctReviews / totalReviews) * 100);
     }
 
     // Streak Days
-    const streakRows = await dbQueryAll(
-      "SELECT DISTINCT DATE(reviewed_at) as d FROM review_log WHERE user_id = ? ORDER BY d DESC",
-      [userId]
-    );
     let streak_days = 0;
     if (streakRows && streakRows.length > 0) {
       const today = new Date().toISOString().split('T')[0];
@@ -142,9 +173,6 @@ async function getStats(req, res) {
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
       const yesterday = yesterdayDate.toISOString().split('T')[0];
       
-
-
-      // Ensure date is a string (SQLite returns string, Postgres pg driver returns local Date object at midnight)
       let expectedDateStr = extractDateString(streakRows[0].d);
       
       if (expectedDateStr === today || expectedDateStr === yesterday) {
@@ -172,15 +200,6 @@ async function getStats(req, res) {
       chartDataMap[dStr] = 0;
     }
 
-    const fiveDaysAgo = new Date();
-    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 4);
-    const fiveDaysAgoStr = fiveDaysAgo.toISOString().split('T')[0] + ' 00:00:00';
-
-    const recentLogs = await dbQueryAll(
-      "SELECT DATE(reviewed_at) as d, COUNT(*) as c FROM review_log WHERE user_id = ? AND reviewed_at >= ? GROUP BY d",
-      [userId, fiveDaysAgoStr]
-    );
-
     for (let row of (recentLogs || [])) {
       const dStr = extractDateString(row.d);
       if (chartDataMap[dStr] !== undefined) {
@@ -197,7 +216,7 @@ async function getStats(req, res) {
       };
     });
 
-    res.json({
+    const payload = {
       total_words: total,
       mastered_words: mastered,
       learning_words: learning,
@@ -205,7 +224,10 @@ async function getStats(req, res) {
       accuracy_rate,
       streak_days,
       chart_data
-    });
+    };
+
+    cache.set(cacheKey, payload, 30); // 30s cache
+    res.json(payload);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

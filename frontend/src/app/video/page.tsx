@@ -222,7 +222,7 @@ export default function VideoPage() {
             <button
               onClick={() => handleLoadSubtitles()}
               disabled={loading}
-              className="px-7 py-3.5 rounded-2xl bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="px-7 py-3.5 rounded-2xl bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-600/20 transition duration-200 ease-out flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5" />} Tải Video & Phụ Đề
             </button>
@@ -239,7 +239,7 @@ export default function VideoPage() {
                 setVideoUrl(sample.url);
                 handleLoadSubtitles();
               }}
-              className="px-3.5 py-2 rounded-xl bg-bg-surface border border-border-main hover:border-primary-500/50 text-text-muted hover:text-text-main transition-all whitespace-nowrap shrink-0 font-medium cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-bg-surface border border-border-main hover:border-primary-500/50 text-text-muted hover:text-text-main transition duration-200 ease-out whitespace-nowrap shrink-0 font-medium cursor-pointer active:scale-95"
             >
               {sample.name}
             </button>
@@ -322,7 +322,7 @@ export default function VideoPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowVideoCaption(!showVideoCaption)}
-                    className="px-3.5 py-2 rounded-xl bg-bg-surface border border-border-main text-xs font-semibold text-text-muted hover:text-text-main transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-bg-surface border border-border-main text-xs font-semibold text-text-muted hover:text-text-main transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
                     {showVideoCaption ? <EyeOff className="w-4 h-4 text-primary-400" /> : <Eye className="w-4 h-4 text-text-muted" />}
                     {showVideoCaption ? 'Ẩn Phụ Đề Trên Video' : 'Hiện Phụ Đề Trên Video'}
@@ -330,7 +330,7 @@ export default function VideoPage() {
 
                   <button
                     onClick={handleDownloadSRT}
-                    className="px-3.5 py-2 rounded-xl bg-primary-600/20 hover:bg-primary-600/30 text-primary-400 border border-primary-500/30 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="px-3.5 py-2 rounded-xl bg-primary-600/20 hover:bg-primary-600/30 text-primary-400 border border-primary-500/30 text-xs font-bold transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95"
                   >
                     <Download className="w-4 h-4" /> Tải File SRT
                   </button>
@@ -380,7 +380,7 @@ export default function VideoPage() {
                           setActiveSubIndex(idx);
                           handleSeek(sub.start || 0);
                         }}
-                        className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${
+                        className={`p-3.5 rounded-2xl transition duration-200 ease-out cursor-pointer border ${
                           isActive
                             ? 'bg-bg-surface-hover border-border-hover text-text-main shadow-md'
                             : 'bg-bg-surface border-border-main text-text-muted hover:bg-bg-surface-hover hover:text-text-main'
@@ -400,7 +400,7 @@ export default function VideoPage() {
                                 e.stopPropagation();
                                 handleWordClick(word);
                               }}
-                              className="hover:text-primary-400 hover:underline cursor-pointer"
+                              className="hover:text-primary-400 hover:underline cursor-pointer active:opacity-75 transition-opacity duration-150 active:scale-95"
                             >
                               {word}{' '}
                             </span>

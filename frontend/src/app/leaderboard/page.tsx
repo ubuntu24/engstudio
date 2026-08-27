@@ -75,7 +75,7 @@ export default function LeaderboardPage() {
       {users.length >= 3 && (
         <div className="flex flex-col md:flex-row items-end justify-center gap-4 md:gap-8 pt-8">
           {/* Top 2 - Bạc */}
-          <div className="order-2 md:order-1 flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <div className="order-2 md:order-1 flex flex-col items-center animate-in fade-in slide-in-from-bottom-6 duration-300 ease-out" style={{ animationDelay: '100ms' }}>
             <div className="relative">
               <div className="w-20 h-20 rounded-full bg-gray-400/20 border-4 border-gray-400 flex items-center justify-center shadow-lg shadow-gray-400/20 z-10 relative">
                 <span className="text-2xl font-black text-gray-400">
@@ -97,7 +97,7 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Top 1 - Vàng */}
-          <div className="order-1 md:order-2 flex flex-col items-center animate-fade-in-up z-10" style={{ animationDelay: '0ms' }}>
+          <div className="order-1 md:order-2 flex flex-col items-center animate-in fade-in slide-in-from-bottom-6 duration-300 ease-out z-10" style={{ animationDelay: '0ms' }}>
             <div className="relative">
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 animate-bounce">
                 <Crown className="w-8 h-8 text-yellow-400 fill-yellow-400/20" />
@@ -122,7 +122,7 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Top 3 - Đồng */}
-          <div className="order-3 flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <div className="order-3 flex flex-col items-center animate-in fade-in slide-in-from-bottom-6 duration-300 ease-out" style={{ animationDelay: '200ms' }}>
             <div className="relative">
               <div className="w-20 h-20 rounded-full bg-amber-600/20 border-4 border-amber-600 flex items-center justify-center shadow-lg shadow-amber-600/20 z-10 relative">
                 <span className="text-2xl font-black text-amber-600">
@@ -151,10 +151,10 @@ export default function LeaderboardPage() {
           {users.slice(3).map((user, index) => (
             <div
               key={user.id}
-              className="flex items-center gap-4 p-4 rounded-2xl hover:bg-bg-surface-hover transition-colors group border border-transparent hover:border-border-main"
+              className="flex items-center gap-4 p-4 rounded-2xl hover:bg-bg-surface-hover transition-colors duration-200 ease-out group border border-transparent hover:border-border-main active:scale-95"
             >
               <div className="w-8 text-center">
-                <span className="text-lg font-bold text-text-muted group-hover:text-text-main transition-colors">
+                <span className="text-lg font-bold text-text-muted group-hover:text-text-main transition-colors duration-200 ease-out active:scale-95">
                   {index + 4}
                 </span>
               </div>

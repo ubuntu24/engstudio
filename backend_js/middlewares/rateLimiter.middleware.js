@@ -25,11 +25,11 @@ const registerLimiter = rateLimit({
 });
 
 const aiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50,
+  windowMs: 20 * 60 * 1000,
+  max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Bạn đã đạt giới hạn sử dụng AI. Vui lòng thử lại sau 15 phút.' }
+  message: { error: 'Bạn đã đạt giới hạn sử dụng AI (tối đa 5 lượt trong 20 phút). Vui lòng thử lại sau.' }
 });
 
 const sessionLimiter = rateLimit({

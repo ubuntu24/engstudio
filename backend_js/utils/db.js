@@ -26,22 +26,38 @@ if (isPostgres) {
   pool = new Pool({
     connectionString: sessionUrl,
     ssl: { rejectUnauthorized: false },   // Required for Supabase
+    max: 20,                              // Stay safely within Supabase connection pool limits
     connectionTimeoutMillis: 5000,
     query_timeout: 10000,
-    idleTimeoutMillis: 10000
+    idleTimeoutMillis: 30000
   });
   pool.on('error', (err) => {
     console.error('[db] ❌ PostgreSQL pool error:', err.message);
   });
-  // Test connection on startup
-  pool.query('SELECT 1').then(() => {
+  // Test connection and apply Supabase Postgres Best Practice indexes on startup
+  pool.query('SELECT 1').then(async () => {
     console.log('[db] ✅ PostgreSQL connected successfully');
-    // Schema migration
-    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0;').catch(() => {});
-    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;').catch(() => {});
-    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS flashcard_xp_today INTEGER DEFAULT 0;').catch(() => {});
-    pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_flashcard_date TEXT;').catch(() => {});
-    pool.query('CREATE TABLE IF NOT EXISTS user_badges (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, badge_id TEXT NOT NULL, earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, badge_id));').catch(() => {});
+    try {
+      // Schema updates
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0;');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS flashcard_xp_today INTEGER DEFAULT 0;');
+      await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_flashcard_date TEXT;');
+      await pool.query('CREATE TABLE IF NOT EXISTS user_badges (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, badge_id TEXT NOT NULL, earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, badge_id));');
+
+      // Supabase Postgres Best Practice: Indexes for high-frequency queries
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_vocab_topic ON vocabulary(topic);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_vocab_word ON vocabulary(word);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_lp_user_due ON learning_progress(user_id, due_date);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_lp_user_status ON learning_progress(user_id, status);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_lp_user_word ON learning_progress(user_id, word_id);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_review_log_user_date ON review_log(user_id, reviewed_at);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_grammar_category ON grammar_questions(category);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_news_created_at ON news_articles(created_at DESC);');
+      console.log('[db] ✅ Supabase PostgreSQL indexes verified successfully');
+    } catch (e) {
+      console.warn('[db] Note on schema updates:', e.message);
+    }
   }).catch(err => {
     console.error('[db] ❌ PostgreSQL connection failed:', err.message);
   });

@@ -43,7 +43,7 @@ export default function RegisterPage() {
         {/* Top Header */}
         <div className="text-center space-y-3 relative z-10">
           <Link href="/" className="inline-flex items-center gap-3 group mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-green-500 p-0.5 shadow-lg shadow-primary-500/30 group-hover:scale-105 transition-transform duration-300">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-green-500 p-0.5 shadow-lg shadow-primary-500/30 group-hover:scale-105 transition-transform duration-200 ease-out">
               <div className="w-full h-full bg-bg-surface rounded-[14px] flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-primary-400" />
               </div>
@@ -57,7 +57,7 @@ export default function RegisterPage() {
 
         {/* Error Banner */}
         {errorMsg && (
-          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-2.5 animate-fade-in relative z-10">
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in zoom-in-[0.98] duration-300 ease-out relative z-10">
             <span className="shrink-0 text-base">⚠️</span>
             <span>{errorMsg}</span>
           </div>
@@ -65,7 +65,7 @@ export default function RegisterPage() {
 
         {/* Success Banner */}
         {successMsg && (
-          <div className="p-4 rounded-2xl bg-primary-500/10 border border-primary-500/30 text-primary-400 text-xs font-semibold flex items-center gap-2.5 animate-fade-in relative z-10">
+          <div className="p-4 rounded-2xl bg-primary-500/10 border border-primary-500/30 text-primary-400 text-xs font-semibold flex items-center gap-2.5 animate-in fade-in zoom-in-[0.98] duration-300 ease-out relative z-10">
             <CheckCircle2 className="w-5 h-5 shrink-0 text-primary-400" />
             <span>{successMsg}</span>
           </div>
@@ -84,7 +84,7 @@ export default function RegisterPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Ví dụ: Alex Nguyen"
-                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium transition-colors"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium transition-colors duration-200 ease-out"
               />
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Nhập tên đăng nhập (ít nhất 3 ký tự)"
-                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium transition-colors"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium transition-colors duration-200 ease-out"
               />
             </div>
           </div>
@@ -118,7 +118,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
-                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium transition-colors"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-bg-surface border border-border-main text-text-main placeholder-slate-600 focus:outline-none focus:border-primary-500 text-sm font-medium transition-colors duration-200 ease-out"
               />
             </div>
           </div>
@@ -126,13 +126,13 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 rounded-2xl bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-text-primary-fg font-extrabold text-sm shadow-lg shadow-primary-600/30 transition-all flex items-center justify-center gap-2 group mt-2"
+            className="w-full py-4 rounded-2xl bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-text-primary-fg font-extrabold text-sm shadow-lg shadow-primary-600/30 transition duration-200 ease-out flex items-center justify-center gap-2 group mt-2 active:scale-95"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
             ) : (
               <>
-                <UserPlus className="w-4 h-4" /> Hoàn Tất Đăng Ký <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <UserPlus className="w-4 h-4" /> Hoàn Tất Đăng Ký <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200 ease-out" />
               </>
             )}
           </button>
@@ -142,7 +142,7 @@ export default function RegisterPage() {
         <div className="pt-4 border-t border-border-main/80 text-center text-xs text-text-muted relative z-10 space-y-3">
           <p>
             Đã có tài khoản từ trước?{' '}
-            <Link href="/login" className="font-extrabold text-primary-400 hover:text-primary-400 hover:underline transition-all">
+            <Link href="/login" className="font-extrabold text-primary-400 hover:text-primary-400 hover:underline transition duration-200 ease-out active:scale-95">
               Đăng Nhập Ngay 🔑
             </Link>
           </p>

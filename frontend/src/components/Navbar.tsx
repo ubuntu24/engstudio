@@ -16,13 +16,14 @@ import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const navItems = [
   { href: "/", label: "Trang chủ" },
-  { href: "/learn", label: "Học Từ Vựng" },
-  { href: "/grammar", label: "Luyện Ngữ Pháp" },
-  { href: "/quiz", label: "Bài Kiểm Tra" },
-  { href: "/practice", label: "Luyện Đặt Câu" },
-  { href: "/video", label: "Video Song Ngữ" },
+  { href: "/learn", label: "Từ Vựng" },
+  { href: "/grammar", label: "Ngữ Pháp" },
+  { href: "/quiz", label: "Kiểm Tra" },
+  { href: "/practice", label: "Đặt Câu" },
+  { href: "/video", label: "Video" },
+  { href: "/news", label: "Tin Tức" },
   { href: "/leaderboard", label: "Xếp Hạng" },
-  { href: "/dashboard", label: "Thống Kê Tiến Độ" },
+  { href: "/dashboard", label: "Thống Kê" },
 ];
 
 export default function Navbar() {
@@ -45,21 +46,21 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-bg-base/90 border-b border-border-main text-text-main shadow-xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl overflow-hidden shadow-md shadow-primary-500/20 border border-primary-500/20 group-hover:scale-105 transition-transform duration-300">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl overflow-hidden shadow-md shadow-primary-500/20 border border-primary-500/20 group-hover:scale-105 transition-transform duration-200 ease-out">
               <Image
                 src="/logo.png"
                 alt="English Vault"
                 fill
-                sizes="(max-width: 768px) 40px, 44px"
+                sizes="(max-width: 768px) 36px, 40px"
                 className="object-cover"
               />
             </div>
             <div>
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-text-main block leading-tight">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-text-main block leading-tight whitespace-nowrap">
                 English Studio
               </span>
               <span className="block text-[8px] sm:text-[9px] font-bold tracking-widest text-primary-400 uppercase"></span>
@@ -67,14 +68,14 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                  className={`px-2.5 xl:px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition duration-200 ${
                     isActive
                       ? "bg-bg-surface-hover text-primary-400 border border-border-hover font-bold shadow-inner"
                       : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"
@@ -94,7 +95,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 bg-bg-surface border border-border-main px-2.5 sm:px-3 py-1.5 rounded-full hover:border-border-hover transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 bg-bg-surface border border-border-main px-2.5 sm:px-3 py-1.5 rounded-full hover:border-border-hover transition-colors cursor-pointer active:scale-95"
                 >
                   <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary-500/20 border border-primary-500/30 flex items-center justify-center text-primary-400 text-xs font-bold">
                     {(currentUser.display_name || currentUser.username || "U")
@@ -119,14 +120,14 @@ export default function Navbar() {
                       <Link
                         href="/profile"
                         onClick={() => setIsDropdownOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-bg-surface-hover transition-colors cursor-pointer border-b border-border-main"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-text-main hover:bg-bg-surface-hover transition-colors cursor-pointer border-b border-border-main active:scale-95"
                       >
                         <UserIcon className="w-4 h-4 text-primary-400" />
                         Hồ sơ cá nhân
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer active:scale-95"
                       >
                         <LogOut className="w-4 h-4" />
                         Đăng xuất
@@ -138,7 +139,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-primary-600 hover:bg-primary-500 text-text-primary-fg font-black text-xs shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-primary-600 hover:bg-primary-500 text-text-primary-fg font-black text-xs shadow-md transition cursor-pointer active:scale-95"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 Đăng Nhập
@@ -147,7 +148,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Toggle Button */}
             <button
-              className="lg:hidden p-2 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main"
+              className="lg:hidden p-2 rounded-full bg-bg-surface border border-border-main text-text-muted hover:text-text-main active:scale-95"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -170,7 +171,7 @@ export default function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                className={`block px-4 py-3 rounded-xl text-sm font-semibold transition ${
                   isActive
                     ? "bg-bg-surface-hover text-primary-400 border border-border-hover font-bold"
                     : "text-text-muted hover:text-text-main hover:bg-bg-surface-hover"

@@ -84,7 +84,7 @@ export default function DashboardPage() {
       {/* Top 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Streak */}
-        <div className="p-6 rounded-3xl bg-bg-card border border-border-hover shadow-xl space-y-4 hover:border-primary-500 transition-all">
+        <div className="p-6 rounded-3xl bg-bg-card border border-border-hover shadow-xl space-y-4 hover:border-primary-500 transition duration-200 ease-out">
           <div className="flex items-center justify-between">
             <div className="w-12 h-12 rounded-2xl bg-primary-500/10 border border-primary-500/30 flex items-center justify-center text-primary-400">
               <Flame className="w-6 h-6 text-primary-400 fill-primary-400/20" />
@@ -104,7 +104,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Card 2: Tổng Số Từ Vựng */}
-        <div className="p-6 rounded-3xl bg-bg-card border border-border-main shadow-xl space-y-4 hover:border-primary-500/40 transition-all">
+        <div className="p-6 rounded-3xl bg-bg-card border border-border-main shadow-xl space-y-4 hover:border-primary-500/40 transition duration-200 ease-out">
           <div className="flex items-center justify-between">
             <div className="w-12 h-12 rounded-2xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
               <Target className="w-6 h-6" />
@@ -124,7 +124,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Card 3: Từ Đã Thành Thục */}
-        <div className="p-6 rounded-3xl bg-bg-card border border-border-main shadow-xl space-y-4 hover:border-primary-500/40 transition-all">
+        <div className="p-6 rounded-3xl bg-bg-card border border-border-main shadow-xl space-y-4 hover:border-primary-500/40 transition duration-200 ease-out">
           <div className="flex items-center justify-between">
             <div className="w-12 h-12 rounded-2xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
               <Trophy className="w-6 h-6" />
@@ -144,7 +144,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Card 4: Tỷ Lệ Chính Xác */}
-        <div className="p-6 rounded-3xl bg-bg-card border border-border-main shadow-xl space-y-4 hover:border-primary-500/40 transition-all">
+        <div className="p-6 rounded-3xl bg-bg-card border border-border-main shadow-xl space-y-4 hover:border-primary-500/40 transition duration-200 ease-out">
           <div className="flex items-center justify-between">
             <div className="w-12 h-12 rounded-2xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
               <Zap className="w-6 h-6" />
@@ -231,7 +231,7 @@ export default function DashboardPage() {
           </div>
           <div className="w-full h-2.5 rounded-full bg-bg-surface border border-border-main overflow-hidden">
             <div
-              className="h-full bg-primary-500 rounded-full transition-all duration-1000"
+              className="h-full bg-primary-500 rounded-full transition duration-1000"
               style={{ width: `${masteryPercentage}%` }}
             />
           </div>

@@ -31,6 +31,7 @@ export default function LearnPage() {
   const [aiExampleLoading, setAiExampleLoading] = useState(false);
   const [aiExample, setAiExample] = useState<{english: string; vietnamese: string} | null>(null);
   const [aiUsage, setAiUsage] = useState<{used: number, limit: number, remaining: number} | null>(null);
+  const [audioRate, setAudioRate] = useState<number>(1.0);
 
   useEffect(() => {
     getAiUsage().then(setAiUsage);
@@ -83,10 +84,12 @@ export default function LearnPage() {
 
   const currentWord = words[currentIndex];
 
-  const playAudio = (text: string) => {
+  const playAudio = (text: string, rate: number = 1.0) => {
     if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
+      utterance.rate = rate;
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -129,6 +132,28 @@ export default function LearnPage() {
     }
     setCurrentIndex(0);
   };
+
+  // Keyboard Shortcuts (Space to Flip, 1-4 to Rate, A to Pronounce)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (!isFlipped) setCardShownAt(Date.now());
+        setIsFlipped((prev) => !prev);
+      } else if (e.key === 'a' || e.key === 'A') {
+        if (currentWord?.word) playAudio(currentWord.word, audioRate);
+      } else if (isFlipped) {
+        if (e.key === '1') handleReview('again');
+        else if (e.key === '2') handleReview('hard');
+        else if (e.key === '3') handleReview('good');
+        else if (e.key === '4') handleReview('easy');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFlipped, currentWord, words, currentIndex, audioRate]);
 
   if (loading && !topics.length) {
     return (
@@ -224,7 +249,7 @@ export default function LearnPage() {
               setVideoOnly(newVal);
               loadSession(selectedTopic, newVal);
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition duration-200 ease-out ${
               videoOnly
                 ? "bg-rose-500/20 border-rose-500/50 text-rose-400"
                 : "bg-bg-surface border-border-main text-text-muted hover:text-text-main"
@@ -241,7 +266,7 @@ export default function LearnPage() {
               <button
                 key={t.name}
                 onClick={() => handleSelectTopic(t.name)}
-                className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer ${
                   isSelected
                     ? "bg-primary-500 text-text-primary-fg shadow-lg shadow-primary-500/20 border border-primary-400 font-black"
                     : "bg-bg-surface text-text-muted hover:bg-bg-surface-hover hover:text-text-main border border-border-main"
@@ -286,7 +311,7 @@ export default function LearnPage() {
           <div className="pt-4 flex justify-center gap-4">
             <button
               onClick={() => loadSession(selectedTopic, videoOnly)}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition duration-200 ease-out cursor-pointer active:scale-95"
             >
               <RefreshCw className="w-4 h-4" /> Kiểm tra lượt học tiếp theo
             </button>
@@ -310,8 +335,8 @@ export default function LearnPage() {
                 }}
                 initial={false}
                 animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
-                className="relative w-full min-h-[360px] rounded-3xl cursor-pointer transform-style-3d"
+                transition={{ duration: 0.7, type: "spring", stiffness: 120, damping: 16 }}
+                className="relative w-full min-h-[360px] rounded-3xl cursor-pointer transform-style-3d active:scale-95"
               >
                 {/* Front Side */}
                 <div className="absolute inset-0 w-full h-full rounded-3xl bg-gradient-to-b from-bg-surface to-bg-base border border-border-hover p-8 flex flex-col justify-between shadow-2xl backface-hidden">
@@ -343,16 +368,27 @@ export default function LearnPage() {
                         /{currentWord.pronunciation}/
                       </p>
                     )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (currentWord?.word) playAudio(currentWord.word);
-                      }}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 text-sm font-semibold transition-colors border border-primary-500/30 mt-2"
-                    >
-                      <Volume2 className="w-4 h-4 text-primary-400" /> Nghe phát
-                      âm
-                    </button>
+                    <div className="inline-flex items-center gap-2 pt-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate);
+                        }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 text-sm font-semibold transition-colors duration-200 ease-out border border-primary-500/30 active:scale-95"
+                      >
+                        <Volume2 className="w-4 h-4 text-primary-400" /> Nghe phát âm [A]
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAudioRate(prev => prev === 1.0 ? 0.8 : 1.0);
+                        }}
+                        className="px-2.5 py-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover text-text-muted hover:text-primary-400 text-xs font-bold transition-colors duration-200 ease-out border border-border-main active:scale-95"
+                        title="Tốc độ đọc"
+                      >
+                        {audioRate === 1.0 ? '1.0x' : '0.8x Chậm'}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="text-xs text-center text-text-muted">
@@ -370,7 +406,7 @@ export default function LearnPage() {
                       Ý Nghĩa Tiếng Việt
                     </span>
                     <span className="text-primary-400 flex items-center gap-1 font-bold">
-                      <RotateCw className="w-3.5 h-3.5" /> Quay lại mặt trước
+                      <RotateCw className="w-3.5 h-3.5" /> Quay lại mặt trước [Space]
                     </span>
                   </div>
 
@@ -421,10 +457,10 @@ export default function LearnPage() {
                         <button
                           onClick={generateAiExample}
                           disabled={aiExampleLoading || aiUsage?.remaining === 0}
-                          className={`mx-auto flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                          className={`mx-auto flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors duration-200 ease-out ${
                             aiUsage?.remaining === 0 
-                              ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed" 
-                              : "border-primary-500/30 bg-bg-surface text-primary-400 hover:bg-primary-500/10 disabled:opacity-50"
+                            ? "bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed" 
+                            : "border-primary-500/30 bg-bg-surface text-primary-400 hover:bg-primary-500/10 disabled:opacity-50"
                           }`}
                         >
                           {aiExampleLoading ? (
@@ -439,7 +475,7 @@ export default function LearnPage() {
                   </div>
 
                   <div className="text-xs text-slate-500 text-center">
-                    Chọn mức độ nhớ
+                    Chọn mức độ nhớ bên dưới (hoặc bấm phím 1 - 4)
                   </div>
                 </div>
               </motion.div>
@@ -448,7 +484,7 @@ export default function LearnPage() {
 
           {/* Embedded Video Context Player */}
           {isFlipped && (currentWord?.embed_url || currentWord?.video_id) && (
-            <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl animate-fade-in">
+            <div className="p-6 rounded-3xl bg-bg-card border border-border-main space-y-4 shadow-xl animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm font-bold text-text-main">
                   <Video className="w-5 h-5 text-rose-400" />
@@ -480,33 +516,46 @@ export default function LearnPage() {
             </div>
           )}
 
-          {/* Review Action Buttons */}
+          {/* Review Action Buttons with Keyboard Shortcuts Badges */}
           {isFlipped && (
-            <div className="grid grid-cols-4 gap-3 animate-fade-in">
-              <button
-                onClick={() => handleReview("again")}
-                className="py-3 px-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-semibold text-xs text-center transition-all cursor-pointer"
-              >
-                Quên (Again)
-              </button>
-              <button
-                onClick={() => handleReview("hard")}
-                className="py-3 px-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold text-xs text-center transition-all cursor-pointer"
-              >
-                Khó (Hard)
-              </button>
-              <button
-                onClick={() => handleReview("good")}
-                className="py-3 px-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-semibold text-xs text-center transition-all cursor-pointer"
-              >
-                Biết (Good)
-              </button>
-              <button
-                onClick={() => handleReview("easy")}
-                className="py-3 px-2 rounded-xl bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 border border-primary-500/40 font-bold text-xs text-center transition-all cursor-pointer shadow-lg shadow-primary-500/10"
-              >
-                Rất rõ (Easy)
-              </button>
+            <div className="space-y-3 animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
+              <div className="grid grid-cols-4 gap-3">
+                <button
+                  onClick={() => handleReview("again")}
+                  className="py-3 px-2 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 font-semibold text-xs text-center transition duration-200 ease-out cursor-pointer active:scale-95 flex flex-col items-center justify-center gap-1"
+                >
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-500/20">[1]</span>
+                  <span>Quên (Again)</span>
+                </button>
+                <button
+                  onClick={() => handleReview("hard")}
+                  className="py-3 px-2 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold text-xs text-center transition duration-200 ease-out cursor-pointer active:scale-95 flex flex-col items-center justify-center gap-1"
+                >
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20">[2]</span>
+                  <span>Khó (Hard)</span>
+                </button>
+                <button
+                  onClick={() => handleReview("good")}
+                  className="py-3 px-2 rounded-2xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-semibold text-xs text-center transition duration-200 ease-out cursor-pointer active:scale-95 flex flex-col items-center justify-center gap-1"
+                >
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-500/20">[3]</span>
+                  <span>Biết (Good)</span>
+                </button>
+                <button
+                  onClick={() => handleReview("easy")}
+                  className="py-3 px-2 rounded-2xl bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 border border-primary-500/40 font-bold text-xs text-center transition duration-200 ease-out cursor-pointer shadow-lg shadow-primary-500/10 active:scale-95 flex flex-col items-center justify-center gap-1"
+                >
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary-500/30">[4]</span>
+                  <span>Rất rõ (Easy)</span>
+                </button>
+              </div>
+
+              {/* Quick Navigation Help Footer */}
+              <div className="flex items-center justify-center gap-4 text-[11px] font-medium text-text-muted pt-2 border-t border-border-main/50">
+                <span>💡 Phím tắt: <kbd className="px-1.5 py-0.5 rounded bg-bg-surface border border-border-main font-mono text-[10px]">Space</kbd> Lật thẻ</span>
+                <span>• <kbd className="px-1.5 py-0.5 rounded bg-bg-surface border border-border-main font-mono text-[10px]">1-4</kbd> Đánh giá</span>
+                <span>• <kbd className="px-1.5 py-0.5 rounded bg-bg-surface border border-border-main font-mono text-[10px]">A</kbd> Nghe</span>
+              </div>
             </div>
           )}
         </>
@@ -514,3 +563,4 @@ export default function LearnPage() {
     </div>
   );
 }
+

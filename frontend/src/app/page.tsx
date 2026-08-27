@@ -12,6 +12,7 @@ import {
   Flame,
   Target,
   Trophy,
+  Newspaper,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchDashboardStats } from "@/lib/api";
@@ -63,6 +64,13 @@ export default function Home() {
       tag: "Phụ đề",
     },
     {
+      href: "/news",
+      title: "Tin Tức & Từ Vựng Hot",
+      desc: "Tổng hợp tin tức tiếng Anh mới nhất từ báo chí quốc tế & bóc tách 5 từ vựng cao cấp C1/C2.",
+      icon: Newspaper,
+      tag: "Daily News",
+    },
+    {
       href: "/dashboard",
       title: "Thống Kê Tiến Độ",
       desc: "Theo dõi tổng số từ đã thuộc, tỷ lệ chính xác, chuỗi ngày học liên tục và biểu đồ tăng trưởng.",
@@ -94,14 +102,14 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
               href="/learn"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-black text-sm shadow-lg shadow-primary-500/20 transition duration-200 ease-out active:scale-95"
             >
               <span>Bắt Đầu Học Ngay</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-bg-surface hover:bg-bg-surface-hover text-text-main font-bold text-sm border border-border-main transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-bg-surface hover:bg-bg-surface-hover text-text-main font-bold text-sm border border-border-main transition duration-200 ease-out active:scale-95"
             >
               <span>Xem Thống Kê Tiến Độ</span>
             </Link>
@@ -164,7 +172,7 @@ export default function Home() {
               <Link
                 key={feat.href}
                 href={feat.href}
-                className="group p-6 rounded-3xl bg-bg-card border border-border-main hover:border-primary-500/40 transition-all duration-300 shadow-xl hover:scale-[1.02] flex flex-col justify-between"
+                className="group p-6 rounded-3xl bg-bg-card border border-border-main hover:border-primary-500/40 transition duration-200 ease-out shadow-xl hover:scale-[1.02] active:scale-[0.98] flex flex-col justify-between"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -176,7 +184,7 @@ export default function Home() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-text-main group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-lg font-bold text-text-main group-hover:text-primary-400 transition-colors duration-200 ease-out active:scale-95">
                       {feat.title}
                     </h3>
                     <p className="text-xs text-text-muted leading-relaxed mt-2 font-medium">
@@ -186,7 +194,7 @@ export default function Home() {
                 </div>
                 <div className="pt-6 flex items-center gap-2 text-xs font-bold text-primary-400">
                   <span>Trải nghiệm ngay</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200 ease-out" />
                 </div>
               </Link>
             );

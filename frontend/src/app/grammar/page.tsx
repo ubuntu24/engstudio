@@ -260,7 +260,7 @@ export default function GrammarPage() {
           <div className="flex items-center bg-bg-base p-1.5 rounded-2xl border border-border-main">
             <button
               onClick={() => setActiveTab('theory')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition duration-200 ease-out cursor-pointer ${
                 activeTab === 'theory'
                   ? 'bg-primary-500 text-text-primary-fg font-extrabold shadow-lg shadow-primary-500/20'
                   : 'text-text-muted hover:text-text-main'
@@ -270,7 +270,7 @@ export default function GrammarPage() {
             </button>
             <button
               onClick={() => setActiveTab('quiz')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition duration-200 ease-out cursor-pointer ${
                 activeTab === 'quiz'
                   ? 'bg-primary-500 text-text-primary-fg font-extrabold shadow-lg shadow-primary-500/20'
                   : 'text-text-muted hover:text-text-main'
@@ -283,7 +283,7 @@ export default function GrammarPage() {
 
         {/* TAB 1: THEORY LESSONS WITH EXAMPLES */}
         {activeTab === 'theory' && (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-8 animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
             {THEORY_TOPICS.map((topic) => (
               <div
                 key={topic.id}
@@ -396,7 +396,7 @@ export default function GrammarPage() {
 
         {/* TAB 2: INTERACTIVE PRACTICE QUIZ */}
         {activeTab === 'quiz' && (
-          <div className="space-y-6 animate-fade-in">
+          <div className="space-y-6 animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
             {loading ? (
               <div className="p-12 text-center text-primary-400 font-bold animate-pulse bg-bg-surface rounded-3xl border border-border-main">
                 <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" /> Đang tải bài tập tự làm...
@@ -440,7 +440,7 @@ export default function GrammarPage() {
                         key={option}
                         onClick={() => handleSelectOption(option)}
                         disabled={isAnswered}
-                        className={`p-4 rounded-2xl border text-left text-sm font-bold transition-all flex items-center justify-between ${btnStyle} cursor-pointer`}
+                        className={`p-4 rounded-2xl border text-left text-sm font-bold transition duration-200 ease-out flex items-center justify-between ${btnStyle} cursor-pointer`}
                       >
                         <div className="flex items-center gap-3">
                           <span className="w-7 h-7 rounded-xl bg-bg-surface border border-border-main text-primary-400 text-xs font-black flex items-center justify-center">
@@ -457,7 +457,7 @@ export default function GrammarPage() {
 
                 {/* Answer Explanation & Vietnamese Translation Box */}
                 {isAnswered && (
-                  <div className="p-6 rounded-2xl bg-bg-surface border border-border-main space-y-4 animate-fade-in shadow-xl">
+                  <div className="p-6 rounded-2xl bg-bg-surface border border-border-main space-y-4 animate-in fade-in zoom-in-[0.98] duration-300 ease-out shadow-xl">
                     <div className="flex items-center justify-between border-b border-border-main pb-3">
                       <span className="text-sm font-bold text-primary-400 flex items-center gap-2">
                         <Bot className="w-5 h-5 text-primary-400" /> Giải Thích Chi Tiết
@@ -511,7 +511,7 @@ export default function GrammarPage() {
                     <div className="pt-3 border-t border-border-main flex justify-end">
                       <button
                         onClick={handleNextQuestion}
-                        className="px-6 py-3 rounded-xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-extrabold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-500/20"
+                        className="px-6 py-3 rounded-xl bg-primary-500 hover:bg-primary-400 text-text-primary-fg font-extrabold text-xs transition duration-200 ease-out flex items-center gap-2 cursor-pointer shadow-lg shadow-primary-500/20 active:scale-95"
                       >
                         Câu tiếp theo <ChevronRight className="w-4 h-4" />
                       </button>

@@ -6,6 +6,54 @@ from backend.core.auth import login_required
 
 quiz_bp = Blueprint('quiz', __name__)
 
+@quiz_bp.route('/api/quiz/info', methods=['GET'])
+def quiz_info():
+    conn = get_db_connection()
+    try:
+        cur = conn.cursor()
+        user_id = get_current_user_id(conn)
+        
+        cur.execute("SELECT COUNT(*) as c FROM vocabulary")
+        total_vocab = cur.fetchone()['c'] or 0
+        
+        total_learned = 0
+        learned_map = {}
+        if user_id:
+            cur.execute("SELECT COUNT(*) as c FROM learning_progress WHERE user_id = ?", (user_id,))
+            total_learned = cur.fetchone()['c'] or 0
+            
+            cur.execute(
+                """
+                SELECT v.topic, COUNT(DISTINCT lp.word_id) as c
+                FROM learning_progress lp
+                JOIN vocabulary v ON v.id = lp.word_id
+                WHERE lp.user_id = ? AND v.topic IS NOT NULL AND v.topic != ''
+                GROUP BY v.topic
+                """,
+                (user_id,)
+            )
+            for r in cur.fetchall():
+                learned_map[r['topic']] = r['c'] or 0
+                
+        cur.execute("SELECT topic, COUNT(*) as c FROM vocabulary WHERE topic IS NOT NULL AND topic != '' GROUP BY topic ORDER BY c DESC")
+        topic_rows = cur.fetchall()
+        
+        topics = [
+            {'name': 'All', 'display_name': 'Tất cả chủ đề', 'count': total_vocab, 'learned': total_learned}
+        ] + [
+            {'name': r['topic'], 'display_name': r['topic'], 'count': r['count'], 'learned': learned_map.get(r['topic'], 0)}
+            for r in topic_rows
+        ]
+        
+        return jsonify({
+            'total_vocabulary': total_vocab,
+            'total_learned': total_learned,
+            'topics': topics,
+            'is_guest': not bool(user_id)
+        })
+    finally:
+        conn.close()
+
 @quiz_bp.route('/api/quiz/generate', methods=['POST'])
 @login_required
 def quiz_generate():
@@ -22,12 +70,12 @@ def quiz_generate():
         
         topic_filter = ""
         params = []
-        if topic and topic != 'All':
+        if topic and topic != 'All' and topic != 'Tất cả':
             topic_filter = " AND v.topic = ?"
             params.append(topic)
 
         if mode == 'review':
-            # Ôn lại từ đã học của user hiện tại
+            # CHỈ LẤY CÁC TỪ MÀ USER NÀY ĐÃ HỌC TRONG TIẾN TRÌNH (learning_progress)
             cur.execute(
                 f"""
                 SELECT v.* FROM vocabulary v
@@ -41,23 +89,13 @@ def quiz_generate():
             )
             words = cur.fetchall()
 
-            # Nếu từ đã học chưa đủ count, bổ sung từ mới trong kho
-            if len(words) < count:
-                existing_ids = {w['id'] for w in words}
-                remaining = count - len(words)
-                placeholders = ','.join('?' for _ in existing_ids) if existing_ids else '-1'
-                cur.execute(
-                    f"""
-                    SELECT v.* FROM vocabulary v
-                    WHERE v.vietnamese_meaning IS NOT NULL AND TRIM(v.vietnamese_meaning) != ''
-                    AND v.id NOT IN ({placeholders})
-                    {topic_filter}
-                    ORDER BY RANDOM()
-                    LIMIT ?
-                    """,
-                    list(existing_ids) + params + [remaining],
-                )
-                words = list(words) + list(cur.fetchall())
+            if not words:
+                topic_msg = f' trong chủ đề "{topic}"' if (topic and topic != 'All' and topic != 'Tất cả') else ''
+                return jsonify({
+                    'questions': [],
+                    'total_learned': 0,
+                    'error': f'Bạn chưa có từ vựng nào đã học{topic_msg} để ôn tập. Hãy học từ mới ở phần Flashcard trước nhé!'
+                }), 200
         else:
             # Từ mới ngẫu nhiên trong kho
             cur.execute(
