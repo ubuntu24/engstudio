@@ -23,6 +23,9 @@ services:
       context: ./backend_js
       dockerfile: Dockerfile
     restart: unless-stopped
+    volumes:
+      - ./database:/app/database
+      - ./cache_audio:/app/cache_audio
     environment:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET}

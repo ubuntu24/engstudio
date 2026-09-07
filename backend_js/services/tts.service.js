@@ -229,7 +229,8 @@ async function callEdgeTts(text, edgeVoiceName, tempFilePath) {
 
   return new Promise((resolve, reject) => {
     let finished = false;
-    const proc = spawn('python', [
+    const pythonBin = process.env.PYTHON_BIN || (process.platform === 'win32' ? 'python' : 'python3');
+    const proc = spawn(pythonBin, [
       '-m', 'edge_tts',
       '--voice', voice,
       '--text', text,
