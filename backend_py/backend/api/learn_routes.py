@@ -21,10 +21,19 @@ def row_to_word(w):
         'channel': w['channel'],
         'view_count': w['view_count'],
         'embed_url': w['embed_url'],
-        'definition': w['definition'],
-        'example': w['example'],
-        'image_path': w['image_path'],
-        'audio_path': w['audio_path'],
+        'definition': w['definition'] if 'definition' in w.keys() else '',
+        'example': w['example'] if 'example' in w.keys() else '',
+        'image_path': w['image_path'] if 'image_path' in w.keys() else '',
+        'audio_path': w['audio_path'] if 'audio_path' in w.keys() else '',
+        'pos': w['pos'] if 'pos' in w.keys() else '',
+        'cefr_level': w['cefr_level'] if 'cefr_level' in w.keys() else '',
+        'collocations': w['collocations'] if 'collocations' in w.keys() else '',
+        'synonyms': w['synonyms'] if 'synonyms' in w.keys() else '',
+        'antonyms': w['antonyms'] if 'antonyms' in w.keys() else '',
+        'phon_uk': w['phon_uk'] if 'phon_uk' in w.keys() else '',
+        'phon_us': w['phon_us'] if 'phon_us' in w.keys() else '',
+        'example_vi': w['example_vi'] if 'example_vi' in w.keys() else '',
+        'topic': w['topic'] if 'topic' in w.keys() else '',
     }
 
 @learn_bp.route('/api/ai/usage', methods=['GET'])

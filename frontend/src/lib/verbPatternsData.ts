@@ -1,0 +1,3197 @@
+// Auto-generated comprehensive Oxford & Cambridge Verb Patterns Master Dataset
+// Derived from:
+// 1. Cambridge Grammar - English Grammar in Use (Raymond Murphy, Units 53-68)
+// 2. Oxford Advanced Learner's Dictionary (A.S. Hornby Verb Patterns System)
+// 3. Oxford Collocations Dictionary for students of English
+// 4. Michael Swan's Practical English Usage (Sections 293-300)
+
+export interface VerbPatternItem {
+  id: string;
+  pattern: string;
+  category: 'to-ving' | 'special-idioms' | 'both' | 'prep-ving' | 'ving' | 'to-v' | 'v-obj-tov';
+  categoryLabel: string;
+  categoryBadgeColor: string;
+  meaningVi: string;
+  formula: string;
+  trapAlert: string;
+  exampleEn: string;
+  exampleVi: string;
+  cefr: string;
+  keywords: string[];
+}
+
+export const STUDY_CATEGORIES = [
+  {
+    "id": "all",
+    "label": "Tất cả cấu trúc (158+ mẫu)"
+  },
+  {
+    "id": "to-ving",
+    "label": "🔥 Cạm bẫy To + V-ing (25)"
+  },
+  {
+    "id": "special-idioms",
+    "label": "💎 Mẫu câu đặc biệt + V-ing (15)"
+  },
+  {
+    "id": "both",
+    "label": "🔄 Đổi nghĩa To-V vs V-ing (10)"
+  },
+  {
+    "id": "ving",
+    "label": "💡 Động từ + V-ing (Gerund) (30)"
+  },
+  {
+    "id": "to-v",
+    "label": "⚡ Động từ + To-V (Infinitive) (30)"
+  },
+  {
+    "id": "v-obj-tov",
+    "label": "👥 Động từ + Tân ngữ + To-V (18)"
+  },
+  {
+    "id": "prep-ving",
+    "label": "🎯 Giới từ & Tính từ + V-ing (30)"
+  }
+];
+
+export const VERB_PATTERN_STUDY_LIST: VerbPatternItem[] = [
+  {
+    "id": "look-forward-to",
+    "pattern": "look forward to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Rất mong đợi, trông ngóng việc gì (xuất hiện 100% trong Email & Thư tín)",
+    "formula": "S + look forward to + V-ing / Noun",
+    "trapAlert": "⚠️ 90% thí sinh chọn nhầm V nguyên thể (*look forward to meet là SAI*). 'To' ở đây là giới từ, bắt buộc là V-ing (*look forward to meeting*).",
+    "exampleEn": "We sincerely look forward to welcoming your delegation next week.",
+    "exampleVi": "Chúng tôi rất chân thành mong đợi được chào đón phái đoàn của quý vị vào tuần tới.",
+    "cefr": "B1",
+    "keywords": [
+      "look forward",
+      "forward",
+      "welcome",
+      "meeting",
+      "email",
+      "letter"
+    ]
+  },
+  {
+    "id": "accustomed-to",
+    "pattern": "become / get / be accustomed to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Quen dần với việc gì (thích nghi với hoàn cảnh/thói quen mới)",
+    "formula": "S + become / get / be accustomed to + V-ing / Noun",
+    "trapAlert": "⚠️ 'To' là giới từ. Không dùng V nguyên thể (*accustomed to work là SAI*), phải là *accustomed to working*.",
+    "exampleEn": "She quickly became accustomed to living alone in the big city.",
+    "exampleVi": "Cô ấy đã nhanh chóng quen dần với việc sống một mình ở thành phố lớn.",
+    "cefr": "B2",
+    "keywords": [
+      "accustomed",
+      "become",
+      "get",
+      "habit",
+      "living",
+      "adapt"
+    ]
+  },
+  {
+    "id": "be-used-to-ving",
+    "pattern": "be / get used to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Đang quen với việc gì (ở hiện tại) / Dần quen với việc gì",
+    "formula": "S + be / get used to + V-ing / Noun",
+    "trapAlert": "⚠️ Phân biệt: 'Used to + V-bare' (Đã từng trong quá khứ) vs 'Be/Get used to + V-ing' (Hiện tại đã quen với việc gì).",
+    "exampleEn": "He is used to working long night shifts at the central hospital.",
+    "exampleVi": "Anh ấy đã quen với việc làm việc ca đêm dài tại bệnh viện trung tâm.",
+    "cefr": "A2",
+    "keywords": [
+      "used to",
+      "get used to",
+      "habit",
+      "familiar",
+      "shift"
+    ]
+  },
+  {
+    "id": "object-to",
+    "pattern": "object to + V-ing / have an objection to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Phản đối, không tán thành việc gì",
+    "formula": "S + object to / have an objection to + V-ing / Noun",
+    "trapAlert": "⚠️ 'Object to' đi kèm V-ing. Nếu phía sau có tân ngữ danh từ thì bắt buộc dùng Danh động từ (V-ing) chứ không dùng Danh từ thường.",
+    "exampleEn": "Local residents strongly objected to building the new commercial complex.",
+    "exampleVi": "Cư dân địa phương đã kịch liệt phản đối việc xây dựng khu phức hợp thương mại mới.",
+    "cefr": "B2",
+    "keywords": [
+      "object",
+      "objection",
+      "protest",
+      "oppose",
+      "building",
+      "disagree"
+    ]
+  },
+  {
+    "id": "be-committed-to",
+    "pattern": "be committed to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Cam kết, tận tụy dốc lòng làm việc gì",
+    "formula": "S + be committed to + V-ing / Noun",
+    "trapAlert": "⚠️ Rất hay gặp trong đề thi TOEIC phần Mission Statement của công ty. Đáp án luôn là V-ing (*committed to providing/improving*).",
+    "exampleEn": "Our corporation is fully committed to reducing carbon emissions by 2030.",
+    "exampleVi": "Tập đoàn chúng tôi hoàn toàn cam kết cắt giảm lượng khí thải carbon trước năm 2030.",
+    "cefr": "B2",
+    "keywords": [
+      "committed",
+      "commitment",
+      "pledge",
+      "corporate",
+      "emissions"
+    ]
+  },
+  {
+    "id": "commit-oneself-to",
+    "pattern": "commit oneself to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Tự cam kết bản thân dốc lòng làm gì",
+    "formula": "S + commit oneself to + V-ing",
+    "trapAlert": "⚠️ Dạng phản thân: commit themselves to finishing, commit herself to studying.",
+    "exampleEn": "The research team committed themselves to completing the clinical trials on schedule.",
+    "exampleVi": "Đội ngũ nghiên cứu đã tự cam kết hoàn thành các thử nghiệm lâm sàng đúng tiến độ.",
+    "cefr": "C1",
+    "keywords": [
+      "commit oneself",
+      "themselves",
+      "dedicate",
+      "trials"
+    ]
+  },
+  {
+    "id": "be-dedicated-to",
+    "pattern": "be dedicated to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Cống hiến, tận tâm hết lòng cho việc gì",
+    "formula": "S + be dedicated to + V-ing / Noun",
+    "trapAlert": "⚠️ Bẫy đề thi: 'dedicated to' luôn đi với V-ing, không được chọn To-V bare.",
+    "exampleEn": "The organization is dedicated to helping underprivileged children get education.",
+    "exampleVi": "Tổ chức này tận tâm giúp đỡ trẻ em có hoàn cảnh khó khăn được tiếp cận giáo dục.",
+    "cefr": "B2",
+    "keywords": [
+      "dedicated",
+      "dedication",
+      "devoted",
+      "charity",
+      "helping"
+    ]
+  },
+  {
+    "id": "dedicate-oneself-to",
+    "pattern": "dedicate oneself to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Tự cống hiến trọn vẹn bản thân cho việc gì",
+    "formula": "S + dedicate oneself to + V-ing",
+    "trapAlert": "⚠️ Theo sau luôn là Danh từ hoặc Danh động từ V-ing.",
+    "exampleEn": "He dedicated his entire life to fighting for human rights.",
+    "exampleVi": "Ông ấy đã cống hiến trọn vẹn cả cuộc đời mình để đấu tranh cho nhân quyền.",
+    "cefr": "B2",
+    "keywords": [
+      "dedicate life",
+      "fighting",
+      "rights",
+      "devote"
+    ]
+  },
+  {
+    "id": "be-devoted-to",
+    "pattern": "be devoted to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Tận tụy, hết lòng hết dạ vì việc gì",
+    "formula": "S + be devoted to + V-ing / Noun",
+    "trapAlert": "⚠️ Tương tự dedicated/committed, to là giới từ.",
+    "exampleEn": "She has been devoted to researching renewable green energy for over a decade.",
+    "exampleVi": "Cô ấy đã tận tụy nghiên cứu năng lượng xanh tái tạo trong hơn một thập kỷ.",
+    "cefr": "B2",
+    "keywords": [
+      "devoted",
+      "devotion",
+      "researching",
+      "energy"
+    ]
+  },
+  {
+    "id": "admit-to",
+    "pattern": "admit to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Thú nhận, thừa nhận việc đã làm",
+    "formula": "S + admit to + V-ing (hoặc S + admit + V-ing)",
+    "trapAlert": "⚠️ Dù có chữ 'to' hay không có 'to', admit luôn đi với V-ing (*admit to making a mistake*).",
+    "exampleEn": "The suspect finally admitted to taking the confidential documents from the vault.",
+    "exampleVi": "Nghi phạm cuối cùng đã thú nhận việc lấy các tài liệu mật khỏi két sắt.",
+    "cefr": "B1",
+    "keywords": [
+      "admit",
+      "confess",
+      "confidential",
+      "documents",
+      "mistake"
+    ]
+  },
+  {
+    "id": "confess-to",
+    "pattern": "confess to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Tự thú, thú tội việc gì",
+    "formula": "S + confess to + V-ing",
+    "trapAlert": "⚠️ 'Confess to' bắt buộc đi với V-ing, không dùng To-V.",
+    "exampleEn": "He confessed to breaking the company's financial regulations.",
+    "exampleVi": "Anh ta đã thú nhận việc vi phạm các quy định tài chính của công ty.",
+    "cefr": "B2",
+    "keywords": [
+      "confess",
+      "admit",
+      "regulations",
+      "crime"
+    ]
+  },
+  {
+    "id": "lead-to",
+    "pattern": "lead to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Dẫn đến kết quả/hậu quả gì",
+    "formula": "S + lead to + V-ing / Noun",
+    "trapAlert": "⚠️ 'Lead to' có 'to' là giới từ chỉ hướng đích, nên theo sau là V-ing (*leads to improving / leads to losing*).",
+    "exampleEn": "Poor communication often leads to misunderstanding critical project deadlines.",
+    "exampleVi": "Giao tiếp kém thường dẫn đến việc hiểu sai các thời hạn dự án quan trọng.",
+    "cefr": "B1",
+    "keywords": [
+      "lead to",
+      "result in",
+      "cause",
+      "deadlines",
+      "consequence"
+    ]
+  },
+  {
+    "id": "contribute-to",
+    "pattern": "contribute to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Đóng góp, góp phần vào việc gì",
+    "formula": "S + contribute to + V-ing / Noun",
+    "trapAlert": "⚠️ Thí sinh rất hay nhầm 'contribute to do sth' (SAI). Bắt buộc: 'contribute to doing sth'.",
+    "exampleEn": "Continuous professional training contributes to enhancing employee productivity.",
+    "exampleVi": "Đào tạo nghiệp vụ liên tục góp phần nâng cao năng suất của nhân viên.",
+    "cefr": "B2",
+    "keywords": [
+      "contribute",
+      "contribution",
+      "enhancing",
+      "productivity"
+    ]
+  },
+  {
+    "id": "with-a-view-to",
+    "pattern": "with a view to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Với mục đích, với ý định làm gì trong tương lai",
+    "formula": "S + V + with a view to + V-ing",
+    "trapAlert": "⚠️ Bẫy kinh điển trong bài thi THPTQG & TOEIC: Thấy 'with a view to' học sinh hay chọn V nguyên thể vì có 'to'. Đáp án đúng PHẢI LÀ V-ing!",
+    "exampleEn": "He enrolled in an intensive night course with a view to obtaining a project management license.",
+    "exampleVi": "Anh ấy đã đăng ký một khóa học đêm chuyên sâu với mục đích lấy được chứng chỉ quản lý dự án.",
+    "cefr": "C1",
+    "keywords": [
+      "with a view to",
+      "aim",
+      "purpose",
+      "license",
+      "course"
+    ]
+  },
+  {
+    "id": "with-an-eye-to",
+    "pattern": "with an eye to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Nhằm mục đích, để mắt hướng tới việc gì",
+    "formula": "S + V + with an eye to + V-ing",
+    "trapAlert": "⚠️ Đồng nghĩa với with a view to, bắt buộc đi với V-ing.",
+    "exampleEn": "The firm expanded overseas with an eye to capturing new market share.",
+    "exampleVi": "Doanh nghiệp đã mở rộng ra nước ngoài nhằm mục đích chiếm lĩnh thị phần mới.",
+    "cefr": "C1",
+    "keywords": [
+      "with an eye to",
+      "capturing",
+      "market",
+      "expansion"
+    ]
+  },
+  {
+    "id": "prior-to",
+    "pattern": "prior to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Trước khi làm việc gì (= Before + V-ing)",
+    "formula": "Prior to + V-ing / Noun, S + V",
+    "trapAlert": "⚠️ 'Prior to' tương đương với 'Before', mang tính trang trọng cao trong văn bản thương mại.",
+    "exampleEn": "Prior to signing the lease agreement, please inspect the apartment thoroughly.",
+    "exampleVi": "Trước khi ký hợp đồng thuê, vui lòng kiểm tra căn hộ thật kỹ lưỡng.",
+    "cefr": "B2",
+    "keywords": [
+      "prior to",
+      "before",
+      "signing",
+      "lease",
+      "contract"
+    ]
+  },
+  {
+    "id": "in-addition-to",
+    "pattern": "in addition to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Ngoài việc, bên cạnh việc làm gì (= Besides + V-ing)",
+    "formula": "In addition to + V-ing / Noun, S + V",
+    "trapAlert": "⚠️ 'To' là giới từ nối, không phải to-infinitive. Luôn chọn V-ing.",
+    "exampleEn": "In addition to managing client accounts, she also oversees social media strategy.",
+    "exampleVi": "Bên cạnh việc quản lý tài khoản khách hàng, cô ấy cũng giám sát chiến lược mạng xã hội.",
+    "cefr": "B1",
+    "keywords": [
+      "in addition to",
+      "besides",
+      "managing",
+      "oversee"
+    ]
+  },
+  {
+    "id": "when-it-comes-to",
+    "pattern": "when it comes to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Khi nói đến, khi đề cập đến việc gì",
+    "formula": "When it comes to + V-ing / Noun, S + V",
+    "trapAlert": "⚠️ Cụm cố định: When it comes to + V-ing. Tuyệt đối không dùng V-bare.",
+    "exampleEn": "When it comes to resolving complex technical issues, Michael is our top expert.",
+    "exampleVi": "Khi nói đến việc giải quyết các sự cố kỹ thuật phức tạp, Michael là chuyên gia số một của chúng tôi.",
+    "cefr": "B2",
+    "keywords": [
+      "when it comes to",
+      "resolving",
+      "expert",
+      "speaking of"
+    ]
+  },
+  {
+    "id": "resort-to",
+    "pattern": "resort to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Phải viện đến, dùng đến biện pháp cuối cùng",
+    "formula": "S + resort to + V-ing / Noun",
+    "trapAlert": "⚠️ 'Resort to' diễn tả việc bất đắc dĩ phải làm, to là giới từ.",
+    "exampleEn": "They had to resort to cutting operational costs to avoid bankruptcy.",
+    "exampleVi": "Họ đã phải viện đến việc cắt giảm chi phí vận hành để tránh phá sản.",
+    "cefr": "B2",
+    "keywords": [
+      "resort to",
+      "costs",
+      "bankruptcy",
+      "emergency"
+    ]
+  },
+  {
+    "id": "prefer-to-ving",
+    "pattern": "prefer + V-ing + to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Thích làm việc này hơn việc kia",
+    "formula": "S + prefer + V-ing + to + V-ing",
+    "trapAlert": "⚠️ So sánh sở thích: prefer V-ing TO V-ing (To ở giữa là giới từ nối 2 danh động từ). Khác với 'would rather V-bare than V-bare'.",
+    "exampleEn": "Many urban commuters prefer cycling to driving during rush hour.",
+    "exampleVi": "Nhiều người đi làm trong đô thị thích đạp xe hơn là lái ô tô vào giờ cao điểm.",
+    "cefr": "A2",
+    "keywords": [
+      "prefer",
+      "cycling",
+      "driving",
+      "comparison",
+      "preference"
+    ]
+  },
+  {
+    "id": "be-opposed-to",
+    "pattern": "be opposed to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Phản đối kịch liệt việc gì",
+    "formula": "S + be opposed to + V-ing / Noun",
+    "trapAlert": "⚠️ 'Opposed to' tương đương 'object to', bắt buộc đi kèm V-ing.",
+    "exampleEn": "Environmentalists are strongly opposed to constructing the dam near the wildlife reserve.",
+    "exampleVi": "Các nhà bảo vệ môi trường kịch liệt phản đối việc xây dựng đập nước gần khu bảo tồn động vật hoang dã.",
+    "cefr": "B2",
+    "keywords": [
+      "opposed to",
+      "protest",
+      "constructing",
+      "dam",
+      "environment"
+    ]
+  },
+  {
+    "id": "be-resigned-to",
+    "pattern": "be resigned to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Cam chịu, miễn cưỡng chấp nhận việc gì",
+    "formula": "S + be resigned to + V-ing / Noun",
+    "trapAlert": "⚠️ Mang nghĩa cam chịu số phận hoặc hoàn cảnh không thể thay đổi.",
+    "exampleEn": "He was resigned to working overtime every Saturday through the audit season.",
+    "exampleVi": "Anh ấy đã cam chịu việc làm thêm giờ vào mỗi thứ Bảy suốt mùa kiểm toán.",
+    "cefr": "C1",
+    "keywords": [
+      "resigned to",
+      "accept",
+      "overtime",
+      "audit",
+      "unwilling"
+    ]
+  },
+  {
+    "id": "see-to",
+    "pattern": "see to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Đảm đương, lo liệu chu tất việc gì (= deal with)",
+    "formula": "S + see to + V-ing / Noun",
+    "trapAlert": "⚠️ 'See to' có nghĩa là phụ trách, giải quyết việc gì. To là giới từ.",
+    "exampleEn": "Could you please see to organizing the conference badges for all delegates?",
+    "exampleVi": "Bạn có thể vui lòng lo liệu việc sắp xếp thẻ hội nghị cho tất cả các đại biểu không?",
+    "cefr": "B2",
+    "keywords": [
+      "see to",
+      "deal with",
+      "organizing",
+      "badges",
+      "task"
+    ]
+  },
+  {
+    "id": "key-to",
+    "pattern": "the key to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Chìa khóa / Bí quyết để đạt được việc gì",
+    "formula": "The key to + V-ing / Noun + is...",
+    "trapAlert": "⚠️ Danh từ 'key' đi với giới từ 'to', sau đó là V-ing (*the key to succeeding / the key to mastering*).",
+    "exampleEn": "Active listening is the key to building lasting partnerships with clients.",
+    "exampleVi": "Lắng nghe tích cực là chìa khóa để xây dựng mối quan hệ đối tác bền vững với khách hàng.",
+    "cefr": "B1",
+    "keywords": [
+      "key to",
+      "secret",
+      "building",
+      "partnerships",
+      "success"
+    ]
+  },
+  {
+    "id": "adapt-adjust-to",
+    "pattern": "adapt / adjust to + V-ing",
+    "category": "to-ving",
+    "categoryLabel": "🔥 Cạm bẫy To + V-ing",
+    "categoryBadgeColor": "bg-rose-500/10 text-rose-400 border-rose-500/30",
+    "meaningVi": "Thích nghi, điều chỉnh cho phù hợp với việc gì",
+    "formula": "S + adapt / adjust to + V-ing / Noun",
+    "trapAlert": "⚠️ 'To' là giới từ chỉ đối tượng thích nghi, theo sau là V-ing.",
+    "exampleEn": "Remote workers have gradually adjusted to collaborating via video conferences.",
+    "exampleVi": "Những nhân viên làm việc từ xa đã dần dần thích nghi với việc cộng tác qua các cuộc họp video.",
+    "cefr": "B2",
+    "keywords": [
+      "adapt",
+      "adjust",
+      "collaborating",
+      "remote",
+      "flexible"
+    ]
+  },
+  {
+    "id": "cant-help",
+    "pattern": "can't help + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Không thể không làm gì, không thể kiềm chế được việc gì",
+    "formula": "S + can't help + V-ing",
+    "trapAlert": "⚠️ 'Can't help doing sth' = không kìm nén được. Tuyệt đối không chia To-V hay V-bare.",
+    "exampleEn": "She couldn't help smiling when she opened the thoughtful gift.",
+    "exampleVi": "Cô ấy không thể ngừng mỉm cười khi mở món quà chu đáo đó.",
+    "cefr": "B1",
+    "keywords": [
+      "can't help",
+      "cannot help",
+      "smiling",
+      "emotion",
+      "resist"
+    ]
+  },
+  {
+    "id": "cant-stand-bear",
+    "pattern": "can't stand / can't bear + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Không thể chịu đựng nổi việc gì",
+    "formula": "S + can't stand / bear + V-ing / Noun",
+    "trapAlert": "⚠️ Thường đi với V-ing để diễn tả sự khó chịu, bức bối.",
+    "exampleEn": "I can't stand waiting in slow queues at the bank.",
+    "exampleVi": "Tôi không thể chịu nổi việc phải đứng chờ trong những hàng dài chậm chạp ở ngân hàng.",
+    "cefr": "B1",
+    "keywords": [
+      "can't stand",
+      "can't bear",
+      "waiting",
+      "intolerable",
+      "patience"
+    ]
+  },
+  {
+    "id": "its-no-use",
+    "pattern": "it's no use + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Chẳng ích gì khi làm việc gì, vô ích khi làm gì",
+    "formula": "It's no use + V-ing",
+    "trapAlert": "⚠️ Xuất hiện nhiều trong bài thi TOEIC & giao tiếp hàng ngày. Luôn đi với V-ing.",
+    "exampleEn": "It's no use worrying about yesterday's exam; focus on the next interview.",
+    "exampleVi": "Thật vô ích khi cứ lo lắng về bài thi hôm qua; hãy tập trung vào buổi phỏng vấn kế tiếp.",
+    "cefr": "B1",
+    "keywords": [
+      "it's no use",
+      "worrying",
+      "useless",
+      "pointless",
+      "exam"
+    ]
+  },
+  {
+    "id": "its-no-good",
+    "pattern": "it's no good + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Chẳng có ích gì, vô nghĩa khi làm gì",
+    "formula": "It's no good + V-ing",
+    "trapAlert": "⚠️ Tương tự 'it's no use', theo sau là danh động từ V-ing.",
+    "exampleEn": "It's no good denying the facts when clear evidence exists.",
+    "exampleVi": "Chẳng có ích gì khi phủ nhận sự thật khi chứng cứ rõ ràng đã tồn tại.",
+    "cefr": "B2",
+    "keywords": [
+      "it's no good",
+      "denying",
+      "evidence",
+      "facts"
+    ]
+  },
+  {
+    "id": "there-is-no-point",
+    "pattern": "there is no point (in) + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Chẳng có ý nghĩa/mục đích gì khi làm việc gì",
+    "formula": "There is no point (in) + V-ing",
+    "trapAlert": "⚠️ Dù có chữ 'in' hay lược bỏ 'in', động từ sau đó vẫn luôn là V-ing.",
+    "exampleEn": "There is no point in arguing when the contract terms are already finalized.",
+    "exampleVi": "Chẳng có ích gì khi tranh cãi khi các điều khoản hợp đồng đã được chốt xong.",
+    "cefr": "B1",
+    "keywords": [
+      "no point",
+      "arguing",
+      "contract",
+      "useless"
+    ]
+  },
+  {
+    "id": "be-worth",
+    "pattern": "be worth + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Rất đáng để làm việc gì (mang lại giá trị cao)",
+    "formula": "S + be worth + V-ing / Noun",
+    "trapAlert": "⚠️ 'Worth' đóng vai trò như tính từ đặc biệt nhận V-ing phía sau mà không cần giới từ.",
+    "exampleEn": "That museum is definitely worth visiting if you have a spare afternoon.",
+    "exampleVi": "Bảo tàng đó chắc chắn rất đáng để ghé thăm nếu bạn có một buổi chiều rảnh rỗi.",
+    "cefr": "B1",
+    "keywords": [
+      "worth",
+      "visiting",
+      "valuable",
+      "recommend",
+      "museum"
+    ]
+  },
+  {
+    "id": "it-is-not-worth",
+    "pattern": "it's not worth + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Không đáng để bận tâm/lãng phí công sức làm gì",
+    "formula": "It's not worth + V-ing",
+    "trapAlert": "⚠️ Không dùng To-V (*it's not worth to repair là SAI*). Phải là *worth repairing*.",
+    "exampleEn": "It's not worth repairing that outdated printer; buying a new one is cheaper.",
+    "exampleVi": "Thật không đáng để sửa chiếc máy in lỗi thời đó; mua cái mới còn rẻ hơn.",
+    "cefr": "B1",
+    "keywords": [
+      "not worth",
+      "repairing",
+      "printer",
+      "waste"
+    ]
+  },
+  {
+    "id": "be-busy",
+    "pattern": "be busy + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Đang bận rộn làm việc gì",
+    "formula": "S + be busy + V-ing",
+    "trapAlert": "⚠️ Rất nhiều bạn dùng nhầm 'busy to do sth' (SAI). Chuẩn xác là 'busy doing sth'.",
+    "exampleEn": "The marketing department is currently busy preparing the product launch presentation.",
+    "exampleVi": "Bộ phận tiếp thị hiện đang bận rộn chuẩn bị bài thuyết trình ra mắt sản phẩm.",
+    "cefr": "A2",
+    "keywords": [
+      "busy",
+      "preparing",
+      "presentation",
+      "launch",
+      "work"
+    ]
+  },
+  {
+    "id": "have-difficulty",
+    "pattern": "have difficulty (in) + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Gặp khó khăn khi làm việc gì",
+    "formula": "S + have difficulty (in) + V-ing",
+    "trapAlert": "⚠️ Bẫy đề thi: Nhiều thí sinh nhầm với 'difficult to do' mà chọn To-V. Với 'have difficulty', động từ bắt buộc là V-ing!",
+    "exampleEn": "International tourists often have difficulty understanding local dialects.",
+    "exampleVi": "Khách du lịch quốc tế thường gặp khó khăn khi hiểu các tiếng địa phương.",
+    "cefr": "B1",
+    "keywords": [
+      "have difficulty",
+      "understanding",
+      "dialects",
+      "trouble",
+      "hard"
+    ]
+  },
+  {
+    "id": "have-trouble",
+    "pattern": "have trouble (in) + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Gặp rắc rối, trở ngại khi làm gì",
+    "formula": "S + have trouble + V-ing",
+    "trapAlert": "⚠️ Động từ đi sau luôn là V-ing (*trouble finding a parking spot*).",
+    "exampleEn": "We had significant trouble finding a parking spot near the exhibition hall.",
+    "exampleVi": "Chúng tôi đã gặp khá nhiều rắc rối khi tìm chỗ đỗ xe gần hội trường triển lãm.",
+    "cefr": "B1",
+    "keywords": [
+      "have trouble",
+      "finding",
+      "parking",
+      "obstacle"
+    ]
+  },
+  {
+    "id": "have-a-hard-time",
+    "pattern": "have a hard time + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Trải qua khoảng thời gian chật vật, khó khăn khi làm gì",
+    "formula": "S + have a hard time + V-ing",
+    "trapAlert": "⚠️ Tương tự have trouble/difficulty, dùng V-ing.",
+    "exampleEn": "The new manager had a hard time earning the respect of veteran employees.",
+    "exampleVi": "Người quản lý mới đã trải qua khoảng thời gian chật vật để chiếm được sự tôn trọng của các nhân viên kỳ cựu.",
+    "cefr": "B2",
+    "keywords": [
+      "hard time",
+      "earning",
+      "respect",
+      "struggle"
+    ]
+  },
+  {
+    "id": "spend-time-money",
+    "pattern": "spend + time / money + (on) + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Dành thời gian hoặc tiền bạc vào việc làm gì",
+    "formula": "S + spend + time/money + (on) + V-ing",
+    "trapAlert": "⚠️ Spend đi với V-ing. (Khác với Take: 'It takes sb time to V').",
+    "exampleEn": "He spends two hours every evening reading academic papers.",
+    "exampleVi": "Anh ấy dành 2 tiếng mỗi tối để đọc các bài báo học thuật.",
+    "cefr": "A2",
+    "keywords": [
+      "spend",
+      "reading",
+      "hours",
+      "money",
+      "time"
+    ]
+  },
+  {
+    "id": "waste-time-money",
+    "pattern": "waste + time / money + (on) + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Lãng phí thời gian hoặc tiền bạc vào việc làm gì",
+    "formula": "S + waste + time/money + (on) + V-ing",
+    "trapAlert": "⚠️ Luôn dùng dạng V-ing phía sau lượng thời gian hoặc tiền bạc bị lãng phí.",
+    "exampleEn": "Don't waste valuable time arguing over minor administrative details.",
+    "exampleVi": "Đừng lãng phí thời gian quý báu để tranh cãi về những tiểu tiết hành chính nhỏ nhặt.",
+    "cefr": "B1",
+    "keywords": [
+      "waste",
+      "arguing",
+      "details",
+      "time",
+      "squander"
+    ]
+  },
+  {
+    "id": "feel-like",
+    "pattern": "feel like + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Cảm thấy muốn làm gì, thích làm gì ngay lúc này",
+    "formula": "S + feel like + V-ing",
+    "trapAlert": "⚠️ Like ở đây là giới từ, do đó động từ theo sau là V-ing (*feel like having coffee*).",
+    "exampleEn": "I feel like taking a long walk by the lake to clear my mind.",
+    "exampleVi": "Tôi cảm thấy muốn đi dạo một quãng dài ven hồ để thanh thản đầu óc.",
+    "cefr": "A2",
+    "keywords": [
+      "feel like",
+      "taking",
+      "walk",
+      "mood",
+      "desire"
+    ]
+  },
+  {
+    "id": "would-you-mind",
+    "pattern": "would you mind + V-ing",
+    "category": "special-idioms",
+    "categoryLabel": "💎 Mẫu câu đặc biệt + V-ing",
+    "categoryBadgeColor": "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
+    "meaningVi": "Bạn có phiền lòng nếu làm việc gì không? (Lời nhờ vả lịch sự)",
+    "formula": "Would you mind + V-ing / Do you mind + V-ing...?",
+    "trapAlert": "⚠️ Bẫy giao tiếp & Part 5: 'Would you mind' luôn đi với V-ing (*mind closing the window*).",
+    "exampleEn": "Would you mind sending me the updated sales report before noon?",
+    "exampleVi": "Bạn có phiền gửi cho tôi bản báo cáo doanh số cập nhật trước buổi trưa không?",
+    "cefr": "A2",
+    "keywords": [
+      "would you mind",
+      "sending",
+      "polite",
+      "request",
+      "report"
+    ]
+  },
+  {
+    "id": "remember-both",
+    "pattern": "remember to V vs remember V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Nhớ phải làm việc gì (To-V) vs Nhớ đã từng làm việc gì (V-ing)",
+    "formula": "• Remember to V: Nhiệm vụ tương lai cần làm\n• Remember V-ing: Hồi tưởng ký ức quá khứ",
+    "trapAlert": "⚠️ Trong các câu nhắc nhở/lời dặn dò: 'Please remember to lock the door' -> Bắt buộc dùng To-V!",
+    "exampleEn": "Please remember to submit your quarterly expense receipts by Friday.",
+    "exampleVi": "Xin hãy nhớ nộp các hóa đơn chi phí quý trước thứ Sáu nhé.",
+    "cefr": "A2",
+    "keywords": [
+      "remember",
+      "memory",
+      "submit",
+      "future",
+      "past"
+    ]
+  },
+  {
+    "id": "forget-both",
+    "pattern": "forget to V vs forget V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Quên phải làm gì (To-V) vs Quên mất là đã từng làm gì (V-ing)",
+    "formula": "• Forget to V: Bỏ quên nhiệm vụ chưa làm\n• Forget V-ing: Quên mất ký ức việc đã xảy ra",
+    "trapAlert": "⚠️ Thường gặp dạng phủ định tương lai: 'I will never forget meeting the President' (Quên ký ức -> V-ing).",
+    "exampleEn": "Don't forget to attach the executive summary to the client proposal.",
+    "exampleVi": "Đừng quên đính kèm bản tóm tắt điều hành vào bản đề xuất gửi khách hàng.",
+    "cefr": "A2",
+    "keywords": [
+      "forget",
+      "attach",
+      "proposal",
+      "memory"
+    ]
+  },
+  {
+    "id": "regret-both",
+    "pattern": "regret to V vs regret V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Lấy làm tiếc khi phải báo tin (To-V) vs Hối hận vì đã lỡ làm gì (V-ing)",
+    "formula": "• Regret to inform/say: Lấy làm tiếc phải thông báo\n• Regret V-ing: Hối hận chuyện quá khứ",
+    "trapAlert": "⚠️ Trong thư từ thương mại từ chối đơn xin việc hoặc báo tin buồn: 'We regret to inform you that...' luôn là To-V!",
+    "exampleEn": "We regret to inform you that the job opening has already been filled.",
+    "exampleVi": "Chúng tôi rất lấy làm tiếc khi phải thông báo rằng vị trí tuyển dụng đã có người nhận.",
+    "cefr": "B2",
+    "keywords": [
+      "regret",
+      "inform",
+      "apology",
+      "rejection",
+      "email"
+    ]
+  },
+  {
+    "id": "stop-both",
+    "pattern": "stop to V vs stop V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Dừng lại để làm việc khác (To-V) vs Bỏ hẳn, từ bỏ việc đang làm (V-ing)",
+    "formula": "• Stop to V: Tạm ngừng mục đích để chuyển sang hành động khác\n• Stop V-ing: Chấm dứt vĩnh viễn hoặc dừng hành vi hiện tại",
+    "trapAlert": "⚠️ 'He stopped smoking' (Bỏ hút thuốc hẳn). 'He stopped to smoke' (Đang đi thì dừng lại để châm thuốc).",
+    "exampleEn": "After hiking for three straight hours, the group stopped to catch their breath.",
+    "exampleVi": "Sau khi leo núi suốt ba tiếng đồng hồ liên tục, cả nhóm đã dừng lại để lấy lại sức thở.",
+    "cefr": "A2",
+    "keywords": [
+      "stop",
+      "pause",
+      "quit",
+      "hiking",
+      "breath"
+    ]
+  },
+  {
+    "id": "try-both",
+    "pattern": "try to V vs try V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Cố gắng hết sức vượt khó (To-V) vs Thử nghiệm xem sao (V-ing)",
+    "formula": "• Try to V: Nỗ lực hết mình giải quyết việc khó\n• Try V-ing: Làm thử một biện pháp/giải pháp xem có hiệu quả không",
+    "trapAlert": "⚠️ Lời khuyên chữa bệnh/gợi ý mẹo vặt: 'If you have a headache, try drinking ginger tea' -> Dùng V-ing!",
+    "exampleEn": "The software developers are trying to eliminate the latency bug in the payment gateway.",
+    "exampleVi": "Các nhà phát triển phần mềm đang cố gắng hết sức để loại bỏ lỗi độ trễ trong cổng thanh toán.",
+    "cefr": "B1",
+    "keywords": [
+      "try",
+      "effort",
+      "experiment",
+      "eliminate",
+      "software"
+    ]
+  },
+  {
+    "id": "mean-both",
+    "pattern": "mean to V vs mean V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Có ý định, định làm gì (To-V) vs Có nghĩa là, kéo theo việc gì (V-ing)",
+    "formula": "• Mean to V: S có chủ đích làm việc gì (= intend to)\n• Mean V-ing: Sự việc kéo theo hoặc đồng nghĩa với kết quả gì",
+    "trapAlert": "⚠️ 'I didn't mean to hurt you' (Ý định -> To-V). 'Taking this job means moving to Tokyo' (Kéo theo việc chuyển nhà -> V-ing).",
+    "exampleEn": "Accepting this senior executive position means traveling abroad frequently.",
+    "exampleVi": "Nhận vị trí điều hành cấp cao này đồng nghĩa với việc phải đi công tác nước ngoài thường xuyên.",
+    "cefr": "B2",
+    "keywords": [
+      "mean",
+      "intend",
+      "entail",
+      "traveling",
+      "executive"
+    ]
+  },
+  {
+    "id": "need-both",
+    "pattern": "need to V vs need V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Cần làm gì (Chủ động - To-V) vs Cần được làm/sửa chữa (Bị động - V-ing)",
+    "formula": "• S (người) + need to V\n• S (vật) + need V-ing (= need to be done)",
+    "trapAlert": "⚠️ Khi chủ ngữ là đồ vật bị hư hỏng: 'The air conditioner needs servicing' (= needs to be serviced).",
+    "exampleEn": "The company's cybersecurity protocols urgently need updating.",
+    "exampleVi": "Các giao thức an ninh mạng của công ty đang khẩn thiết cần được cập nhật.",
+    "cefr": "B1",
+    "keywords": [
+      "need",
+      "passive",
+      "updating",
+      "cybersecurity",
+      "servicing"
+    ]
+  },
+  {
+    "id": "go-on-both",
+    "pattern": "go on to V vs go on V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Chuyển sang làm việc mới (To-V) vs Tiếp tục làm việc đang dở dang (V-ing)",
+    "formula": "• Go on to V: Làm xong một việc rồi chuyển sang bước tiếp theo\n• Go on V-ing: Vẫn tiếp tục duy trì hành động đang diễn ra",
+    "trapAlert": "⚠️ Kể về tiểu sử nhân vật thành đạt: 'He graduated in 2015 and went on to establish a tech startup' (To-V).",
+    "exampleEn": "After serving as department head, she went on to become the university's president.",
+    "exampleVi": "Sau khi làm trưởng khoa, bà đã tiếp tục thăng tiến để trở thành hiệu trưởng của trường đại học.",
+    "cefr": "B2",
+    "keywords": [
+      "go on",
+      "continue",
+      "progress",
+      "president",
+      "career"
+    ]
+  },
+  {
+    "id": "propose-both",
+    "pattern": "propose to V vs propose V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Có ý định làm gì (To-V) vs Đề xuất một kế hoạch/phương án (V-ing)",
+    "formula": "• Propose to V: S dự định sẽ làm gì\n• Propose V-ing: Đưa ra đề xuất cho mọi người cùng thực hiện",
+    "trapAlert": "⚠️ 'He proposed holding the next summit in Da Nang' (Đề xuất ý tưởng -> V-ing).",
+    "exampleEn": "The committee proposed allocating additional funds for renewable energy research.",
+    "exampleVi": "Ủy ban đã đề xuất phân bổ thêm ngân sách cho nghiên cứu năng lượng tái tạo.",
+    "cefr": "B2",
+    "keywords": [
+      "propose",
+      "suggest",
+      "allocating",
+      "funds",
+      "committee"
+    ]
+  },
+  {
+    "id": "quit-both",
+    "pattern": "quit to V vs quit V-ing",
+    "category": "both",
+    "categoryLabel": "🔄 Đổi nghĩa To-V vs V-ing",
+    "categoryBadgeColor": "bg-violet-500/10 text-violet-400 border-violet-500/30",
+    "meaningVi": "Rời đi để làm việc gì (To-V) vs Từ bỏ, thôi làm việc gì (V-ing)",
+    "formula": "• Quit (a place) to V: Bỏ đi nơi khác để làm gì\n• Quit V-ing: Dừng hẳn một thói quen hoặc công việc",
+    "trapAlert": "⚠️ 95% trường hợp 'quit' đi kèm V-ing: 'He quit working overtime'.",
+    "exampleEn": "She decided to quit her corporate banking job to pursue her passion for painting.",
+    "exampleVi": "Cô ấy đã quyết định từ bỏ công việc ngân hàng để theo đuổi đam mê hội họa.",
+    "cefr": "B1",
+    "keywords": [
+      "quit",
+      "resign",
+      "pursue",
+      "passion",
+      "career"
+    ]
+  },
+  {
+    "id": "avoid-ving",
+    "pattern": "avoid + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Né tránh, tránh làm việc gì",
+    "formula": "S + avoid + V-ing",
+    "trapAlert": "⚠️ 'Avoid' tuyệt đối KHÔNG BAO GIỜ đi với To-V (*avoid to make a mistake là SAI*). Luôn là *avoid making*.",
+    "exampleEn": "You should strictly avoid traveling during peak holiday hours.",
+    "exampleVi": "Bạn nên tuyệt đối tránh đi lại vào những giờ cao điểm ngày lễ.",
+    "cefr": "A2",
+    "keywords": [
+      "avoid",
+      "traveling",
+      "evade",
+      "rush hour",
+      "gerund"
+    ]
+  },
+  {
+    "id": "appreciate-ving",
+    "pattern": "appreciate + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Đánh giá cao, rất cảm kích việc gì",
+    "formula": "S + appreciate + V-ing / your V-ing",
+    "trapAlert": "⚠️ Trong thư cảm ơn thương mại: 'I would greatly appreciate receiving your prompt reply'. Luôn là V-ing!",
+    "exampleEn": "We would truly appreciate receiving your candid feedback on the beta trial.",
+    "exampleVi": "Chúng tôi sẽ vô cùng cảm kích khi nhận được phản hồi chân thành của bạn về bản dùng thử nghiệm.",
+    "cefr": "B2",
+    "keywords": [
+      "appreciate",
+      "grateful",
+      "receiving",
+      "feedback",
+      "email"
+    ]
+  },
+  {
+    "id": "anticipate-ving",
+    "pattern": "anticipate + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Dự đoán, lường trước việc gì sẽ xảy ra",
+    "formula": "S + anticipate + V-ing",
+    "trapAlert": "⚠️ Khác với 'expect to V', động từ 'anticipate' luôn đi kèm Danh động từ V-ing.",
+    "exampleEn": "Economists anticipate seeing a noticeable rebound in retail sales this quarter.",
+    "exampleVi": "Các nhà kinh tế dự đoán sẽ thấy sự phục hồi rõ rệt trong doanh số bán lẻ quý này.",
+    "cefr": "B2",
+    "keywords": [
+      "anticipate",
+      "predict",
+      "seeing",
+      "rebound",
+      "retail"
+    ]
+  },
+  {
+    "id": "consider-ving",
+    "pattern": "consider + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Cân nhắc, xem xét làm việc gì",
+    "formula": "S + consider + V-ing",
+    "trapAlert": "⚠️ Bẫy đề thi Part 5: 'consider moving/buying', không bao giờ chọn 'consider to move'.",
+    "exampleEn": "The board of directors is seriously considering expanding into Southeast Asian markets.",
+    "exampleVi": "Hội đồng quản trị đang nghiêm túc cân nhắc việc mở rộng sang các thị trường Đông Nam Á.",
+    "cefr": "B1",
+    "keywords": [
+      "consider",
+      "expanding",
+      "deliberate",
+      "markets",
+      "board"
+    ]
+  },
+  {
+    "id": "delay-ving",
+    "pattern": "delay + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Trì hoãn, chậm trễ làm việc gì",
+    "formula": "S + delay + V-ing",
+    "trapAlert": "⚠️ Theo sau luôn là V-ing (*delay announcing the results*).",
+    "exampleEn": "They delayed announcing the quarterly financial figures due to an internal audit.",
+    "exampleVi": "Họ đã trì hoãn việc công bố số liệu tài chính quý do có cuộc kiểm toán nội bộ.",
+    "cefr": "B1",
+    "keywords": [
+      "delay",
+      "postpone",
+      "announcing",
+      "audit",
+      "figures"
+    ]
+  },
+  {
+    "id": "postpone-ving",
+    "pattern": "postpone + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Hoãn lại, dời lịch làm việc gì",
+    "formula": "S + postpone + V-ing",
+    "trapAlert": "⚠️ Đồng nghĩa với delay / put off, bắt buộc đi với V-ing.",
+    "exampleEn": "Due to adverse weather conditions, officials postponed launching the satellite.",
+    "exampleVi": "Do điều kiện thời tiết bất lợi, các quan chức đã hoãn việc phóng vệ tinh.",
+    "cefr": "B1",
+    "keywords": [
+      "postpone",
+      "put off",
+      "launching",
+      "satellite",
+      "weather"
+    ]
+  },
+  {
+    "id": "deny-ving",
+    "pattern": "deny + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Phủ nhận việc đã làm gì",
+    "formula": "S + deny + V-ing",
+    "trapAlert": "⚠️ 'Deny' đi với V-ing hoặc having + V3/ed (*denied taking the money*).",
+    "exampleEn": "The spokesperson firmly denied leaking sensitive negotiation details to the press.",
+    "exampleVi": "Người phát ngôn đã kiên quyết phủ nhận việc làm rò rỉ các chi tiết đàm phán nhạy cảm cho báo chí.",
+    "cefr": "B2",
+    "keywords": [
+      "deny",
+      "refuse",
+      "leaking",
+      "spokesperson",
+      "press"
+    ]
+  },
+  {
+    "id": "detest-ving",
+    "pattern": "detest + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Ghét cay ghét đắng, cực kỳ căm ghét việc gì",
+    "formula": "S + detest + V-ing",
+    "trapAlert": "⚠️ 'Detest' mang sắc thái căm ghét mạnh mẽ, chỉ nhận V-ing.",
+    "exampleEn": "She detests commuting in overcrowded underground trains during summer.",
+    "exampleVi": "Cô ấy ghét cay ghét đắng việc phải đi lại trên những chuyến tàu điện ngầm quá tải vào mùa hè.",
+    "cefr": "C1",
+    "keywords": [
+      "detest",
+      "hate",
+      "loathe",
+      "commuting",
+      "underground"
+    ]
+  },
+  {
+    "id": "discuss-ving",
+    "pattern": "discuss + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Thảo luận về việc làm gì",
+    "formula": "S + discuss + V-ing",
+    "trapAlert": "⚠️ 1) Không có giới từ 'about' sau discuss. 2) Động từ theo sau là V-ing (*discuss implementing the policy*).",
+    "exampleEn": "The team will discuss revising the client onboarding checklist tomorrow.",
+    "exampleVi": "Đội ngũ sẽ thảo luận về việc sửa đổi danh sách kiểm tra tiếp nhận khách hàng vào ngày mai.",
+    "cefr": "B1",
+    "keywords": [
+      "discuss",
+      "debate",
+      "revising",
+      "onboarding",
+      "meeting"
+    ]
+  },
+  {
+    "id": "dislike-ving",
+    "pattern": "dislike + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Không thích, ác cảm với việc làm gì",
+    "formula": "S + dislike + V-ing",
+    "trapAlert": "⚠️ Khác với 'like' có thể đi với cả To-V, 'dislike' thường chỉ đi với V-ing.",
+    "exampleEn": "Many junior executives dislike giving unscripted speeches at large gatherings.",
+    "exampleVi": "Nhiều chuyên viên điều hành trẻ không thích phát biểu không có kịch bản trước tại các cuộc tụ họp lớn.",
+    "cefr": "A2",
+    "keywords": [
+      "dislike",
+      "giving",
+      "speeches",
+      "aversion"
+    ]
+  },
+  {
+    "id": "enjoy-ving",
+    "pattern": "enjoy + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Thích thú, tận hưởng việc làm gì",
+    "formula": "S + enjoy + V-ing",
+    "trapAlert": "⚠️ Không bao giờ nói 'enjoy to do sth' (SAI 100%). Luôn luôn là 'enjoy doing sth'.",
+    "exampleEn": "Our staff enjoy collaborating on open-source coding projects together.",
+    "exampleVi": "Nhân viên của chúng tôi thích thú việc cùng nhau cộng tác trong các dự án lập trình mã nguồn mở.",
+    "cefr": "A1",
+    "keywords": [
+      "enjoy",
+      "like",
+      "collaborating",
+      "coding",
+      "pleasure"
+    ]
+  },
+  {
+    "id": "escape-ving",
+    "pattern": "escape + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Thoát khỏi hiểm cảnh, thoát nạn bị làm sao",
+    "formula": "S + escape + V-ing (thường là bị động: being + V3/ed)",
+    "trapAlert": "⚠️ Mang nghĩa may mắn thoát khỏi một hình phạt hoặc tai họa (*escape being punished*).",
+    "exampleEn": "The reckless driver narrowly escaped causing a severe multi-vehicle collision.",
+    "exampleVi": "Tài xế ẩu tả đã suýt chút nữa không thoát khỏi việc gây ra một vụ va chạm liên hoàn nghiêm trọng.",
+    "cefr": "B2",
+    "keywords": [
+      "escape",
+      "causing",
+      "collision",
+      "danger",
+      "evade"
+    ]
+  },
+  {
+    "id": "fancy-ving",
+    "pattern": "fancy + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Thích, muốn làm việc gì (đặc trưng giọng Anh-Anh)",
+    "formula": "Do you fancy + V-ing...?",
+    "trapAlert": "⚠️ 'Fancy doing sth' rất phổ biến trong đề thi Cambridge & IELTS Listening.",
+    "exampleEn": "Do you fancy going out for authentic Italian pizza tonight?",
+    "exampleVi": "Tối nay bạn có hứng đi ăn pizza Ý chính hiệu không?",
+    "cefr": "B1",
+    "keywords": [
+      "fancy",
+      "going",
+      "pizza",
+      "invitation",
+      "british"
+    ]
+  },
+  {
+    "id": "finish-ving",
+    "pattern": "finish + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Hoàn thành, làm xong việc gì",
+    "formula": "S + finish + V-ing",
+    "trapAlert": "⚠️ 'Finish' luôn đi với V-ing (*finish compiling the data*), không dùng To-V.",
+    "exampleEn": "Once you finish reviewing the contract clauses, please sign on the dotted line.",
+    "exampleVi": "Khi bạn xem xét xong các điều khoản hợp đồng, vui lòng ký tên vào dòng chấm nhé.",
+    "cefr": "A1",
+    "keywords": [
+      "finish",
+      "reviewing",
+      "complete",
+      "contract",
+      "clauses"
+    ]
+  },
+  {
+    "id": "forgive-ving",
+    "pattern": "forgive (sb for) + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Tha thứ cho việc gì / tha thứ cho ai vì đã làm gì",
+    "formula": "S + forgive (sb for) + V-ing",
+    "trapAlert": "⚠️ Theo sau luôn là V-ing hoặc cụm danh từ.",
+    "exampleEn": "He couldn't forgive himself for failing to notify his team earlier.",
+    "exampleVi": "Anh ấy đã không thể tha thứ cho bản thân vì đã không thông báo cho đội ngũ của mình sớm hơn.",
+    "cefr": "B2",
+    "keywords": [
+      "forgive",
+      "failing",
+      "pardon",
+      "notify"
+    ]
+  },
+  {
+    "id": "imagine-ving",
+    "pattern": "imagine + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Tưởng tượng, hình dung việc làm gì",
+    "formula": "S + imagine + V-ing",
+    "trapAlert": "⚠️ 'Can you imagine working 80 hours a week?' -> Bắt buộc là V-ing.",
+    "exampleEn": "I cannot imagine relocating to another continent without speaking the language.",
+    "exampleVi": "Tôi không thể hình dung được việc chuyển đến một châu lục khác mà không nói được ngôn ngữ đó.",
+    "cefr": "B1",
+    "keywords": [
+      "imagine",
+      "relocating",
+      "picture",
+      "continent"
+    ]
+  },
+  {
+    "id": "involve-ving",
+    "pattern": "involve + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Bao gồm, đòi hỏi, liên quan đến việc làm gì",
+    "formula": "S + involve + V-ing",
+    "trapAlert": "⚠️ 'Involve' là động từ cực kỳ phổ biến trong TOEIC Part 5. Luôn chọn V-ing theo sau.",
+    "exampleEn": "The new auditor role involves traveling to client branch offices twice a month.",
+    "exampleVi": "Vai trò kiểm toán viên mới đòi hỏi phải đi công tác đến các chi nhánh của khách hàng hai lần mỗi tháng.",
+    "cefr": "B1",
+    "keywords": [
+      "involve",
+      "traveling",
+      "auditor",
+      "job description",
+      "entail"
+    ]
+  },
+  {
+    "id": "keep-on-ving",
+    "pattern": "keep / keep on + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Cứ tiếp tục, liên tục lặp đi lặp lại việc gì",
+    "formula": "S + keep / keep on + V-ing",
+    "trapAlert": "⚠️ 'Keep doing sth' diễn tả hành động liên tục không ngừng. Không dùng To-V.",
+    "exampleEn": "Despite initial setbacks, the engineers kept refining the prototype engine.",
+    "exampleVi": "Mặc dù gặp những trở ngại ban đầu, các kỹ sư vẫn tiếp tục tinh chỉnh động cơ nguyên mẫu.",
+    "cefr": "A2",
+    "keywords": [
+      "keep",
+      "keep on",
+      "refining",
+      "continue",
+      "prototype"
+    ]
+  },
+  {
+    "id": "mention-ving",
+    "pattern": "mention + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Đề cập, nhắc đến việc làm gì",
+    "formula": "S + mention + V-ing",
+    "trapAlert": "⚠️ 'Mention' không đi trực tiếp với To-V. Chuẩn: 'mention doing sth' hoặc 'mention that S + V'.",
+    "exampleEn": "During the debrief, the manager mentioned seeing a sharp drop in website bounce rates.",
+    "exampleVi": "Trong buổi họp tổng kết, người quản lý đã đề cập đến việc thấy tỷ lệ thoát trang web giảm mạnh.",
+    "cefr": "B1",
+    "keywords": [
+      "mention",
+      "seeing",
+      "website",
+      "debrief",
+      "rates"
+    ]
+  },
+  {
+    "id": "mind-ving",
+    "pattern": "mind + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Bận tâm, phiền lòng khi làm việc gì",
+    "formula": "S + don't/doesn't mind + V-ing",
+    "trapAlert": "⚠️ 'I don't mind working late' -> Bắt buộc là V-ing.",
+    "exampleEn": "She doesn't mind working overtime if advance notification is given.",
+    "exampleVi": "Cô ấy không phiền lòng việc làm thêm giờ nếu được thông báo trước.",
+    "cefr": "A2",
+    "keywords": [
+      "mind",
+      "working",
+      "overtime",
+      "objection"
+    ]
+  },
+  {
+    "id": "miss-ving",
+    "pattern": "miss + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Bỏ lỡ việc làm gì / Nhớ việc đã từng làm",
+    "formula": "S + miss + V-ing",
+    "trapAlert": "⚠️ 'Miss' luôn đi với V-ing (*miss seeing friends*).",
+    "exampleEn": "Since moving to the suburbs, he truly misses taking spontaneous city walks.",
+    "exampleVi": "Kể từ khi chuyển ra vùng ngoại ô, anh ấy thực sự nhớ những buổi đi dạo ngẫu hứng trong thành phố.",
+    "cefr": "B1",
+    "keywords": [
+      "miss",
+      "taking",
+      "suburbs",
+      "nostalgia"
+    ]
+  },
+  {
+    "id": "practice-ving",
+    "pattern": "practice + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Luyện tập, thực hành làm việc gì",
+    "formula": "S + practice + V-ing",
+    "trapAlert": "⚠️ Học ngoại ngữ/nhạc cụ: 'practice speaking English every day', không nói 'practice to speak'.",
+    "exampleEn": "You should practice speaking English with native speakers to build fluency.",
+    "exampleVi": "Bạn nên luyện tập nói tiếng Anh với người bản xứ để xây dựng sự trôi chảy.",
+    "cefr": "A2",
+    "keywords": [
+      "practice",
+      "speaking",
+      "fluency",
+      "training",
+      "english"
+    ]
+  },
+  {
+    "id": "recall-ving",
+    "pattern": "recall + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Nhớ lại, hồi tưởng việc trong quá khứ",
+    "formula": "S + recall + V-ing / having V3/ed",
+    "trapAlert": "⚠️ 'Recall' tương đương 'remember V-ing', diễn tả ký ức quá khứ.",
+    "exampleEn": "The witness could not recall seeing any suspicious vehicles near the warehouse.",
+    "exampleVi": "Nhân chứng đã không thể nhớ lại việc nhìn thấy bất kỳ phương tiện khả nghi nào gần nhà kho.",
+    "cefr": "B2",
+    "keywords": [
+      "recall",
+      "seeing",
+      "witness",
+      "warehouse",
+      "memory"
+    ]
+  },
+  {
+    "id": "recommend-ving",
+    "pattern": "recommend + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Khuyên bảo, gợi ý, đề xuất làm gì",
+    "formula": "S + recommend + V-ing (hoặc S + recommend that S + (should) V-bare)",
+    "trapAlert": "⚠️ TUYỆT ĐỐI KHÔNG DÙNG: recommend sb to do sth (SAI 100%). Bắt buộc: 'recommend doing sth'!",
+    "exampleEn": "Specialists strongly recommend backing up database records onto off-site cloud servers.",
+    "exampleVi": "Các chuyên gia nhiệt liệt khuyên nên sao lưu dữ liệu cơ sở dữ liệu lên các máy chủ đám mây ngoài cơ sở.",
+    "cefr": "B1",
+    "keywords": [
+      "recommend",
+      "backing up",
+      "database",
+      "advice",
+      "cloud"
+    ]
+  },
+  {
+    "id": "resist-ving",
+    "pattern": "resist + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Kháng cự, kiềm chế không làm việc gì",
+    "formula": "S + resist + V-ing",
+    "trapAlert": "⚠️ 'Can't resist doing sth' = không thể kiềm chế được.",
+    "exampleEn": "She couldn't resist checking her phone notifications every five minutes.",
+    "exampleVi": "Cô ấy đã không thể kiềm chế được việc kiểm tra thông báo điện thoại cứ sau mỗi 5 phút.",
+    "cefr": "B2",
+    "keywords": [
+      "resist",
+      "checking",
+      "temptation",
+      "notifications"
+    ]
+  },
+  {
+    "id": "risk-ving",
+    "pattern": "risk + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Liều lĩnh, mạo hiểm làm việc gì",
+    "formula": "S + risk + V-ing",
+    "trapAlert": "⚠️ 'Risk' luôn đi với V-ing (*risk losing all savings*).",
+    "exampleEn": "Uninsured investors risk losing substantial capital during sharp market downturns.",
+    "exampleVi": "Các nhà đầu tư không có bảo hiểm mạo hiểm việc mất đi số vốn lớn trong những đợt suy thoái thị trường mạnh.",
+    "cefr": "B2",
+    "keywords": [
+      "risk",
+      "losing",
+      "capital",
+      "investors",
+      "downturn"
+    ]
+  },
+  {
+    "id": "suggest-ving",
+    "pattern": "suggest + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Đề xuất, gợi ý làm việc gì",
+    "formula": "S + suggest + V-ing (hoặc S + suggest that S + V-bare)",
+    "trapAlert": "⚠️ BẪY TOEIC LỚN NHẤT: 'suggest sb to do' là HOÀN TOÀN SAI. Bắt buộc: 'suggest + V-ing' (*suggest breaking tasks*)!",
+    "exampleEn": "Productivity coaches suggest prioritizing the three most critical tasks each morning.",
+    "exampleVi": "Các huấn luyện viên năng suất đề xuất ưu tiên 3 nhiệm vụ quan trọng nhất vào mỗi buổi sáng.",
+    "cefr": "B1",
+    "keywords": [
+      "suggest",
+      "prioritizing",
+      "tasks",
+      "proposal",
+      "advice"
+    ]
+  },
+  {
+    "id": "tolerate-ving",
+    "pattern": "tolerate + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Khoan dung, dung thứ, chấp nhận việc gì",
+    "formula": "S + tolerate + V-ing",
+    "trapAlert": "⚠️ 'Tolerate' luôn nhận V-ing (*will not tolerate cheating*).",
+    "exampleEn": "The university leadership will not tolerate cheating under any circumstances.",
+    "exampleVi": "Ban giám hiệu trường đại học sẽ không dung thứ cho hành vi gian lận dưới bất kỳ hoàn cảnh nào.",
+    "cefr": "B2",
+    "keywords": [
+      "tolerate",
+      "cheating",
+      "university",
+      "integrity",
+      "accept"
+    ]
+  },
+  {
+    "id": "give-up-ving",
+    "pattern": "give up + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Từ bỏ, bỏ cuộc một thói quen/việc làm gì",
+    "formula": "S + give up + V-ing",
+    "trapAlert": "⚠️ Phrasal verb: giới từ 'up' yêu cầu V-ing theo sau.",
+    "exampleEn": "After experiencing persistent back pain, he gave up lifting heavy weights.",
+    "exampleVi": "Sau khi bị đau lưng dai dẳng, anh ấy đã từ bỏ việc nâng tạ nặng.",
+    "cefr": "A2",
+    "keywords": [
+      "give up",
+      "lifting",
+      "quit",
+      "weights",
+      "habit"
+    ]
+  },
+  {
+    "id": "put-off-ving",
+    "pattern": "put off + V-ing",
+    "category": "ving",
+    "categoryLabel": "💡 Động từ + V-ing (Gerund)",
+    "categoryBadgeColor": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    "meaningVi": "Hoãn lại, chần chừ làm việc gì (= postpone)",
+    "formula": "S + put off + V-ing",
+    "trapAlert": "⚠️ 'Put off' luôn đi với V-ing.",
+    "exampleEn": "Never put off doing what must be completed before the weekend.",
+    "exampleVi": "Đừng bao giờ trì hoãn việc cần phải hoàn thành trước ngày cuối tuần.",
+    "cefr": "B1",
+    "keywords": [
+      "put off",
+      "postpone",
+      "procrastinate",
+      "delay"
+    ]
+  },
+  {
+    "id": "afford-tov",
+    "pattern": "afford + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Đủ khả năng tài chính/thời gian để làm gì",
+    "formula": "S + can/could afford + to V",
+    "trapAlert": "⚠️ Thường dùng trong câu phủ định hoặc nghi vấn: 'can't afford to buy'. Không dùng V-ing.",
+    "exampleEn": "As a fledgling startup, we cannot afford to lose our prime enterprise customers.",
+    "exampleVi": "Là một công ty khởi nghiệp non trẻ, chúng tôi không thể đủ sức để mất đi những khách hàng doanh nghiệp chủ chốt.",
+    "cefr": "B1",
+    "keywords": [
+      "afford",
+      "lose",
+      "customers",
+      "startup",
+      "finance"
+    ]
+  },
+  {
+    "id": "agree-tov",
+    "pattern": "agree + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Đồng ý làm việc gì",
+    "formula": "S + agree + to V",
+    "trapAlert": "⚠️ Đồng ý thực hiện hành động: 'agree to collaborate/sign'. Khác với 'agree on sth' (đồng ý về chủ đề).",
+    "exampleEn": "Both parties readily agreed to extend the partnership agreement for two more years.",
+    "exampleVi": "Cả hai bên đã sẵn sàng đồng ý gia hạn thỏa thuận hợp tác thêm hai năm nữa.",
+    "cefr": "A2",
+    "keywords": [
+      "agree",
+      "extend",
+      "partnership",
+      "agreement",
+      "contract"
+    ]
+  },
+  {
+    "id": "aim-tov",
+    "pattern": "aim + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Nhắm tới mục tiêu làm gì",
+    "formula": "S + aim + to V (hoặc aim at + V-ing)",
+    "trapAlert": "⚠️ Khi dùng trực tiếp: 'aim to improve customer retention'.",
+    "exampleEn": "Our upcoming marketing initiative aims to increase brand awareness across European cities.",
+    "exampleVi": "Sáng kiến tiếp thị sắp tới của chúng tôi nhắm tới mục tiêu tăng cường nhận diện thương hiệu trên khắp các thành phố châu Âu.",
+    "cefr": "B1",
+    "keywords": [
+      "aim",
+      "increase",
+      "awareness",
+      "marketing",
+      "goal"
+    ]
+  },
+  {
+    "id": "appear-tov",
+    "pattern": "appear + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Có vẻ, dường như làm gì (= seem to V)",
+    "formula": "S + appear + to V",
+    "trapAlert": "⚠️ 'He appears to know the answer'. Không dùng V-ing.",
+    "exampleEn": "The new operating system appears to run noticeably faster on older hardware.",
+    "exampleVi": "Hệ điều hành mới dường như chạy nhanh hơn rõ rệt trên phần cứng đời cũ.",
+    "cefr": "B2",
+    "keywords": [
+      "appear",
+      "seem",
+      "run",
+      "hardware",
+      "performance"
+    ]
+  },
+  {
+    "id": "arrange-tov",
+    "pattern": "arrange + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Sắp xếp, thu xếp để làm gì",
+    "formula": "S + arrange + to V",
+    "trapAlert": "⚠️ Bẫy đề thi: 'arrange to meet' (thu xếp gặp), không chọn V-ing.",
+    "exampleEn": "The diplomatic team arranged to hold bilateral trade talks behind closed doors.",
+    "exampleVi": "Đội ngũ ngoại giao đã thu xếp tổ chức các cuộc đàm phán thương mại song phương sau cánh cửa đóng kín.",
+    "cefr": "B1",
+    "keywords": [
+      "arrange",
+      "hold",
+      "talks",
+      "diplomatic",
+      "meeting"
+    ]
+  },
+  {
+    "id": "attempt-tov",
+    "pattern": "attempt + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Nỗ lực, thử sức làm việc gì khó khăn",
+    "formula": "S + attempt + to V",
+    "trapAlert": "⚠️ Tương tự 'try to V', nỗ lực hết mình.",
+    "exampleEn": "Rescue crews attempted to reach the stranded mountaineers before nightfall.",
+    "exampleVi": "Các đội cứu hộ đã nỗ lực tiếp cận những người leo núi bị mắc kẹt trước khi màn đêm buông xuống.",
+    "cefr": "B2",
+    "keywords": [
+      "attempt",
+      "reach",
+      "rescue",
+      "effort",
+      "mountaineers"
+    ]
+  },
+  {
+    "id": "ask-tov",
+    "pattern": "ask + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Xin phép, yêu cầu được làm gì",
+    "formula": "S + ask + to V",
+    "trapAlert": "⚠️ 'She asked to leave early' (Cô ấy xin được về sớm).",
+    "exampleEn": "The lead auditor asked to inspect the physical server racks in person.",
+    "exampleVi": "Trưởng đoàn kiểm toán đã yêu cầu được trực tiếp kiểm tra các tủ máy chủ vật lý.",
+    "cefr": "A2",
+    "keywords": [
+      "ask",
+      "inspect",
+      "auditor",
+      "request",
+      "server"
+    ]
+  },
+  {
+    "id": "claim-tov",
+    "pattern": "claim + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Tuyên bố, tự nhận là làm được gì",
+    "formula": "S + claim + to V / to have V3/ed",
+    "trapAlert": "⚠️ Thường gặp: 'claim to have invented/discovered'.",
+    "exampleEn": "The startup claims to offer the highest data encryption standards on the market.",
+    "exampleVi": "Công ty khởi nghiệp tuyên bố cung cấp các tiêu chuẩn mã hóa dữ liệu cao nhất trên thị trường.",
+    "cefr": "B2",
+    "keywords": [
+      "claim",
+      "offer",
+      "encryption",
+      "startup",
+      "standards"
+    ]
+  },
+  {
+    "id": "choose-tov",
+    "pattern": "choose + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Lựa chọn, quyết định làm gì",
+    "formula": "S + choose + to V",
+    "trapAlert": "⚠️ 'Choose to do sth' (quyết định làm gì sau khi cân nhắc lựa chọn).",
+    "exampleEn": "Many prospective homebuyers choose to invest in suburban properties.",
+    "exampleVi": "Nhiều người mua nhà tiềm năng lựa chọn đầu tư vào các bất động sản vùng ngoại ô.",
+    "cefr": "A2",
+    "keywords": [
+      "choose",
+      "invest",
+      "properties",
+      "choice",
+      "homebuyers"
+    ]
+  },
+  {
+    "id": "decide-tov",
+    "pattern": "decide + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Quyết định làm gì",
+    "formula": "S + decide + to V",
+    "trapAlert": "⚠️ Động từ hướng tới tương lai: 'decide to accept/launch'. Không dùng V-ing.",
+    "exampleEn": "After comprehensive market research, they decided to launch the app in Japan first.",
+    "exampleVi": "Sau khi nghiên cứu thị trường toàn diện, họ đã quyết định ra mắt ứng dụng tại Nhật Bản trước tiên.",
+    "cefr": "A2",
+    "keywords": [
+      "decide",
+      "launch",
+      "decision",
+      "research",
+      "market"
+    ]
+  },
+  {
+    "id": "demand-tov",
+    "pattern": "demand + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Đòi hỏi, yêu sách được làm gì",
+    "formula": "S + demand + to V",
+    "trapAlert": "⚠️ 'He demanded to speak with the manager' -> Luôn là To-V.",
+    "exampleEn": "The dissatisfied customer demanded to see the general store manager immediately.",
+    "exampleVi": "Vị khách hàng bất mãn đã đòi gặp người quản lý tổng cửa hàng ngay lập tức.",
+    "cefr": "B2",
+    "keywords": [
+      "demand",
+      "see",
+      "customer",
+      "manager",
+      "complaint"
+    ]
+  },
+  {
+    "id": "deserve-tov",
+    "pattern": "deserve + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Xứng đáng được nhận/làm việc gì",
+    "formula": "S + deserve + to V / to be V3/ed",
+    "trapAlert": "⚠️ 'Deserve to win', 'deserve to be promoted'.",
+    "exampleEn": "Every diligent employee deserves to receive equitable pay and proper recognition.",
+    "exampleVi": "Mỗi nhân viên chăm chỉ đều xứng đáng nhận được mức lương công bằng và sự ghi nhận xứng đáng.",
+    "cefr": "B1",
+    "keywords": [
+      "deserve",
+      "receive",
+      "employee",
+      "recognition",
+      "pay"
+    ]
+  },
+  {
+    "id": "expect-tov",
+    "pattern": "expect + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Kỳ vọng, trông đợi làm được việc gì",
+    "formula": "S + expect + to V",
+    "trapAlert": "⚠️ Khác với 'anticipate + V-ing', 'expect' đi kèm To-infinitive.",
+    "exampleEn": "The logistics director expects to double warehouse shipping capacity by year-end.",
+    "exampleVi": "Giám đốc logistics kỳ vọng tăng gấp đôi năng lực vận chuyển của kho vào cuối năm.",
+    "cefr": "B1",
+    "keywords": [
+      "expect",
+      "double",
+      "shipping",
+      "warehouse",
+      "capacity"
+    ]
+  },
+  {
+    "id": "fail-tov",
+    "pattern": "fail + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Thất bại, không làm được việc gì",
+    "formula": "S + fail + to V",
+    "trapAlert": "⚠️ Mang sắc thái 'không làm được': 'He failed to pass the exam'. Không chọn V-ing.",
+    "exampleEn": "The contractor failed to deliver the construction supplies by the agreed deadline.",
+    "exampleVi": "Nhà thầu đã không giao được các vật tư xây dựng trước thời hạn đã thỏa thuận.",
+    "cefr": "B1",
+    "keywords": [
+      "fail",
+      "deliver",
+      "contractor",
+      "deadline",
+      "supplies"
+    ]
+  },
+  {
+    "id": "hesitate-tov",
+    "pattern": "hesitate + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Ngần ngại, do dự khi làm gì",
+    "formula": "S + hesitate + to V (thường: Don't hesitate to V)",
+    "trapAlert": "⚠️ Câu kết thư tín TOEIC: 'Please do not hesitate to contact us'. Luôn là To-V!",
+    "exampleEn": "Please do not hesitate to reach out if you require further technical assistance.",
+    "exampleVi": "Xin vui lòng đừng ngần ngại liên hệ nếu bạn cần thêm sự hỗ trợ kỹ thuật.",
+    "cefr": "B1",
+    "keywords": [
+      "hesitate",
+      "reach out",
+      "contact",
+      "support",
+      "email"
+    ]
+  },
+  {
+    "id": "hope-tov",
+    "pattern": "hope + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Hi vọng, mong ước làm được việc gì",
+    "formula": "S + hope + to V",
+    "trapAlert": "⚠️ Bắt buộc đi với To-V (*hope to see you soon*).",
+    "exampleEn": "The environmental research institute hopes to secure state funding for clean water projects.",
+    "exampleVi": "Viện nghiên cứu môi trường hi vọng sẽ bảo đảm được nguồn tài trợ của nhà nước cho các dự án nước sạch.",
+    "cefr": "A2",
+    "keywords": [
+      "hope",
+      "secure",
+      "funding",
+      "institute",
+      "future"
+    ]
+  },
+  {
+    "id": "intend-tov",
+    "pattern": "intend + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Có ý định, dự định làm gì",
+    "formula": "S + intend + to V (hoặc intend + V-ing)",
+    "trapAlert": "⚠️ Dạng phổ biến nhất trong văn bản trang trọng là 'intend to V'.",
+    "exampleEn": "The mayor intends to revitalize the historical downtown district over the next three years.",
+    "exampleVi": "Thị trưởng có ý định hồi sinh khu trung tâm lịch sử trong vòng ba năm tới.",
+    "cefr": "B1",
+    "keywords": [
+      "intend",
+      "revitalize",
+      "downtown",
+      "intention",
+      "plan"
+    ]
+  },
+  {
+    "id": "learn-tov",
+    "pattern": "learn + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Học cách làm việc gì",
+    "formula": "S + learn + to V / learn how to V",
+    "trapAlert": "⚠️ 'Learn to drive / learn to code'.",
+    "exampleEn": "New hires quickly learned to navigate the proprietary database system.",
+    "exampleVi": "Các nhân viên mới đã nhanh chóng học được cách thao tác trên hệ thống cơ sở dữ liệu độc quyền.",
+    "cefr": "A1",
+    "keywords": [
+      "learn",
+      "navigate",
+      "skills",
+      "database",
+      "training"
+    ]
+  },
+  {
+    "id": "manage-tov",
+    "pattern": "manage + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Xoay xở, giải quyết thành công việc gì khó khăn",
+    "formula": "S + manage + to V",
+    "trapAlert": "⚠️ Khác với 'manage a team' (quản lý đội ngũ), 'manage to V' mang nghĩa vượt khó thành công.",
+    "exampleEn": "Despite severe supply chain disruptions, the plant managed to fulfill all customer orders.",
+    "exampleVi": "Bất chấp sự gián đoạn chuỗi cung ứng nghiêm trọng, nhà máy đã xoay xở hoàn thành tất cả các đơn hàng của khách.",
+    "cefr": "B1",
+    "keywords": [
+      "manage",
+      "fulfill",
+      "orders",
+      "supply chain",
+      "succeed"
+    ]
+  },
+  {
+    "id": "neglect-tov",
+    "pattern": "neglect + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Sao lãng, lơ là không làm việc gì",
+    "formula": "S + neglect + to V",
+    "trapAlert": "⚠️ 'Neglect to mention/check' = bỏ sót không kiểm tra.",
+    "exampleEn": "The inspector neglected to verify the emergency exit safety locks.",
+    "exampleVi": "Thanh tra viên đã lơ là không kiểm tra các khóa an toàn của lối thoát hiểm khẩn cấp.",
+    "cefr": "B2",
+    "keywords": [
+      "neglect",
+      "verify",
+      "locks",
+      "safety",
+      "careless"
+    ]
+  },
+  {
+    "id": "offer-tov",
+    "pattern": "offer + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Tự nguyện đề nghị giúp làm việc gì",
+    "formula": "S + offer + to V",
+    "trapAlert": "⚠️ 'He offered to drive me home' -> Bắt buộc là To-V.",
+    "exampleEn": "The senior architect generously offered to mentor junior designers during the internship.",
+    "exampleVi": "Kiến trúc sư trưởng đã hào phóng đề nghị cố vấn cho các nhà thiết kế trẻ trong suốt kỳ thực tập.",
+    "cefr": "B1",
+    "keywords": [
+      "offer",
+      "mentor",
+      "internship",
+      "architect",
+      "help"
+    ]
+  },
+  {
+    "id": "plan-tov",
+    "pattern": "plan + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Lên kế hoạch làm việc gì",
+    "formula": "S + plan + to V (hoặc plan on + V-ing)",
+    "trapAlert": "⚠️ Khi dùng trực tiếp: 'plan to launch / plan to visit'. Luôn dùng To-V.",
+    "exampleEn": "The retail chain plans to open twenty new convenience outlets across the region.",
+    "exampleVi": "Chuỗi bán lẻ lên kế hoạch mở 20 cửa hàng tiện lợi mới trên khắp khu vực.",
+    "cefr": "A2",
+    "keywords": [
+      "plan",
+      "open",
+      "outlets",
+      "retail",
+      "strategy"
+    ]
+  },
+  {
+    "id": "prepare-tov",
+    "pattern": "prepare + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Chuẩn bị sẵn sàng làm gì",
+    "formula": "S + prepare + to V",
+    "trapAlert": "⚠️ 'Prepare to board the flight / prepare to defend'.",
+    "exampleEn": "Legal counsels are preparing to defend the trademark patent in federal court.",
+    "exampleVi": "Các cố vấn pháp lý đang chuẩn bị bảo vệ bằng sáng chế nhãn hiệu tại tòa án liên bang.",
+    "cefr": "B1",
+    "keywords": [
+      "prepare",
+      "defend",
+      "patent",
+      "court",
+      "legal"
+    ]
+  },
+  {
+    "id": "pretend-tov",
+    "pattern": "pretend + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Giả vờ, làm ra vẻ như làm gì",
+    "formula": "S + pretend + to V / to be V-ing",
+    "trapAlert": "⚠️ 'He pretended not to hear me'.",
+    "exampleEn": "The clerk pretended to be busy with paperwork whenever the supervisor walked past.",
+    "exampleVi": "Anh nhân viên giả vờ bận rộn với giấy tờ mỗi khi người giám sát bước ngang qua.",
+    "cefr": "B1",
+    "keywords": [
+      "pretend",
+      "feign",
+      "supervisor",
+      "paperwork"
+    ]
+  },
+  {
+    "id": "promise-tov",
+    "pattern": "promise + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Hứa hẹn sẽ làm việc gì",
+    "formula": "S + promise + to V",
+    "trapAlert": "⚠️ Lời hứa cam kết: 'promise to deliver/repay'.",
+    "exampleEn": "The software vendor promised to deliver the security patch within twenty-four hours.",
+    "exampleVi": "Nhà cung cấp phần mềm đã hứa sẽ phân phối bản vá bảo mật trong vòng 24 giờ.",
+    "cefr": "A2",
+    "keywords": [
+      "promise",
+      "deliver",
+      "patch",
+      "vendor",
+      "commitment"
+    ]
+  },
+  {
+    "id": "refuse-tov",
+    "pattern": "refuse + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Từ chối, khước từ làm việc gì",
+    "formula": "S + refuse + to V",
+    "trapAlert": "⚠️ 'Refuse to cooperate' (Từ chối hợp tác). Không bao giờ dùng V-ing.",
+    "exampleEn": "The union leaders refused to accept the revised pension proposal.",
+    "exampleVi": "Các lãnh đạo công đoàn đã từ chối chấp nhận đề xuất lương hưu đã sửa đổi.",
+    "cefr": "B1",
+    "keywords": [
+      "refuse",
+      "accept",
+      "pension",
+      "union",
+      "reject"
+    ]
+  },
+  {
+    "id": "resolve-tov",
+    "pattern": "resolve + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Quyết tâm, kiên quyết làm việc gì",
+    "formula": "S + resolve + to V",
+    "trapAlert": "⚠️ Thể hiện quyết tâm mãnh liệt trong nghị quyết/kế hoạch lớn.",
+    "exampleEn": "Shareholders resolved to elect an independent oversight auditor at the general assembly.",
+    "exampleVi": "Các cổ đông đã quyết tâm bầu ra một kiểm toán viên giám sát độc lập tại đại hội đồng.",
+    "cefr": "B2",
+    "keywords": [
+      "resolve",
+      "elect",
+      "shareholders",
+      "resolution",
+      "assembly"
+    ]
+  },
+  {
+    "id": "seem-tov",
+    "pattern": "seem + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Dường như, có vẻ như làm gì",
+    "formula": "S + seem + to V",
+    "trapAlert": "⚠️ 'It seems to work fine' -> Luôn là To-V.",
+    "exampleEn": "The ongoing inflation measures seem to stabilize food commodities across markets.",
+    "exampleVi": "Các biện pháp kiềm chế lạm phát hiện tại dường như đang bình ổn giá các mặt hàng lương thực trên khắp các thị trường.",
+    "cefr": "A2",
+    "keywords": [
+      "seem",
+      "stabilize",
+      "inflation",
+      "markets",
+      "appear"
+    ]
+  },
+  {
+    "id": "struggle-tov",
+    "pattern": "struggle + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Vật lộn, gặp muôn vàn khó khăn khi làm gì",
+    "formula": "S + struggle + to V",
+    "trapAlert": "⚠️ 'Struggle to cope / struggle to survive'. Không dùng V-ing.",
+    "exampleEn": "Small local businesses struggled to survive during the prolonged economic lockdown.",
+    "exampleVi": "Các doanh nghiệp nhỏ tại địa phương đã phải vật lộn để sinh tồn trong suốt giai đoạn phong tỏa kinh tế kéo dài.",
+    "cefr": "B1",
+    "keywords": [
+      "struggle",
+      "survive",
+      "lockdown",
+      "businesses",
+      "hardship"
+    ]
+  },
+  {
+    "id": "tend-tov",
+    "pattern": "tend + to V",
+    "category": "to-v",
+    "categoryLabel": "⚡ Động từ + To-V (Infinitive)",
+    "categoryBadgeColor": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    "meaningVi": "Có xu hướng, thường làm việc gì",
+    "formula": "S + tend + to V",
+    "trapAlert": "⚠️ Bẫy đề thi Part 5: 'tend to underestimate costs'. Luôn chọn To-V.",
+    "exampleEn": "First-time entrepreneurs often tend to underestimate initial operational expenses.",
+    "exampleVi": "Những người khởi nghiệp lần đầu thường có xu hướng đánh giá thấp các chi phí vận hành ban đầu.",
+    "cefr": "B1",
+    "keywords": [
+      "tend",
+      "underestimate",
+      "expenses",
+      "entrepreneurs",
+      "trend"
+    ]
+  },
+  {
+    "id": "advise-obj-tov",
+    "pattern": "advise sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Khuyên bảo ai đó nên làm việc gì",
+    "formula": "S + advise + sb + to V (Nếu không có sb: advise + V-ing)",
+    "trapAlert": "⚠️ BẪY SO SÁNH: Có tân ngữ người -> 'advise HIM TO V'. Không có tân ngữ -> 'advise V-ING'!",
+    "exampleEn": "Financial planners strongly advised him to diversify his investment portfolio.",
+    "exampleVi": "Các nhà hoạch định tài chính đã nhiệt liệt khuyên anh ấy nên đa dạng hóa danh mục đầu tư của mình.",
+    "cefr": "B1",
+    "keywords": [
+      "advise",
+      "diversify",
+      "portfolio",
+      "recommend",
+      "counsel"
+    ]
+  },
+  {
+    "id": "allow-obj-tov",
+    "pattern": "allow sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Cho phép ai đó được làm việc gì",
+    "formula": "S + allow + sb + to V (Bị động: sb be allowed to V)",
+    "trapAlert": "⚠️ Tương tự advise: 'allow sb to V' nhưng 'allow V-ing' nếu không nhắc đến tân ngữ chỉ người.",
+    "exampleEn": "The new flexible policy allows employees to work remotely two days per week.",
+    "exampleVi": "Chính sách linh hoạt mới cho phép nhân viên làm việc từ xa hai ngày mỗi tuần.",
+    "cefr": "B1",
+    "keywords": [
+      "allow",
+      "permit",
+      "remotely",
+      "policy",
+      "permission"
+    ]
+  },
+  {
+    "id": "beg-obj-tov",
+    "pattern": "beg sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Cầu xin, nài nỉ ai làm việc gì",
+    "formula": "S + beg + sb + to V",
+    "trapAlert": "⚠️ 'Beg him to stay' -> Luôn đi với To-V.",
+    "exampleEn": "The refugees begged authorities to grant them temporary humanitarian shelter.",
+    "exampleVi": "Những người tị nạn đã cầu xin các nhà chức trách cấp cho họ nơi trú ẩn nhân đạo tạm thời.",
+    "cefr": "B2",
+    "keywords": [
+      "beg",
+      "grant",
+      "shelter",
+      "refugees",
+      "plead"
+    ]
+  },
+  {
+    "id": "cause-obj-tov",
+    "pattern": "cause sb / sth + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Gây ra, khiến cho ai/cái gì phải làm gì",
+    "formula": "S + cause + sb/sth + to V",
+    "trapAlert": "⚠️ Nguyên nhân - kết quả: 'The storm caused power lines to collapse'.",
+    "exampleEn": "Severe currency fluctuations caused import prices to surge unexpectedly.",
+    "exampleVi": "Sự biến động tiền tệ nghiêm trọng đã khiến cho giá hàng nhập khẩu tăng vọt ngoài dự kiến.",
+    "cefr": "B2",
+    "keywords": [
+      "cause",
+      "surge",
+      "prices",
+      "fluctuations",
+      "currency"
+    ]
+  },
+  {
+    "id": "convince-obj-tov",
+    "pattern": "convince sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Thuyết phục ai đó làm việc gì",
+    "formula": "S + convince + sb + to V",
+    "trapAlert": "⚠️ Phải có tân ngữ người: 'convince sb to invest/join'.",
+    "exampleEn": "The pitch deck successfully convinced venture capitalists to fund the green biotech venture.",
+    "exampleVi": "Bản thuyết trình gọi vốn đã thuyết phục thành công các nhà đầu tư mạo hiểm rót vốn cho dự án công nghệ sinh học xanh.",
+    "cefr": "B2",
+    "keywords": [
+      "convince",
+      "fund",
+      "venture",
+      "persuade",
+      "investors"
+    ]
+  },
+  {
+    "id": "enable-obj-tov",
+    "pattern": "enable sb / sth + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Tạo điều kiện, giúp cho ai/cái gì có thể làm được gì",
+    "formula": "S + enable + sb/sth + to V",
+    "trapAlert": "⚠️ Từ vựng kinh điển trong các bài viết về công nghệ và tính năng sản phẩm: 'enable users to access'.",
+    "exampleEn": "Cloud infrastructure enables distributed teams to collaborate seamlessly across time zones.",
+    "exampleVi": "Cơ sở hạ tầng đám mây cho phép các đội ngũ phân tán cộng tác liền mạch qua các múi giờ.",
+    "cefr": "B2",
+    "keywords": [
+      "enable",
+      "collaborate",
+      "cloud",
+      "teams",
+      "empower"
+    ]
+  },
+  {
+    "id": "encourage-obj-tov",
+    "pattern": "encourage sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Khuyến khích, động viên ai làm gì",
+    "formula": "S + encourage + sb + to V (Nếu không có tân ngữ: encourage + V-ing)",
+    "trapAlert": "⚠️ Bị động: 'Employees are encouraged to submit innovative ideas'.",
+    "exampleEn": "Team leads encourage all associates to pursue professional certifications on company time.",
+    "exampleVi": "Các trưởng nhóm khuyến khích tất cả cộng sự theo đuổi các chứng chỉ chuyên môn trong giờ làm việc của công ty.",
+    "cefr": "B1",
+    "keywords": [
+      "encourage",
+      "pursue",
+      "certifications",
+      "associates",
+      "motivate"
+    ]
+  },
+  {
+    "id": "expect-obj-tov",
+    "pattern": "expect sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Kỳ vọng, đòi hỏi ai đó làm việc gì",
+    "formula": "S + expect + sb + to V",
+    "trapAlert": "⚠️ Bị động: 'You are expected to arrive punctually'.",
+    "exampleEn": "The department head expects all staff members to submit weekly status briefs every Friday.",
+    "exampleVi": "Trưởng phòng kỳ vọng tất cả nhân viên sẽ nộp bản tóm tắt tình hình hàng tuần vào mỗi thứ Sáu.",
+    "cefr": "B1",
+    "keywords": [
+      "expect",
+      "submit",
+      "briefs",
+      "punctual",
+      "manager"
+    ]
+  },
+  {
+    "id": "forbid-obj-tov",
+    "pattern": "forbid sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Cấm đoán, nghiêm cấm ai làm việc gì",
+    "formula": "S + forbid + sb + to V (hoặc forbid sb from V-ing)",
+    "trapAlert": "⚠️ Dạng chuẩn Oxford: 'forbid sb to do sth'. Quá khứ: forbade / forbidden.",
+    "exampleEn": "Company privacy guidelines strictly forbid staff to disclose proprietary source code.",
+    "exampleVi": "Các hướng dẫn bảo mật của công ty nghiêm cấm nhân viên tiết lộ mã nguồn độc quyền.",
+    "cefr": "B2",
+    "keywords": [
+      "forbid",
+      "disclose",
+      "code",
+      "guidelines",
+      "prohibit"
+    ]
+  },
+  {
+    "id": "force-obj-tov",
+    "pattern": "force sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Bắt buộc, cưỡng ép ai phải làm gì",
+    "formula": "S + force + sb + to V",
+    "trapAlert": "⚠️ Bị động: 'sb be forced to V' (= compelled to V).",
+    "exampleEn": "Budget reductions forced the healthcare provider to scale back community outreach programs.",
+    "exampleVi": "Việc cắt giảm ngân sách đã buộc nhà cung cấp dịch vụ y tế phải thu hẹp các chương trình tiếp cận cộng đồng.",
+    "cefr": "B1",
+    "keywords": [
+      "force",
+      "scale back",
+      "budget",
+      "compel",
+      "healthcare"
+    ]
+  },
+  {
+    "id": "hire-obj-tov",
+    "pattern": "hire sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Thuê ai đó để làm một nhiệm vụ cụ thể",
+    "formula": "S + hire + sb + to V",
+    "trapAlert": "⚠️ Mục đích tuyển dụng: hire a consultant to analyze...",
+    "exampleEn": "The retail enterprise hired an outside agency to revamp its e-commerce brand identity.",
+    "exampleVi": "Doanh nghiệp bán lẻ đã thuê một công ty bên ngoài để cải tổ lại bộ nhận diện thương hiệu thương mại điện tử của mình.",
+    "cefr": "B1",
+    "keywords": [
+      "hire",
+      "revamp",
+      "agency",
+      "brand",
+      "consultant"
+    ]
+  },
+  {
+    "id": "instruct-obj-tov",
+    "pattern": "instruct sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Chỉ thị, hướng dẫn ai làm việc gì",
+    "formula": "S + instruct + sb + to V",
+    "trapAlert": "⚠️ Chỉ thị mệnh lệnh trang trọng: 'instruct passengers to fasten seatbelts'.",
+    "exampleEn": "Flight attendants instructed passengers to keep their seatbelts securely fastened.",
+    "exampleVi": "Các tiếp viên hàng không đã hướng dẫn hành khách giữ dây an toàn thắt chặt.",
+    "cefr": "B2",
+    "keywords": [
+      "instruct",
+      "fasten",
+      "passengers",
+      "direct",
+      "command"
+    ]
+  },
+  {
+    "id": "invite-obj-tov",
+    "pattern": "invite sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Mời ai đó làm việc gì",
+    "formula": "S + invite + sb + to V",
+    "trapAlert": "⚠️ Trong các thông báo hội thảo: 'You are cordially invited to attend'.",
+    "exampleEn": "The conference committee invited distinguished scholars to submit research papers.",
+    "exampleVi": "Hội đồng hội nghị đã mời các học giả xuất sắc nộp các bài báo nghiên cứu.",
+    "cefr": "B1",
+    "keywords": [
+      "invite",
+      "submit",
+      "scholars",
+      "conference",
+      "papers"
+    ]
+  },
+  {
+    "id": "order-obj-tov",
+    "pattern": "order sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Ra lệnh, yêu cầu ai làm việc gì",
+    "formula": "S + order + sb + to V",
+    "trapAlert": "⚠️ Mệnh lệnh quân sự hoặc tư pháp: 'ordered the suspect to surrender'.",
+    "exampleEn": "The presiding judge ordered the defendant to surrender his passport immediately.",
+    "exampleVi": "Thẩm phán chủ tọa phiên tòa đã ra lệnh cho bị cáo nộp lại hộ chiếu ngay lập tức.",
+    "cefr": "B1",
+    "keywords": [
+      "order",
+      "surrender",
+      "judge",
+      "passport",
+      "command"
+    ]
+  },
+  {
+    "id": "permit-obj-tov",
+    "pattern": "permit sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Cho phép ai làm việc gì (trang trọng hơn allow)",
+    "formula": "S + permit + sb + to V (Bị động: sb be permitted to V)",
+    "trapAlert": "⚠️ Bẫy đề thi: Nếu không có tân ngữ người, dùng V-ing (*permit parking*). Có tân ngữ: *permit sb to park*.",
+    "exampleEn": "The security credential permits accredited journalists to enter the parliamentary press gallery.",
+    "exampleVi": "Thẻ an ninh cho phép các nhà báo được công nhận tiến vào khu vực báo chí của quốc hội.",
+    "cefr": "B2",
+    "keywords": [
+      "permit",
+      "enter",
+      "journalists",
+      "credential",
+      "allow"
+    ]
+  },
+  {
+    "id": "persuade-obj-tov",
+    "pattern": "persuade sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Thuyết phục ai làm việc gì",
+    "formula": "S + persuade + sb + to V",
+    "trapAlert": "⚠️ Bắt buộc đi với tân ngữ người + To-V.",
+    "exampleEn": "The seasoned negotiator persuaded both dispute parties to sign the ceasefire accord.",
+    "exampleVi": "Nhà đàm phán lão luyện đã thuyết phục được cả hai bên tranh chấp ký vào hiệp định ngừng bắn.",
+    "cefr": "B2",
+    "keywords": [
+      "persuade",
+      "sign",
+      "negotiator",
+      "accord",
+      "convince"
+    ]
+  },
+  {
+    "id": "remind-obj-tov",
+    "pattern": "remind sb + to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Nhắc nhở ai đó phải làm việc gì",
+    "formula": "S + remind + sb + to V",
+    "trapAlert": "⚠️ 'Remind sb to V' (nhắc ai làm việc). Khác với 'remind sb of sth' (gợi ai nhớ đến cái gì).",
+    "exampleEn": "The automated notification reminded registered users to renew their annual subscription.",
+    "exampleVi": "Thông báo tự động đã nhắc nhở người dùng đã đăng ký gia hạn gói thuê bao hàng năm của họ.",
+    "cefr": "A2",
+    "keywords": [
+      "remind",
+      "renew",
+      "subscription",
+      "notification",
+      "alert"
+    ]
+  },
+  {
+    "id": "warn-obj-tov",
+    "pattern": "warn sb + to V / not to V",
+    "category": "v-obj-tov",
+    "categoryLabel": "👥 Động từ + Tân ngữ + To-V",
+    "categoryBadgeColor": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+    "meaningVi": "Cảnh báo ai đó nên làm gì / không được làm gì",
+    "formula": "S + warn + sb + (not) to V",
+    "trapAlert": "⚠️ Cảnh báo phủ định: 'warn sb not to click'.",
+    "exampleEn": "Cybersecurity advisers warned employees not to click on untrusted email links.",
+    "exampleVi": "Các cố vấn an ninh mạng đã cảnh báo nhân viên không được bấm vào các liên kết email không đáng tin cậy.",
+    "cefr": "B1",
+    "keywords": [
+      "warn",
+      "click",
+      "cybersecurity",
+      "links",
+      "caution"
+    ]
+  },
+  {
+    "id": "insist-on",
+    "pattern": "insist on + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Khăng khăng, kiên quyết đòi làm việc gì",
+    "formula": "S + insist on + V-ing / Noun",
+    "trapAlert": "⚠️ 'Insist' đi với giới từ 'on' + V-ing. (Nếu không có 'on': insist that S + V-bare).",
+    "exampleEn": "He firmly insisted on paying for the entire anniversary dinner.",
+    "exampleVi": "Anh ấy đã kiên quyết khăng khăng đòi trả tiền cho cả bữa tiệc tối kỷ niệm.",
+    "cefr": "B2",
+    "keywords": [
+      "insist on",
+      "paying",
+      "dinner",
+      "demand",
+      "firm"
+    ]
+  },
+  {
+    "id": "succeed-in",
+    "pattern": "succeed in + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Thành công trong việc làm gì",
+    "formula": "S + succeed in + V-ing",
+    "trapAlert": "⚠️ Giới từ của 'succeed' luôn là 'IN' + V-ing. Không dùng 'to V' (*succeeded to pass là SAI*).",
+    "exampleEn": "After months of rigorous preparation, she succeeded in passing the bar examination.",
+    "exampleVi": "Sau nhiều tháng chuẩn bị nghiêm ngặt, cô ấy đã thành công trong việc vượt qua kỳ thi luật sư.",
+    "cefr": "B1",
+    "keywords": [
+      "succeed in",
+      "passing",
+      "examination",
+      "achieve",
+      "bar"
+    ]
+  },
+  {
+    "id": "prevent-from",
+    "pattern": "prevent sb / sth from + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Ngăn cản ai/cái gì không làm được việc gì",
+    "formula": "S + prevent + sb/sth + from + V-ing",
+    "trapAlert": "⚠️ Giới từ bắt buộc là 'from' + V-ing. Cực kỳ phổ biến trong TOEIC.",
+    "exampleEn": "Strict access controls effectively prevent unauthorized users from tampering with data.",
+    "exampleVi": "Các biện pháp kiểm soát truy cập nghiêm ngặt ngăn chặn hiệu quả người dùng không phận sự can thiệp vào dữ liệu.",
+    "cefr": "B1",
+    "keywords": [
+      "prevent from",
+      "tampering",
+      "security",
+      "unauthorized",
+      "data"
+    ]
+  },
+  {
+    "id": "stop-from",
+    "pattern": "stop sb / sth from + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Chặn đứng ai/cái gì khỏi việc làm gì",
+    "formula": "S + stop + sb/sth + (from) + V-ing",
+    "trapAlert": "⚠️ Tương tự prevent from, theo sau là V-ing.",
+    "exampleEn": "Heavy flooding stopped emergency vehicles from accessing the affected village.",
+    "exampleVi": "Lũ lụt nặng nề đã chặn các phương tiện cứu hộ tiếp cận ngôi làng bị ảnh hưởng.",
+    "cefr": "A2",
+    "keywords": [
+      "stop from",
+      "accessing",
+      "flooding",
+      "vehicles",
+      "hinder"
+    ]
+  },
+  {
+    "id": "discourage-from",
+    "pattern": "discourage sb from + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Làm nản lòng, ngăn cản ai không nên làm gì",
+    "formula": "S + discourage + sb + from + V-ing",
+    "trapAlert": "⚠️ Trái nghĩa với 'encourage sb to V', 'discourage' lại đi với 'from + V-ing'!",
+    "exampleEn": "High licensing tariffs discouraged foreign entrepreneurs from setting up subsidiaries.",
+    "exampleVi": "Thuế phí cấp phép cao đã làm nản lòng các doanh nhân nước ngoài thành lập công ty con.",
+    "cefr": "B2",
+    "keywords": [
+      "discourage from",
+      "setting up",
+      "tariffs",
+      "entrepreneurs",
+      "deter"
+    ]
+  },
+  {
+    "id": "protect-from",
+    "pattern": "protect sb / sth from + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Bảo vệ ai/cái gì khỏi nguy cơ bị làm sao",
+    "formula": "S + protect + sb/sth + from + V-ing",
+    "trapAlert": "⚠️ Đi với 'from + V-ing' hoặc danh từ.",
+    "exampleEn": "Robust antivirus software protects workstation networks from being infected by ransomware.",
+    "exampleVi": "Phần mềm diệt virus mạnh mẽ bảo vệ các mạng máy trạm khỏi việc bị lây nhiễm mã độc tống tiền.",
+    "cefr": "B1",
+    "keywords": [
+      "protect from",
+      "infected",
+      "antivirus",
+      "ransomware",
+      "security"
+    ]
+  },
+  {
+    "id": "prohibit-from",
+    "pattern": "prohibit sb from + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Nghiêm cấm theo luật/quy định ai làm việc gì",
+    "formula": "S + prohibit + sb + from + V-ing",
+    "trapAlert": "⚠️ 'Forbid sb to V' nhưng 'prohibit sb from V-ing'!",
+    "exampleEn": "Federal environmental statutes prohibit factories from discharging untreated waste into rivers.",
+    "exampleVi": "Các đạo luật môi trường liên bang nghiêm cấm các nhà máy xả chất thải chưa qua xử lý vào các con sông.",
+    "cefr": "B2",
+    "keywords": [
+      "prohibit from",
+      "discharging",
+      "factories",
+      "statutes",
+      "waste"
+    ]
+  },
+  {
+    "id": "apologize-for",
+    "pattern": "apologize (to sb) for + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Xin lỗi ai vì đã làm việc gì",
+    "formula": "S + apologize (to sb) for + V-ing",
+    "trapAlert": "⚠️ Lưu ý: apologize TO somebody FOR doing something.",
+    "exampleEn": "The airline management formally apologized to passengers for canceling the flight without warning.",
+    "exampleVi": "Ban quản lý hãng hàng không đã chính thức xin lỗi hành khách vì đã hủy chuyến bay mà không báo trước.",
+    "cefr": "A2",
+    "keywords": [
+      "apologize for",
+      "canceling",
+      "passengers",
+      "flight",
+      "sorry"
+    ]
+  },
+  {
+    "id": "thank-for",
+    "pattern": "thank sb for + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Cảm ơn ai đó vì đã làm việc gì",
+    "formula": "S + thank + sb + for + V-ing",
+    "trapAlert": "⚠️ 'Thank you for attending/helping' -> Luôn là V-ing.",
+    "exampleEn": "We would like to thank our key stakeholders for supporting the acquisition bid.",
+    "exampleVi": "Chúng tôi muốn gửi lời cảm ơn các bên liên quan chủ chốt vì đã ủng hộ nỗ lực chào mua thâu tóm.",
+    "cefr": "A1",
+    "keywords": [
+      "thank for",
+      "supporting",
+      "stakeholders",
+      "gratitude",
+      "acquisition"
+    ]
+  },
+  {
+    "id": "blame-for",
+    "pattern": "blame sb for + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Đổ lỗi, quy trách nhiệm cho ai vì đã làm gì",
+    "formula": "S + blame + sb + for + V-ing",
+    "trapAlert": "⚠️ 'Blame sb for doing sth' hoặc 'blame sth on sb'.",
+    "exampleEn": "The committee blamed the project lead for mismanaging the operational budget.",
+    "exampleVi": "Ủy ban đã đổ lỗi cho trưởng dự án vì quản lý yếu kém ngân sách vận hành.",
+    "cefr": "B1",
+    "keywords": [
+      "blame for",
+      "mismanaging",
+      "budget",
+      "fault",
+      "committee"
+    ]
+  },
+  {
+    "id": "praise-for",
+    "pattern": "praise sb for + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Tuyên dương, khen ngợi ai vì đã làm việc gì tốt",
+    "formula": "S + praise + sb + for + V-ing",
+    "trapAlert": "⚠️ Sau giới từ 'for' luôn là V-ing.",
+    "exampleEn": "The mayor publicly praised emergency responders for displaying exceptional courage.",
+    "exampleVi": "Thị trưởng đã công khai tuyên dương các nhân viên cứu hộ vì đã thể hiện lòng dũng cảm phi thường.",
+    "cefr": "B2",
+    "keywords": [
+      "praise for",
+      "displaying",
+      "courage",
+      "responders",
+      "commend"
+    ]
+  },
+  {
+    "id": "congratulate-on",
+    "pattern": "congratulate sb on + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Chúc mừng ai nhân dịp/vì việc gì",
+    "formula": "S + congratulate + sb + on + V-ing",
+    "trapAlert": "⚠️ BẪY GIỚI TỪ KINH ĐIỂN: 'Congratulate sb ON' (KHÔNG DÙNG for). Theo sau là V-ing!",
+    "exampleEn": "Colleagues gathered to congratulate Dr. Harris on winning the distinguished chemistry award.",
+    "exampleVi": "Các đồng nghiệp đã tụ họp để chúc mừng Tiến sĩ Harris vì đã giành được giải thưởng hóa học danh giá.",
+    "cefr": "B1",
+    "keywords": [
+      "congratulate on",
+      "winning",
+      "award",
+      "celebrate",
+      "chemistry"
+    ]
+  },
+  {
+    "id": "accuse-of",
+    "pattern": "accuse sb of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Buộc tội, cáo buộc ai đã làm gì",
+    "formula": "S + accuse + sb + of + V-ing",
+    "trapAlert": "⚠️ Giới từ bắt buộc là 'of'. Bị động: 'be accused of V-ing'.",
+    "exampleEn": "The former executive was formally accused of insider trading by financial regulators.",
+    "exampleVi": "Cựu giám đốc điều hành đã bị các cơ quan quản lý tài chính chính thức cáo buộc giao dịch nội gián.",
+    "cefr": "B2",
+    "keywords": [
+      "accuse of",
+      "insider trading",
+      "regulators",
+      "charge",
+      "crime"
+    ]
+  },
+  {
+    "id": "suspect-of",
+    "pattern": "suspect sb of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Nghi ngờ ai đã làm việc gì",
+    "formula": "S + suspect + sb + of + V-ing",
+    "trapAlert": "⚠️ Tương tự accuse of: 'suspect sb of altering records'.",
+    "exampleEn": "Internal audit specialists suspected the bookkeeper of altering transaction invoices.",
+    "exampleVi": "Các chuyên gia kiểm toán nội bộ đã nghi ngờ người kế toán sổ sách làm giả các hóa đơn giao dịch.",
+    "cefr": "B2",
+    "keywords": [
+      "suspect of",
+      "altering",
+      "invoices",
+      "audit",
+      "fraud"
+    ]
+  },
+  {
+    "id": "warn-against",
+    "pattern": "warn sb against + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Cảnh báo ai không nên làm việc gì",
+    "formula": "S + warn + sb + against + V-ing",
+    "trapAlert": "⚠️ 'Warn sb against V-ing' (= warn sb not to V). Giới từ against đi kèm V-ing.",
+    "exampleEn": "Physicians consistently warn patients against relying on unverified medical remedies online.",
+    "exampleVi": "Các bác sĩ luôn cảnh báo bệnh nhân không nên tin vào các bài thuốc y tế chưa kiểm chứng trên mạng.",
+    "cefr": "B2",
+    "keywords": [
+      "warn against",
+      "relying",
+      "remedies",
+      "caution",
+      "online"
+    ]
+  },
+  {
+    "id": "rely-depend-on",
+    "pattern": "rely / depend on + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Phụ thuộc, trông cậy vào việc làm gì",
+    "formula": "S + rely / depend on + V-ing",
+    "trapAlert": "⚠️ Giới từ 'on' luôn nhận V-ing.",
+    "exampleEn": "Modern logistics supply networks heavily rely on forecasting seasonal demand accurately.",
+    "exampleVi": "Các mạng lưới cung ứng logistics hiện đại phụ thuộc rất lớn vào việc dự báo nhu cầu theo mùa một cách chính xác.",
+    "cefr": "B1",
+    "keywords": [
+      "rely on",
+      "depend on",
+      "forecasting",
+      "logistics",
+      "demand"
+    ]
+  },
+  {
+    "id": "believe-in",
+    "pattern": "believe in + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Tin tưởng vào giá trị của việc làm gì",
+    "formula": "S + believe in + V-ing",
+    "trapAlert": "⚠️ Giới từ 'in' + V-ing.",
+    "exampleEn": "Our corporate culture strongly believes in empowering employees at all levels.",
+    "exampleVi": "Văn hóa doanh nghiệp của chúng tôi tin tưởng mạnh mẽ vào việc trao quyền cho nhân viên ở mọi cấp bậc.",
+    "cefr": "B1",
+    "keywords": [
+      "believe in",
+      "empowering",
+      "culture",
+      "trust"
+    ]
+  },
+  {
+    "id": "participate-in",
+    "pattern": "participate in + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Tham gia vào việc làm gì",
+    "formula": "S + participate in + V-ing",
+    "trapAlert": "⚠️ 'Participate in' (= take part in) luôn đi với V-ing.",
+    "exampleEn": "Over two hundred staff members participated in planting trees on Earth Day.",
+    "exampleVi": "Hơn hai trăm nhân viên đã tham gia vào việc trồng cây nhân Ngày Trái Đất.",
+    "cefr": "B1",
+    "keywords": [
+      "participate in",
+      "planting",
+      "earth day",
+      "involvement"
+    ]
+  },
+  {
+    "id": "approve-of",
+    "pattern": "approve of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Tán thành, đồng ý với việc làm gì",
+    "formula": "S + approve of + V-ing",
+    "trapAlert": "⚠️ 'Approve of' đi kèm V-ing. (Trái nghĩa: disapprove of + V-ing).",
+    "exampleEn": "The board did not approve of outsourcing core technical maintenance to external contractors.",
+    "exampleVi": "Hội đồng quản trị đã không tán thành việc thuê ngoài công tác bảo trì kỹ thuật cốt lõi cho các nhà thầu bên ngoài.",
+    "cefr": "B2",
+    "keywords": [
+      "approve of",
+      "outsourcing",
+      "maintenance",
+      "agreement",
+      "board"
+    ]
+  },
+  {
+    "id": "complain-about",
+    "pattern": "complain about + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Phàn nàn, kêu ca về việc gì",
+    "formula": "S + complain about + V-ing",
+    "trapAlert": "⚠️ Giới từ 'about' + V-ing.",
+    "exampleEn": "Hotel guests frequently complained about having to wait for elevator access during rush hours.",
+    "exampleVi": "Khách ở khách sạn thường xuyên phàn nàn về việc phải chờ đợi thang máy vào các giờ cao điểm.",
+    "cefr": "A2",
+    "keywords": [
+      "complain about",
+      "having to",
+      "elevator",
+      "guests",
+      "service"
+    ]
+  },
+  {
+    "id": "be-good-bad-at",
+    "pattern": "be good / bad at + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Giỏi / Dở trong việc làm gì",
+    "formula": "S + be good / bad at + V-ing",
+    "trapAlert": "⚠️ Tính từ chỉ năng khiếu đi với giới từ 'at' + V-ing (*good at problem-solving*).",
+    "exampleEn": "She is exceptionally good at mediating disputes between cross-functional departments.",
+    "exampleVi": "Cô ấy đặc biệt giỏi trong việc hòa giải các tranh chấp giữa các phòng ban đa chức năng.",
+    "cefr": "A2",
+    "keywords": [
+      "good at",
+      "bad at",
+      "mediating",
+      "disputes",
+      "skill"
+    ]
+  },
+  {
+    "id": "be-interested-in",
+    "pattern": "be interested in + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Hứng thú, quan tâm đến việc làm gì",
+    "formula": "S + be interested in + V-ing",
+    "trapAlert": "⚠️ Bẫy: Luôn đi với 'in' + V-ing, không dùng To-V.",
+    "exampleEn": "Many recent college graduates are interested in pursuing software engineering careers.",
+    "exampleVi": "Nhiều sinh viên mới tốt nghiệp đại học rất hứng thú với việc theo đuổi sự nghiệp kỹ thuật phần mềm.",
+    "cefr": "A1",
+    "keywords": [
+      "interested in",
+      "pursuing",
+      "careers",
+      "software",
+      "graduates"
+    ]
+  },
+  {
+    "id": "be-fond-of",
+    "pattern": "be fond of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Rất thích, yêu mến việc làm gì",
+    "formula": "S + be fond of + V-ing",
+    "trapAlert": "⚠️ Giới từ 'of' + V-ing.",
+    "exampleEn": "Grandmother is especially fond of tending to her organic rose garden every morning.",
+    "exampleVi": "Bà đặc biệt yêu thích việc chăm sóc vườn hoa hồng hữu cơ của mình vào mỗi buổi sáng.",
+    "cefr": "B1",
+    "keywords": [
+      "fond of",
+      "tending",
+      "garden",
+      "roses",
+      "hobby"
+    ]
+  },
+  {
+    "id": "be-keen-on",
+    "pattern": "be keen on + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Say mê, hào hứng với việc làm gì",
+    "formula": "S + be keen on + V-ing",
+    "trapAlert": "⚠️ 'Keen on' đi với V-ing (Khác với 'keen to V' - nóng lòng muốn làm gì).",
+    "exampleEn": "The research team is keen on adopting cutting-edge machine learning algorithms.",
+    "exampleVi": "Đội ngũ nghiên cứu rất say mê áp dụng các thuật toán máy học tiên tiến nhất.",
+    "cefr": "B1",
+    "keywords": [
+      "keen on",
+      "adopting",
+      "machine learning",
+      "algorithms",
+      "enthusiastic"
+    ]
+  },
+  {
+    "id": "be-tired-of",
+    "pattern": "be tired of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Mệt mỏi, phát ngán vì phải làm gì liên tục",
+    "formula": "S + be tired of + V-ing",
+    "trapAlert": "⚠️ 'Tired of' mang nghĩa chán ngấy. Giới từ 'of' + V-ing.",
+    "exampleEn": "Subscribers grew tired of receiving unsolicited promotional SMS alerts daily.",
+    "exampleVi": "Các thuê bao đã phát ngán vì việc nhận các tin nhắn quảng cáo không mong muốn hàng ngày.",
+    "cefr": "A2",
+    "keywords": [
+      "tired of",
+      "receiving",
+      "promotional",
+      "annoyed",
+      "spam"
+    ]
+  },
+  {
+    "id": "be-capable-of",
+    "pattern": "be capable of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Có năng lực, có khả năng làm được việc gì",
+    "formula": "S + be capable of + V-ing",
+    "trapAlert": "⚠️ BẪY SO SÁNH: 'able to V' nhưng 'CAPABLE OF + V-ING'!",
+    "exampleEn": "This cutting-edge AI server is capable of processing billions of tokens per minute.",
+    "exampleVi": "Máy chủ AI tiên tiến này có khả năng xử lý hàng tỷ token mỗi phút.",
+    "cefr": "B2",
+    "keywords": [
+      "capable of",
+      "processing",
+      "tokens",
+      "ability",
+      "server"
+    ]
+  },
+  {
+    "id": "be-responsible-for",
+    "pattern": "be responsible for + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Chịu trách nhiệm, phụ trách việc làm gì",
+    "formula": "S + be responsible for + V-ing",
+    "trapAlert": "⚠️ Mô tả công việc (Job Description) trong TOEIC luôn dùng cấu trúc này.",
+    "exampleEn": "The project coordinator is solely responsible for ensuring milestone delivery compliance.",
+    "exampleVi": "Điều phối viên dự án chịu trách nhiệm duy nhất cho việc bảo đảm tuân thủ tiến độ bàn giao các mốc.",
+    "cefr": "B1",
+    "keywords": [
+      "responsible for",
+      "ensuring",
+      "milestones",
+      "compliance",
+      "duty"
+    ]
+  },
+  {
+    "id": "be-famous-for",
+    "pattern": "be famous for + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Nổi tiếng vì đã làm được điều gì / có nét đặc trưng gì",
+    "formula": "S + be famous / renowned for + V-ing",
+    "trapAlert": "⚠️ Giới từ 'for' + V-ing.",
+    "exampleEn": "The coastal bakery is famous for crafting handmade sourdough bread from heirloom grains.",
+    "exampleVi": "Tiệm bánh ven biển nổi tiếng vì chế tác bánh mì bột chua thủ công từ các loại ngũ cốc gia truyền.",
+    "cefr": "A2",
+    "keywords": [
+      "famous for",
+      "crafting",
+      "bakery",
+      "renowned",
+      "bread"
+    ]
+  },
+  {
+    "id": "be-afraid-of",
+    "pattern": "be afraid of / scared of + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Sợ hãi, lo ngại việc gì",
+    "formula": "S + be afraid of / scared of + V-ing",
+    "trapAlert": "⚠️ 'Afraid of making mistakes' -> Bắt buộc là V-ing.",
+    "exampleEn": "Novice public speakers are usually afraid of forgetting their key talking points on stage.",
+    "exampleVi": "Những người mới tập diễn thuyết trước công chúng thường sợ quên các ý chính khi đứng trên sân khấu.",
+    "cefr": "A2",
+    "keywords": [
+      "afraid of",
+      "forgetting",
+      "fear",
+      "stage",
+      "speaking"
+    ]
+  },
+  {
+    "id": "be-excited-about",
+    "pattern": "be excited about + V-ing",
+    "category": "prep-ving",
+    "categoryLabel": "🎯 Giới từ & Tính từ + V-ing",
+    "categoryBadgeColor": "bg-sky-500/10 text-sky-400 border-sky-500/30",
+    "meaningVi": "Hào hứng, phấn khích về việc làm gì",
+    "formula": "S + be excited about + V-ing",
+    "trapAlert": "⚠️ Giới từ 'about' + V-ing.",
+    "exampleEn": "The engineering team is genuinely excited about showcasing the new prototype at the global expo.",
+    "exampleVi": "Đội ngũ kỹ thuật thực sự hào hứng về việc giới thiệu nguyên mẫu mới tại hội chợ triển lãm toàn cầu.",
+    "cefr": "A2",
+    "keywords": [
+      "excited about",
+      "showcasing",
+      "prototype",
+      "expo",
+      "enthusiasm"
+    ]
+  }
+];

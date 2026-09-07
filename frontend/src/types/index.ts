@@ -25,6 +25,11 @@ export interface Word {
   context?: string;
   definition?: string;
   cefr_level?: string;
+  collocations?: string;
+  synonyms?: string;
+  antonyms?: string;
+  phon_uk?: string;
+  phon_us?: string;
   video_id?: string;
   embed_url?: string;
   timestamp_sec?: number;

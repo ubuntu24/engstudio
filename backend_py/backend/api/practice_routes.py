@@ -188,6 +188,66 @@ PRACTICE_SAMPLE_TOPICS = [
         "category": "Học tập & Cuộc sống",
         "original_vi": "Việc học một ngôn ngữ mới đòi hỏi sự kiên trì.",
         "reference_en": "Learning a new language requires patience."
+    },
+    {
+        "id": "topic-vp-1",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Tôi rất mong đợi được gặp lại bạn vào tuần tới.",
+        "reference_en": "I look forward to meeting you again next week."
+    },
+    {
+        "id": "topic-vp-2",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Cô ấy nhanh chóng quen dần với việc sống ở thành phố mới.",
+        "reference_en": "She quickly became accustomed to living in the new city."
+    },
+    {
+        "id": "topic-vp-3",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Anh ấy đã quen với việc thức dậy sớm vào buổi sáng.",
+        "reference_en": "He is used to waking up early in the morning."
+    },
+    {
+        "id": "topic-vp-4",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Trước đây anh ấy từng hút thuốc, nhưng giờ anh ấy đã bỏ rồi.",
+        "reference_en": "He used to smoke, but now he has quit."
+    },
+    {
+        "id": "topic-vp-5",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Họ kịch liệt phản đối việc tăng giá vé máy bay.",
+        "reference_en": "They strongly objected to increasing the airfare prices."
+    },
+    {
+        "id": "topic-vp-6",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Cô ấy khăng khăng đòi trả tiền cho bữa tối hôm nay.",
+        "reference_en": "She insisted on paying for the dinner today."
+    },
+    {
+        "id": "topic-vp-7",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Thời tiết xấu đã ngăn cản chuyến bay cất cánh đúng giờ.",
+        "reference_en": "The bad weather prevented the flight from departing on time."
+    },
+    {
+        "id": "topic-vp-8",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Công ty khởi nghiệp đã thành công trong việc phát triển sản phẩm mới.",
+        "reference_en": "The startup succeeded in developing a new product."
+    },
+    {
+        "id": "topic-vp-9",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Xin đừng quên khóa cửa trước khi rời khỏi văn phòng.",
+        "reference_en": "Please remember to lock the door before leaving the office."
+    },
+    {
+        "id": "topic-vp-10",
+        "category": "Verb Patterns & To + V-ing",
+        "original_vi": "Diễn giả đã dừng lại để uống một ngụm nước rồi tiếp tục.",
+        "reference_en": "The speaker stopped to take a sip of water and then continued."
     }
 ]
 

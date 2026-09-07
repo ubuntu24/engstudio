@@ -3,3 +3,9 @@ __pycache__
 *.pyc
 ai_worker.log
 .env
+scripts/
+data/
+*.db
+*.mp3
+cache_audio/
+web_app/

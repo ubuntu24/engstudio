@@ -45,9 +45,18 @@ if (isPostgres) {
       await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS last_flashcard_date TEXT;');
       await pool.query('CREATE TABLE IF NOT EXISTS user_badges (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, badge_id TEXT NOT NULL, earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(user_id, badge_id));');
 
+      // Oxford Schema updates
+      await pool.query("ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS cefr_level TEXT DEFAULT '';");
+      await pool.query("ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS collocations TEXT DEFAULT '';");
+      await pool.query("ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS synonyms TEXT DEFAULT '';");
+      await pool.query("ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS antonyms TEXT DEFAULT '';");
+      await pool.query("ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS phon_uk TEXT DEFAULT '';");
+      await pool.query("ALTER TABLE vocabulary ADD COLUMN IF NOT EXISTS phon_us TEXT DEFAULT '';");
+
       // Supabase Postgres Best Practice: Indexes for high-frequency queries
       await pool.query('CREATE INDEX IF NOT EXISTS idx_vocab_topic ON vocabulary(topic);');
       await pool.query('CREATE INDEX IF NOT EXISTS idx_vocab_word ON vocabulary(word);');
+      await pool.query('CREATE INDEX IF NOT EXISTS idx_vocab_cefr ON vocabulary(cefr_level);');
       await pool.query('CREATE INDEX IF NOT EXISTS idx_lp_user_due ON learning_progress(user_id, due_date);');
       await pool.query('CREATE INDEX IF NOT EXISTS idx_lp_user_status ON learning_progress(user_id, status);');
       await pool.query('CREATE INDEX IF NOT EXISTS idx_lp_user_word ON learning_progress(user_id, word_id);');
@@ -109,6 +118,12 @@ if (isPostgres) {
         pos TEXT DEFAULT '',
         example_vi TEXT DEFAULT '',
         topic TEXT DEFAULT 'Giao tiếp hàng ngày',
+        cefr_level TEXT DEFAULT '',
+        collocations TEXT DEFAULT '',
+        synonyms TEXT DEFAULT '',
+        antonyms TEXT DEFAULT '',
+        phon_uk TEXT DEFAULT '',
+        phon_us TEXT DEFAULT '',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -173,6 +188,9 @@ if (isPostgres) {
     // Alter table if they already exist
     try { sqliteDb.run("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0;"); } catch (_) {}
     try { sqliteDb.run("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1;"); } catch (_) {}
+    for (const col of ["cefr_level", "collocations", "synonyms", "antonyms", "phon_uk", "phon_us"]) {
+      try { sqliteDb.run(`ALTER TABLE vocabulary ADD COLUMN ${col} TEXT DEFAULT '';`); } catch (_) {}
+    }
     
     // Persist the newly created schema
     try { fs.writeFileSync(resolvedDbPath, Buffer.from(sqliteDb.export())); } catch (_) {}

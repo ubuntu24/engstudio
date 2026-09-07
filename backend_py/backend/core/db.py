@@ -161,6 +161,12 @@ def init_db():
                     pos TEXT DEFAULT '',
                     example_vi TEXT DEFAULT '',
                     topic TEXT DEFAULT 'Giao tiếp hàng ngày',
+                    cefr_level TEXT DEFAULT '',
+                    collocations TEXT DEFAULT '',
+                    synonyms TEXT DEFAULT '',
+                    antonyms TEXT DEFAULT '',
+                    phon_uk TEXT DEFAULT '',
+                    phon_us TEXT DEFAULT '',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -257,6 +263,12 @@ def init_db():
                     pos TEXT DEFAULT '',
                     example_vi TEXT DEFAULT '',
                     topic TEXT DEFAULT 'Giao tiếp hàng ngày',
+                    cefr_level TEXT DEFAULT '',
+                    collocations TEXT DEFAULT '',
+                    synonyms TEXT DEFAULT '',
+                    antonyms TEXT DEFAULT '',
+                    phon_uk TEXT DEFAULT '',
+                    phon_us TEXT DEFAULT '',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );
@@ -341,6 +353,14 @@ def init_db():
             conn.commit()
         except Exception:
             pass
+
+        # Oxford columns migration for vocabulary table
+        for col in ["cefr_level", "collocations", "synonyms", "antonyms", "phon_uk", "phon_us"]:
+            try:
+                conn.execute(f"ALTER TABLE vocabulary ADD COLUMN {col} TEXT DEFAULT ''")
+                conn.commit()
+            except Exception:
+                pass
 
         conn.commit()
         conn.close()

@@ -1,6 +1,8 @@
+const fs = require('fs');
 const { dbQueryAll, dbQueryGet, dbRun } = require('../utils/db');
 const { verifyToken } = require('../utils/auth');
 const cache = require('../utils/cache');
+const ttsService = require('../services/tts.service');
 
 async function getWords(req, res) {
   try {
@@ -9,8 +11,9 @@ async function getWords(req, res) {
     const search = (req.query.search || '').trim().toLowerCase();
     const sort = req.query.sort || 'az';
     const filter = req.query.filter || 'all';
+    const cefr = (req.query.cefr || '').trim().toUpperCase();
 
-    const cacheKey = `words_list:${page}:${perPage}:${search}:${sort}:${filter}`;
+    const cacheKey = `words_list:${page}:${perPage}:${search}:${sort}:${filter}:${cefr}`;
     const cached = cache.get(cacheKey);
     if (cached) return res.json(cached);
 
@@ -18,8 +21,12 @@ async function getWords(req, res) {
     let params = [];
 
     if (search) {
-      conditions.push('(LOWER(word) LIKE ? OR LOWER(vietnamese_meaning) LIKE ?)');
-      params.push(`%${search}%`, `%${search}%`);
+      conditions.push('(LOWER(word) LIKE ? OR LOWER(vietnamese_meaning) LIKE ? OR LOWER(collocations) LIKE ?)');
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+    if (cefr && cefr !== 'ALL' && cefr !== 'TẤT CẢ') {
+      conditions.push('cefr_level = ?');
+      params.push(cefr);
     }
     if (filter === 'video') {
       conditions.push("video_id IS NOT NULL AND video_id != ''");
@@ -233,8 +240,54 @@ async function getStats(req, res) {
   }
 }
 
+async function getTtsAudio(req, res) {
+  try {
+    const text = (req.query.text || '').trim();
+    const accent = (req.query.accent || 'us').toLowerCase();
+    const voice = (req.query.voice || '').trim().toLowerCase() || null;
+    if (!text || text.length > 2000) {
+      return res.status(400).json({ error: 'Text parameter required (max 2000 characters)' });
+    }
+
+    const { filePath, buffer, engine, voice: selectedVoice } = await ttsService.getOrGenerateTts(text, accent, voice);
+
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('X-TTS-Engine', engine || 'unknown');
+    res.setHeader('X-TTS-Voice', (selectedVoice && selectedVoice.id) || 'default');
+
+    if (buffer) {
+      res.setHeader('Content-Length', buffer.length);
+      return res.end(buffer);
+    } else if (filePath && fs.existsSync(filePath)) {
+      const stat = fs.statSync(filePath);
+      res.setHeader('Content-Length', stat.size);
+      const readStream = fs.createReadStream(filePath);
+      return readStream.pipe(res);
+    } else {
+      return res.status(500).json({ error: 'TTS output missing' });
+    }
+  } catch (err) {
+    console.error('[TTS] Audio synthesis error:', err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'TTS error: ' + err.message });
+    }
+  }
+}
+
+async function getTtsVoices(req, res) {
+  try {
+    const voicesData = ttsService.getAllVoicesInfo();
+    res.json(voicesData);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 module.exports = {
   getWords,
   saveWord,
-  getStats
+  getStats,
+  getTtsAudio,
+  getTtsVoices
 };

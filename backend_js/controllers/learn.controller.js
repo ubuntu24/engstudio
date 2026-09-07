@@ -79,11 +79,16 @@ async function getTopics(req, res) {
         )
       : Promise.resolve([]);
 
-    const [totalRow, topicRows, totalLearnedRow, learnedTopicRows] = await Promise.all([
+    let cefrRowsPromise = dbQueryAll(
+      "SELECT cefr_level, COUNT(*) as c FROM vocabulary WHERE cefr_level IS NOT NULL AND cefr_level != '' GROUP BY cefr_level ORDER BY cefr_level ASC"
+    );
+
+    const [totalRow, topicRows, totalLearnedRow, learnedTopicRows, cefrRows] = await Promise.all([
       totalRowPromise,
       topicRowsPromise,
       totalLearnedPromise,
-      learnedTopicRowsPromise
+      learnedTopicRowsPromise,
+      cefrRowsPromise
     ]);
 
     let totalLearned = totalLearnedRow ? parseInt(totalLearnedRow.c, 10) : 0;
@@ -101,7 +106,15 @@ async function getTopics(req, res) {
       }))
     ];
 
-    const payload = { topics, total_learned: totalLearned };
+    const levels = [
+      { name: 'Tất cả', count: totalRow ? parseInt(totalRow.c, 10) : 0 },
+      ...(cefrRows || []).map(r => ({
+        name: r.cefr_level,
+        count: parseInt(r.c, 10)
+      }))
+    ];
+
+    const payload = { topics, levels, total_learned: totalLearned };
     cache.set(cacheKey, payload, 60);
     res.json(payload);
   } catch (err) {
@@ -116,6 +129,7 @@ async function createSession(req, res) {
     count = Math.max(1, Math.min(count, 50));
     const topicRaw = (data.topic || '').trim();
     const topic = topicRaw;
+    const cefr = (data.cefr || '').trim().toUpperCase();
     const videoOnly = data.video_only === true || data.video_only === 'true';
 
     if (!req.userId) {
@@ -124,6 +138,10 @@ async function createSession(req, res) {
       if (topic && topic !== 'all' && topic !== 'Tất cả') {
         guestParams.push(topic);
         guestSql += ` WHERE v.topic = $${guestParams.length}`;
+      }
+      if (cefr && cefr !== 'ALL' && cefr !== 'TẤT CẢ') {
+        guestParams.push(cefr);
+        guestSql += guestSql.includes('WHERE') ? ` AND v.cefr_level = $${guestParams.length}` : ` WHERE v.cefr_level = $${guestParams.length}`;
       }
       if (videoOnly) {
         guestSql += guestSql.includes('WHERE') ? ` AND v.video_id IS NOT NULL AND v.video_id != ''` : ` WHERE v.video_id IS NOT NULL AND v.video_id != ''`;
@@ -137,6 +155,7 @@ async function createSession(req, res) {
         new_count: cards.length,
         review_count: 0,
         topic: topic || 'Tất cả',
+        cefr: cefr || 'Tất cả',
         is_guest: true
       });
     }
@@ -161,6 +180,13 @@ async function createSession(req, res) {
       dueSql += ` AND v.topic = $${dueParams.length}`;
       newParams.push(topic);
       newSql += ` AND v.topic = $${newParams.length}`;
+    }
+
+    if (cefr && cefr !== 'ALL' && cefr !== 'TẤT CẢ') {
+      dueParams.push(cefr);
+      dueSql += ` AND v.cefr_level = $${dueParams.length}`;
+      newParams.push(cefr);
+      newSql += ` AND v.cefr_level = $${newParams.length}`;
     }
     
     if (videoOnly) {

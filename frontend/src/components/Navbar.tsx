@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Sparkles, LogIn, LogOut, X, ChevronDown, Menu, User as UserIcon } from "lucide-react";
+import { Sparkles, LogIn, LogOut, X, ChevronDown, Menu, User as UserIcon, Mic } from "lucide-react";
 import {
   fetchCurrentUser,
   loginUser,
@@ -13,6 +13,7 @@ import {
 } from "@/lib/api";
 import { User } from "@/types";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import VoiceSettingsModal from "./VoiceSettingsModal";
 
 const navItems = [
   { href: "/", label: "Trang chủ" },
@@ -31,6 +32,7 @@ export default function Navbar() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCurrentUser().then((user) => {
@@ -89,6 +91,16 @@ export default function Navbar() {
 
           {/* User Auth Section & Mobile Toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Voice Selector */}
+            <button
+              onClick={() => setIsVoiceModalOpen(true)}
+              title="Chọn giọng đọc AI"
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-bold border border-border-main bg-bg-surface text-text-muted hover:text-primary-500 hover:border-primary-500/40 transition-colors cursor-pointer active:scale-95"
+            >
+              <Mic className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Giọng AI</span>
+            </button>
+
             <ThemeSwitcher />
 
             {currentUser ? (
@@ -183,6 +195,12 @@ export default function Navbar() {
           })}
         </div>
       )}
+
+      {/* Voice Settings Modal */}
+      <VoiceSettingsModal
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+      />
     </header>
   );
 }

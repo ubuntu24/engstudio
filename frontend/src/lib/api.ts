@@ -101,12 +101,32 @@ export async function fetchTopics(): Promise<{ name: string; count: number }[]> 
   }
 }
 
-export async function fetchLearnSession(count: number = 20, topic?: string, video_only: boolean = false): Promise<{ cards: Word[]; session_id: number; review_count: number; new_count: number }> {
+export async function fetchLearnMetadata(): Promise<{ topics: { name: string; count: number }[]; levels: { name: string; count: number }[] }> {
+  try {
+    const res = await fetch('/api/learn/topics');
+    if (!res.ok) throw new Error('Failed to fetch learn metadata');
+    const data = await res.json();
+    return {
+      topics: data.topics || [],
+      levels: data.levels || []
+    };
+  } catch (err) {
+    console.error('Error fetching learn metadata:', err);
+    return { topics: [], levels: [] };
+  }
+}
+
+export async function fetchLearnSession(
+  count: number = 20, 
+  topic?: string, 
+  video_only: boolean = false, 
+  cefr?: string
+): Promise<{ cards: Word[]; session_id: number; review_count: number; new_count: number }> {
   try {
     const res = await fetch('/api/learn/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ count, topic, video_only }),
+      body: JSON.stringify({ count, topic, video_only, cefr }),
     });
     if (!res.ok) throw new Error('Failed to fetch learn session');
     const data = await res.json();
@@ -114,6 +134,13 @@ export async function fetchLearnSession(count: number = 20, topic?: string, vide
     const cards = rawWords.map((w: any) => ({
       ...w,
       word: cleanText(w.word),
+      pos: cleanText(w.pos),
+      cefr_level: cleanText(w.cefr_level),
+      collocations: cleanText(w.collocations),
+      synonyms: cleanText(w.synonyms),
+      antonyms: cleanText(w.antonyms),
+      phon_uk: cleanText(w.phon_uk),
+      phon_us: cleanText(w.phon_us),
       meaning_vi: cleanText(w.vietnamese_meaning || w.meaning_vi) || 'Chưa có nghĩa tiếng Việt',
       definition: cleanText(w.definition),
       example_en: cleanText(w.example || w.context || w.example_en),

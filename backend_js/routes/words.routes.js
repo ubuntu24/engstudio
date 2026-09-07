@@ -8,6 +8,8 @@ router.get('/words', wordsController.getWords);
 router.post('/words/save', requireAuth, wordsController.saveWord);
 router.get('/stats', optionalAuth, wordsController.getStats);
 router.get('/news', getRecentNews);
+router.get('/tts/voices', wordsController.getTtsVoices);
+router.get('/tts', wordsController.getTtsAudio);
 
 module.exports = router;
 

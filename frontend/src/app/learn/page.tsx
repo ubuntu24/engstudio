@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchLearnSession, submitReviewSession, fetchTopics, getAiUsage } from "@/lib/api";
+import { fetchLearnSession, submitReviewSession, fetchLearnMetadata, getAiUsage } from "@/lib/api";
 import { Word } from "@/types";
 import {
   Volume2,
@@ -13,14 +13,21 @@ import {
   Trophy,
   Filter,
   Medal,
+  Layers,
+  GraduationCap,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { playSmartAudio, prefetchTtsAudio } from "@/lib/tts";
 
 export default function LearnPage() {
   const [words, setWords] = useState<Word[]>([]);
   const [topics, setTopics] = useState<{ name: string; count: number }[]>([]);
+  const [levels, setLevels] = useState<{ name: string; count: number }[]>([]);
   const [selectedTopic, setSelectedTopic] = useState<string>("Tất cả");
+  const [selectedCefr, setSelectedCefr] = useState<string>("Tất cả");
   const [videoOnly, setVideoOnly] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -32,6 +39,16 @@ export default function LearnPage() {
   const [aiExample, setAiExample] = useState<{english: string; vietnamese: string} | null>(null);
   const [aiUsage, setAiUsage] = useState<{used: number, limit: number, remaining: number} | null>(null);
   const [audioRate, setAudioRate] = useState<number>(1.0);
+
+  const getCefrBadge = (level?: string) => {
+    const l = (level || "").toUpperCase();
+    if (l === "A1") return { text: "Oxford A1 • Beginner", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" };
+    if (l === "A2") return { text: "Oxford A2 • Elementary", color: "bg-teal-500/10 text-teal-400 border-teal-500/30" };
+    if (l === "B1") return { text: "Oxford B1 • Intermediate", color: "bg-sky-500/10 text-sky-400 border-sky-500/30" };
+    if (l === "B2") return { text: "Oxford B2 • Upper-Int", color: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30" };
+    if (l === "C1" || l === "C2") return { text: "Oxford C1 • Advanced", color: "bg-purple-500/10 text-purple-400 border-purple-500/30" };
+    return { text: "Oxford Core", color: "bg-primary-500/10 text-primary-400 border-primary-500/30" };
+  };
 
   useEffect(() => {
     getAiUsage().then(setAiUsage);
@@ -46,21 +63,25 @@ export default function LearnPage() {
   };
 
   const loadTopicsList = async () => {
-    const list = await fetchTopics();
-    if (list && list.length > 0) {
-      setTopics(list);
+    const meta = await fetchLearnMetadata();
+    if (meta.topics && meta.topics.length > 0) {
+      setTopics(meta.topics);
+    }
+    if (meta.levels && meta.levels.length > 0) {
+      setLevels(meta.levels);
     }
   };
 
   const loadSession = async (
     topic: string = selectedTopic,
     vidOnly: boolean = videoOnly,
+    cefr: string = selectedCefr
   ) => {
     setLoading(true);
     setCompletedCount(0);
     setAiExample(null);
     try {
-      const data = await fetchLearnSession(20, topic, vidOnly);
+      const data = await fetchLearnSession(20, topic, vidOnly, cefr);
       setWords(data.cards);
       setCurrentIndex(0);
       setIsFlipped(false);
@@ -74,24 +95,75 @@ export default function LearnPage() {
 
   useEffect(() => {
     loadTopicsList();
-    loadSession("Tất cả", false);
+    loadSession("Tất cả", false, "Tất cả");
   }, []);
 
   const handleSelectTopic = (topicName: string) => {
     setSelectedTopic(topicName);
-    loadSession(topicName);
+    loadSession(topicName, videoOnly, selectedCefr);
+  };
+
+  const handleSelectCefr = (cefrName: string) => {
+    setSelectedCefr(cefrName);
+    loadSession(selectedTopic, videoOnly, cefrName);
   };
 
   const currentWord = words[currentIndex];
 
-  const playAudio = (text: string, rate: number = 1.0) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = rate;
-      window.speechSynthesis.speak(utterance);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const [audioAccent, setAudioAccent] = useState<'us' | 'uk' | 'vi'>('us');
+
+  // Background Pre-fetching for 0ms Instant Playback
+  useEffect(() => {
+    if (currentWord?.word) {
+      prefetchTtsAudio(currentWord.word, 'us');
+      prefetchTtsAudio(currentWord.word, 'uk');
+
+      // Prefetch Vietnamese meaning with Vietnamese voice
+      const viMeaning = currentWord.meaning_vi || currentWord.vietnamese_meaning;
+      if (viMeaning) {
+        prefetchTtsAudio(viMeaning, 'vi');
+      }
+
+      // Prefetch example sentence if present
+      if (currentWord.example) {
+        prefetchTtsAudio(currentWord.example, audioAccent === 'vi' ? 'us' : audioAccent);
+      }
+
+      // Prefetch next word in queue
+      const nextWord = words[currentIndex + 1];
+      if (nextWord?.word) {
+        prefetchTtsAudio(nextWord.word, 'us');
+        prefetchTtsAudio(nextWord.word, 'uk');
+      }
     }
+  }, [currentWord?.id, currentIndex, words, audioAccent]);
+
+  const playAudio = (text: string, rate: number = 1.0, accent: 'us' | 'uk' | 'vi' = 'us') => {
+    if (!text) return;
+    setAudioAccent(accent);
+
+    playSmartAudio(text, {
+      accent,
+      rate,
+      onLoading: () => {
+        setIsAudioLoading(true);
+        setIsPlayingAudio(true);
+      },
+      onPlaying: () => {
+        setIsAudioLoading(false);
+        setIsPlayingAudio(true);
+      },
+      onEnd: () => {
+        setIsAudioLoading(false);
+        setIsPlayingAudio(false);
+      },
+      onError: () => {
+        setIsAudioLoading(false);
+        setIsPlayingAudio(false);
+      }
+    });
   };
 
   const handleReview = async (rating: "easy" | "good" | "hard" | "again") => {
@@ -143,7 +215,11 @@ export default function LearnPage() {
         if (!isFlipped) setCardShownAt(Date.now());
         setIsFlipped((prev) => !prev);
       } else if (e.key === 'a' || e.key === 'A') {
-        if (currentWord?.word) playAudio(currentWord.word, audioRate);
+        if (currentWord?.word) playAudio(currentWord.word, audioRate, 'us');
+      } else if (e.key === 'u' || e.key === 'U') {
+        if (currentWord?.word) playAudio(currentWord.word, audioRate, 'uk');
+      } else if (e.key === 'v' || e.key === 'V') {
+        if (currentWord?.word) playAudio(currentWord.word, audioRate, 'vi');
       } else if (isFlipped) {
         if (e.key === '1') handleReview('again');
         else if (e.key === '2') handleReview('hard');
@@ -236,51 +312,104 @@ export default function LearnPage() {
         </div>
       </div>
 
-      {/* Topic Selection Bar */}
-      <div className="bg-bg-card border border-border-main p-4 rounded-3xl space-y-3 shadow-xl">
-        <div className="flex items-center justify-between text-xs font-bold text-text-muted">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-primary-400" />
-            <span>Chọn Chủ Đề Học Tập:</span>
+      {/* Oxford CEFR & Topic Selection Bar */}
+      <div className="bg-bg-card border border-border-main p-4 rounded-3xl space-y-3.5 shadow-xl">
+        {/* Row 1: Oxford CEFR Level Filters */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-bold text-text-muted">
+            <div className="flex items-center gap-2">
+              <GraduationCap className="w-4 h-4 text-primary-400" />
+              <span>Cấp Độ Chuẩn Oxford (CEFR):</span>
+            </div>
+            <span className="text-[11px] text-primary-400 font-semibold">
+              {selectedCefr === "Tất cả" ? "Toàn bộ cấp độ" : `Đang lọc: ${selectedCefr}`}
+            </span>
           </div>
-          <button
-            onClick={() => {
-              const newVal = !videoOnly;
-              setVideoOnly(newVal);
-              loadSession(selectedTopic, newVal);
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition duration-200 ease-out ${
-              videoOnly
-                ? "bg-rose-500/20 border-rose-500/50 text-rose-400"
-                : "bg-bg-surface border-border-main text-text-muted hover:text-text-main"
-            }`}
-          >
-            <Video className="w-3.5 h-3.5" />
-            {videoOnly ? "Đang Lọc Video" : "Chỉ Lọc Video"}
-          </button>
-        </div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
-          {topics.map((t) => {
-            const isSelected = selectedTopic === t.name;
-            return (
-              <button
-                key={t.name}
-                onClick={() => handleSelectTopic(t.name)}
-                className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer ${
-                  isSelected
-                    ? "bg-primary-500 text-text-primary-fg shadow-lg shadow-primary-500/20 border border-primary-400 font-black"
-                    : "bg-bg-surface text-text-muted hover:bg-bg-surface-hover hover:text-text-main border border-border-main"
-                }`}
-              >
-                <span>{t.name}</span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] ${isSelected ? "bg-slate-950 text-primary-400" : "bg-bg-surface-hover text-text-muted"}`}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+            {(levels.length > 0 ? levels : [
+              { name: "Tất cả", count: 3312 },
+              { name: "A1", count: 738 },
+              { name: "A2", count: 738 },
+              { name: "B1", count: 925 },
+              { name: "B2", count: 794 },
+              { name: "C1", count: 117 }
+            ]).map((lvl) => {
+              const isSelected = selectedCefr === lvl.name;
+              return (
+                <button
+                  key={lvl.name}
+                  onClick={() => handleSelectCefr(lvl.name)}
+                  className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold whitespace-nowrap transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                    isSelected
+                      ? "bg-primary-500 text-text-primary-fg shadow-lg shadow-primary-500/20 border border-primary-400 font-black"
+                      : "bg-bg-surface text-text-muted hover:bg-bg-surface-hover hover:text-text-main border border-border-main"
+                  }`}
                 >
-                  {t.count}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{lvl.name === "Tất cả" ? "Tất cả Cấp độ" : `Oxford ${lvl.name}`}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] ${
+                      isSelected ? "bg-slate-950 text-primary-400" : "bg-bg-surface-hover text-text-muted"
+                    }`}
+                  >
+                    {lvl.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-border-main/60" />
+
+        {/* Row 2: Topic Selection */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs font-bold text-text-muted">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-primary-400" />
+              <span>Chủ Đề:</span>
+            </div>
+            <button
+              onClick={() => {
+                const newVal = !videoOnly;
+                setVideoOnly(newVal);
+                loadSession(selectedTopic, newVal, selectedCefr);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition duration-200 ease-out text-xs ${
+                videoOnly
+                  ? "bg-rose-500/20 border-rose-500/50 text-rose-400"
+                  : "bg-bg-surface border-border-main text-text-muted hover:text-text-main"
+              }`}
+            >
+              <Video className="w-3.5 h-3.5" />
+              {videoOnly ? "Đang Lọc Video" : "Chỉ Lọc Video"}
+            </button>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar">
+            {topics.map((t) => {
+              const isSelected = selectedTopic === t.name;
+              return (
+                <button
+                  key={t.name}
+                  onClick={() => handleSelectTopic(t.name)}
+                  className={`px-3.5 py-1.5 rounded-2xl text-xs font-bold whitespace-nowrap transition duration-200 ease-out flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                    isSelected
+                      ? "bg-primary-500/20 text-primary-300 border border-primary-500/40 font-black"
+                      : "bg-bg-surface text-text-muted hover:bg-bg-surface-hover hover:text-text-main border border-border-main"
+                  }`}
+                >
+                  <span>{t.name}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] ${
+                      isSelected ? "bg-primary-500/30 text-primary-200" : "bg-bg-surface-hover text-text-muted"
+                    }`}
+                  >
+                    {t.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -359,31 +488,98 @@ export default function LearnPage() {
                     </span>
                   </div>
 
-                  <div className="text-center space-y-3 py-8">
-                    <h2 className="text-4xl sm:text-5xl font-black text-text-main tracking-tight">
-                      {currentWord?.word}
-                    </h2>
-                    {currentWord?.pronunciation && (
-                      <p className="text-lg text-primary-400 font-medium">
-                        /{currentWord.pronunciation}/
-                      </p>
+                  <div className="text-center space-y-3 py-6">
+                    <div className="flex items-center justify-center gap-2.5 flex-wrap">
+                      <h2 className="text-4xl sm:text-5xl font-black text-text-main tracking-tight">
+                        {currentWord?.word}
+                      </h2>
+                      {currentWord?.pos && (
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-primary-500/10 text-primary-300 border border-primary-500/30">
+                          {currentWord.pos}
+                        </span>
+                      )}
+                    </div>
+
+                    {(currentWord?.phon_uk || currentWord?.phon_us || currentWord?.pronunciation) && (
+                      <div className="flex items-center justify-center gap-3 text-sm font-medium text-primary-400">
+                        {currentWord.phon_uk && <span>UK: {currentWord.phon_uk}</span>}
+                        {currentWord.phon_us && <span>US: {currentWord.phon_us}</span>}
+                        {!currentWord.phon_uk && !currentWord.phon_us && currentWord.pronunciation && (
+                          <span>/{currentWord.pronunciation}/</span>
+                        )}
+                      </div>
                     )}
-                    <div className="inline-flex items-center gap-2 pt-2">
+
+                    <div className="inline-flex items-center gap-2 pt-2 flex-wrap justify-center">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (currentWord?.word) playAudio(currentWord.word, audioRate);
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate, 'us');
                         }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 text-sm font-semibold transition-colors duration-200 ease-out border border-primary-500/30 active:scale-95"
+                        disabled={isPlayingAudio && audioAccent === 'us'}
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ease-out border active:scale-95 cursor-pointer ${
+                          audioAccent === 'us' && isPlayingAudio
+                            ? "bg-primary-500 text-text-primary-fg border-primary-400 animate-pulse"
+                            : "bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 border-primary-500/30"
+                        }`}
+                        title="Nghe phát âm chuẩn Anh - Mỹ (Phím A)"
                       >
-                        <Volume2 className="w-4 h-4 text-primary-400" /> Nghe phát âm [A]
+                        {isAudioLoading && audioAccent === 'us' ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-primary-400" />
+                        ) : (
+                          <Volume2 className="w-4 h-4 text-primary-400" />
+                        )}
+                        <span>🇺🇸 US [A]</span>
                       </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate, 'uk');
+                        }}
+                        disabled={isPlayingAudio && audioAccent === 'uk'}
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ease-out border active:scale-95 cursor-pointer ${
+                          audioAccent === 'uk' && isPlayingAudio
+                            ? "bg-sky-500 text-text-primary-fg border-sky-400 animate-pulse"
+                            : "bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border-sky-500/30"
+                        }`}
+                        title="Nghe phát âm chuẩn Anh - Anh (Phím U)"
+                      >
+                        {isAudioLoading && audioAccent === 'uk' ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-sky-400" />
+                        ) : (
+                          <Volume2 className="w-4 h-4 text-sky-400" />
+                        )}
+                        <span>🇬🇧 UK [U]</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate, 'vi');
+                        }}
+                        disabled={isPlayingAudio && audioAccent === 'vi'}
+                        className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ease-out border active:scale-95 cursor-pointer ${
+                          audioAccent === 'vi' && isPlayingAudio
+                            ? "bg-emerald-500 text-text-primary-fg border-emerald-400 animate-pulse"
+                            : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                        }`}
+                        title="Nghe phát âm tiếng Anh giọng người Việt (Phím V)"
+                      >
+                        {isAudioLoading && audioAccent === 'vi' ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
+                        ) : (
+                          <Volume2 className="w-4 h-4 text-emerald-400" />
+                        )}
+                        <span>🇻🇳 VI [V]</span>
+                      </button>
+
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setAudioRate(prev => prev === 1.0 ? 0.8 : 1.0);
                         }}
-                        className="px-2.5 py-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover text-text-muted hover:text-primary-400 text-xs font-bold transition-colors duration-200 ease-out border border-border-main active:scale-95"
+                        className="px-2.5 py-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover text-text-muted hover:text-primary-400 text-xs font-bold transition-colors duration-200 ease-out border border-border-main active:scale-95 cursor-pointer"
                         title="Tốc độ đọc"
                       >
                         {audioRate === 1.0 ? '1.0x' : '0.8x Chậm'}
@@ -391,16 +587,20 @@ export default function LearnPage() {
                     </div>
                   </div>
 
-                  <div className="text-xs text-center text-text-muted">
-                    Cấp độ:{" "}
-                    <span className="text-text-main font-semibold">
-                      {currentWord?.cefr_level || "A2-B1"}
-                    </span>
+                  <div className="flex items-center justify-center gap-2 text-xs">
+                    {(() => {
+                      const badge = getCefrBadge(currentWord?.cefr_level);
+                      return (
+                        <span className={`px-3 py-1 rounded-full border font-bold ${badge.color}`}>
+                          {badge.text}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
 
                 {/* Back Side */}
-                <div className="absolute inset-0 w-full h-full rounded-3xl bg-bg-surface border border-border-hover p-8 flex flex-col justify-between shadow-2xl rotate-y-180 backface-hidden">
+                <div className="absolute inset-0 w-full h-full rounded-3xl bg-bg-surface border border-border-hover p-8 flex flex-col justify-between shadow-2xl rotate-y-180 backface-hidden overflow-y-auto custom-scrollbar">
                   <div className="flex items-center justify-between text-xs font-semibold text-text-muted">
                     <span className="text-primary-400 font-bold">
                       Ý Nghĩa Tiếng Việt
@@ -410,16 +610,120 @@ export default function LearnPage() {
                     </span>
                   </div>
 
-                  <div className="space-y-4 py-4 text-center">
+                  <div className="space-y-4 py-3 text-center">
+                    {/* Word reminder + quick audio on back side */}
+                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                      <span className="text-xl font-black text-text-main">{currentWord?.word}</span>
+                      {currentWord?.pos && (
+                        <span className="px-2 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-primary-500/10 text-primary-300 border border-primary-500/30">
+                          {currentWord.pos}
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate, 'us');
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 border border-primary-500/30 active:scale-95 transition-colors cursor-pointer"
+                        title="Nghe phát âm US (Phím A)"
+                      >
+                        {isAudioLoading && audioAccent === 'us' ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary-400" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5" />
+                        )}
+                        <span>🇺🇸 US</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate, 'uk');
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 active:scale-95 transition-colors cursor-pointer"
+                        title="Nghe phát âm UK (Phím U)"
+                      >
+                        {isAudioLoading && audioAccent === 'uk' ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5" />
+                        )}
+                        <span>🇬🇧 UK</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (currentWord?.word) playAudio(currentWord.word, audioRate, 'vi');
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 active:scale-95 transition-colors cursor-pointer"
+                        title="Nghe phát âm tiếng Anh giọng người Việt (Phím V)"
+                      >
+                        {isAudioLoading && audioAccent === 'vi' ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                        ) : (
+                          <Volume2 className="w-3.5 h-3.5" />
+                        )}
+                        <span>🇻🇳 VI</span>
+                      </button>
+                    </div>
+
                     <h3 className="text-3xl font-bold text-primary-400">
                       {currentWord?.meaning_vi ||
                         currentWord?.vietnamese_meaning ||
                         "Chưa có nghĩa tiếng Việt"}
                     </h3>
                     {currentWord?.definition && (
-                      <p className="text-sm text-text-muted italic max-w-lg mx-auto">
+                      <p className="text-sm text-text-muted italic max-w-lg mx-auto leading-relaxed">
                         {currentWord.definition}
                       </p>
+                    )}
+
+                    {/* Oxford Collocations Section */}
+                    {Boolean(currentWord?.collocations) && (
+                      <div className="bg-teal-500/10 p-3.5 rounded-2xl border border-teal-500/20 text-left space-y-2 max-w-xl mx-auto">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-teal-400">
+                          <Layers className="w-3.5 h-3.5" />
+                          <span>Oxford Collocations & Cấu trúc ngữ pháp</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {currentWord!.collocations!.split(',').map((col, idx) => {
+                            const trimmed = col.trim();
+                            if (!trimmed) return null;
+                            const isPattern = trimmed.includes('+ V-ing') || trimmed.includes('+ to V') || trimmed.includes('+ V-bare') || trimmed.includes('+ V');
+                            return (
+                              <span
+                                key={idx}
+                                className={`px-2.5 py-1 rounded-xl text-xs font-semibold border ${
+                                  isPattern
+                                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm"
+                                    : "bg-teal-500/15 text-teal-300 border-teal-500/30"
+                                }`}
+                              >
+                                {isPattern && "⚡ "}
+                                {trimmed}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Synonyms & Antonyms */}
+                    {Boolean(currentWord?.synonyms || currentWord?.antonyms) && (
+                      <div className="flex flex-wrap items-center justify-center gap-2 text-xs max-w-xl mx-auto">
+                        {Boolean(currentWord?.synonyms) && (
+                          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                            <span className="font-bold text-[10px] uppercase text-emerald-400">Đồng nghĩa:</span>
+                            <span className="font-medium">{currentWord?.synonyms}</span>
+                          </div>
+                        )}
+                        {Boolean(currentWord?.antonyms) && (
+                          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300">
+                            <span className="font-bold text-[10px] uppercase text-rose-400">Trái nghĩa:</span>
+                            <span className="font-medium">{currentWord?.antonyms}</span>
+                          </div>
+                        )}
+                      </div>
                     )}
                     
                     {/* Ví dụ tĩnh hoặc AI */}
@@ -428,13 +732,26 @@ export default function LearnPage() {
                         currentWord?.example ||
                         currentWord?.context) && (
                         <div className="bg-bg-surface p-4 rounded-2xl border border-border-main space-y-1.5 text-sm text-left max-w-xl mx-auto">
-                          <p className="text-text-main font-medium">
-                            {currentWord.example_en ||
-                              currentWord.example ||
-                              currentWord.context}
-                          </p>
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-text-main font-medium leading-relaxed">
+                              {currentWord.example_en ||
+                                currentWord.example ||
+                                currentWord.context}
+                            </p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const sent = currentWord.example_en || currentWord.example || currentWord.context;
+                                if (sent) playAudio(sent, 1.0, audioAccent);
+                              }}
+                              className="p-1.5 rounded-lg bg-bg-card hover:bg-primary-500/20 text-text-muted hover:text-primary-400 border border-border-main transition-colors shrink-0 cursor-pointer"
+                              title="Nghe phát âm câu ví dụ"
+                            >
+                              <Volume2 className="w-4 h-4" />
+                            </button>
+                          </div>
                           {currentWord.example_vi && (
-                            <p className="text-text-muted italic text-xs">
+                            <p className="text-text-muted italic text-xs pt-1 border-t border-border-main/50">
                               {currentWord.example_vi}
                             </p>
                           )}
@@ -447,9 +764,21 @@ export default function LearnPage() {
                           animate={{ opacity: 1, y: 0 }}
                           className="bg-primary-500/10 p-4 rounded-2xl border border-primary-500/30 space-y-1.5 text-sm text-left max-w-xl mx-auto"
                         >
-                          <div className="text-[10px] font-bold text-primary-400 uppercase tracking-wider mb-1">✨ AI Generated Context</div>
-                          <p className="text-primary-300 font-medium">{aiExample.english}</p>
-                          <p className="text-text-muted italic text-xs">{aiExample.vietnamese}</p>
+                          <div className="flex items-center justify-between">
+                            <div className="text-[10px] font-bold text-primary-400 uppercase tracking-wider">✨ AI Generated Context</div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (aiExample?.english) playAudio(aiExample.english, 1.0, audioAccent);
+                              }}
+                              className="p-1 rounded-lg hover:bg-primary-500/20 text-primary-400 transition-colors shrink-0 cursor-pointer"
+                              title="Nghe phát âm câu ví dụ AI"
+                            >
+                              <Volume2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                          <p className="text-primary-300 font-medium leading-relaxed">{aiExample.english}</p>
+                          <p className="text-text-muted italic text-xs pt-1 border-t border-primary-500/20">{aiExample.vietnamese}</p>
                         </motion.div>
                       )}
 

@@ -1,13 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import Link from 'next/link';
 import { fetchGrammarQuestions, fetchAiGrammarExplanation, AiExplanationResult } from '@/lib/api';
 import { GrammarQuestion } from '@/types';
 import {
   BookOpen, CheckCircle, XCircle, RotateCcw, Award,
   ArrowRight, Sparkles, Star, Target, Filter, HelpCircle, Lightbulb, GraduationCap, Bot, Loader2,
-  FileText, Check, ChevronRight, Layers, Bookmark, Languages
+  FileText, Check, ChevronRight, ChevronLeft, ChevronsLeft, ChevronsRight, Layers, Bookmark,
+  Languages, Volume2, Search, Zap, Flame, ArrowUpRight, SlidersHorizontal, ExternalLink, AlertTriangle
 } from 'lucide-react';
+import { VERB_PATTERN_STUDY_LIST, STUDY_CATEGORIES, VerbPatternItem } from '@/lib/verbPatternsData';
+import { playSmartAudio, prefetchTtsAudio } from '@/lib/tts';
 
 interface TheoryTopic {
   id: string;
@@ -168,17 +172,146 @@ const THEORY_TOPICS: TheoryTopic[] = [
         translation: 'Sự kiện gây quỹ cho thư viện đã thành công, tuy nhiên buổi đọc sách của tác giả đã bị hủy.'
       }
     ]
+  },
+  {
+    id: 'verb-patterns',
+    title: '6. Cụm Động từ: To-V, V-ing & Cạm bẫy To + V-ing (Verb Patterns & Dependent Prepositions)',
+    badge: 'To-V, V-ing & Giới từ',
+    formula: 'Verb + To-V  |  Verb + V-ing  |  Verb + Preposition + V-ing  |  To (Giới từ) + V-ing',
+    rules: [
+      'CẠM BẪY TO + V-ING: Khi "TO" là Giới từ (thay thế được bằng Danh từ), bắt buộc chia V-ing: become / get accustomed to + V-ing (quen dần với việc), be / get used to + V-ing (đã quen với), look forward to + V-ing (trông đợi), object to + V-ing (phản đối), be committed / devoted to + V-ing (cống hiến), admit to + V-ing (thú nhận), lead to + V-ing (dẫn đến), contribute to + V-ing (đóng góp vào).',
+      'PHÂN BIỆT USED TO & COME TO: "used to + V-bare" (từng làm gì trong quá khứ) vs "be/get used to + V-ing" (đang quen với việc gì); "come to / grow to + V-bare" (dần dần nhận ra / hiểu ra: come to realize).',
+      'QUY TẮC MỌI GIỚI TỪ + V-ING: Mọi giới từ (in, on, at, for, from, of, about, without, by...) đi liền sau động từ luôn chia V-ing: insist on + V-ing (khăng khăng), apologize for + V-ing (xin lỗi vì), succeed in + V-ing (thành công trong việc), prevent sb from + V-ing (ngăn cản ai làm gì).',
+      'ĐỘNG TỪ ĐỔI NGHĨA KHI ĐI VỚI TO-V vs V-ING: remember/forget to V (nhớ/quên phải làm gì) vs remember/forget V-ing (nhớ/quên đã làm gì trong quá khứ); stop to V (dừng lại để làm gì khác) vs stop V-ing (dừng hẳn hành động đang làm); try to V (cố gắng hết sức) vs try V-ing (thử làm nghiệm chứng).'
+    ],
+    signalWords: ['accustomed to', 'look forward to', 'used to', 'object to', 'committed to', 'insist on', 'apologize for', 'prevent from', 'stop', 'remember'],
+    examples: [
+      {
+        question: 'After moving to London, David quickly became accustomed to _______ on the left side of the road.',
+        options: ['A. drive', 'B. drove', 'C. driving', 'D. driven'],
+        answer: 'C. driving',
+        explanation: 'Cấu trúc "become / get accustomed to + V-ing" (quen dần với việc gì). "To" ở đây là Giới từ, bắt buộc đi với V-ing (driving).',
+        translation: 'Sau khi chuyển đến London, David đã nhanh chóng quen dần với việc lái xe bên lề trái đường.'
+      },
+      {
+        question: 'We look forward to _______ your representatives at the upcoming international trade expo.',
+        options: ['A. meet', 'B. meeting', 'C. met', 'D. be met'],
+        answer: 'B. meeting',
+        explanation: 'Cấu trúc thư từ thương mại kinh điển trong TOEIC: "look forward to + V-ing / Noun" (rất mong đợi việc gì). "To" là giới từ, chọn "meeting".',
+        translation: 'Chúng tôi rất mong đợi được gặp gỡ đại diện của quý công ty tại hội chợ triển lãm thương mại quốc tế sắp tới.'
+      },
+      {
+        question: 'The committee member strongly objected to _______ the annual budget without prior notice.',
+        options: ['A. approve', 'B. approved', 'C. approving', 'D. approval'],
+        answer: 'C. approving',
+        explanation: 'Cấu trúc "object to + V-ing / Noun" (phản đối việc gì). Chỗ trống cần một V-ing có tân ngữ "the annual budget" phía sau.',
+        translation: 'Thành viên ủy ban đã kịch liệt phản đối việc thông qua ngân sách hàng năm mà không thông báo trước.'
+      },
+      {
+        question: 'The bad weather prevented the flight crew from _______ on time this morning.',
+        options: ['A. depart', 'B. departing', 'C. departed', 'D. to depart'],
+        answer: 'B. departing',
+        explanation: 'Cấu trúc "prevent sb/sth from + V-ing" (ngăn cản ai/cái gì làm việc gì). "From" là giới từ nên sau nó là V-ing (departing).',
+        translation: 'Thời tiết xấu đã ngăn cản phi hành đoàn cất cánh đúng giờ sáng nay.'
+      }
+    ]
   }
 ];
 
+const QUIZ_CATEGORIES = [
+  'All',
+  'Verb Patterns (To-V / V-ing)',
+  'Vocabulary & Grammar TOEIC Part 5',
+  'Conjunctions & Connectors',
+  'Hien tai hoan thanh (Present Perfect)',
+  'Tuong lai don & Tuong lai gan',
+  'The bi dong (Passive Voice)'
+];
+
+function getPageNumbers(current: number, total: number): (number | string)[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 3) {
+    return [1, 2, 3, 4, '...', total];
+  }
+  if (current >= total - 2) {
+    return [1, '...', total - 3, total - 2, total - 1, total];
+  }
+  return [1, '...', current - 1, current, current + 1, '...', total];
+}
+
 export default function GrammarPage() {
-  const [activeTab, setActiveTab] = useState<'theory' | 'quiz'>('theory');
+  const [activeTab, setActiveTab] = useState<'study' | 'theory' | 'quiz'>('study');
+  const [studySearch, setStudySearch] = useState('');
+  const [selectedStudyCategory, setSelectedStudyCategory] = useState('all');
+  const [playingId, setPlayingId] = useState<string | null>(null);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const hubRef = useRef<HTMLDivElement>(null);
+
   const [questions, setQuestions] = useState<GrammarQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [loading, setLoading] = useState(true);
   const [aiAnalysis, setAiAnalysis] = useState<AiExplanationResult | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const playAudio = (text: string, accent: 'us' | 'uk' | 'vi' = 'us', id?: string) => {
+    if (!text) return;
+    if (id) setPlayingId(id);
+
+    playSmartAudio(text, {
+      accent,
+      onPlaying: () => {
+        if (id) setPlayingId(id);
+      },
+      onEnd: () => {
+        setPlayingId(null);
+      },
+      onError: () => {
+        setPlayingId(null);
+      }
+    });
+  };
+
+  const filteredPatterns = useMemo(() => {
+    return VERB_PATTERN_STUDY_LIST.filter(item => {
+      const matchCat = selectedStudyCategory === 'all' || item.category === selectedStudyCategory;
+      if (!matchCat) return false;
+      if (!studySearch.trim()) return true;
+      const q = studySearch.toLowerCase().trim();
+      return (
+        item.pattern.toLowerCase().includes(q) ||
+        item.meaningVi.toLowerCase().includes(q) ||
+        item.formula.toLowerCase().includes(q) ||
+        item.keywords.some(k => k.toLowerCase().includes(q))
+      );
+    });
+  }, [selectedStudyCategory, studySearch]);
+
+  // Reset page when category or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedStudyCategory, studySearch, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredPatterns.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, filteredPatterns.length);
+
+  const paginatedPatterns = useMemo(() => {
+    return filteredPatterns.slice(startIndex, endIndex);
+  }, [filteredPatterns, startIndex, endIndex]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    hubRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const loadQuestions = async (cat: string) => {
     setLoading(true);
@@ -186,7 +319,7 @@ export default function GrammarPage() {
     setSelectedOption(null);
     setIsAnswered(false);
     setAiAnalysis(null);
-    const data = await fetchGrammarQuestions('All');
+    const data = await fetchGrammarQuestions(cat);
     setQuestions(data);
     setLoading(false);
   };
@@ -257,29 +390,404 @@ export default function GrammarPage() {
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center bg-bg-base p-1.5 rounded-2xl border border-border-main">
+          <div className="flex items-center gap-1 bg-bg-base p-1.5 rounded-2xl border border-border-main scrollbar-none">
             <button
-              onClick={() => setActiveTab('theory')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition duration-200 ease-out cursor-pointer ${
-                activeTab === 'theory'
-                  ? 'bg-primary-500 text-text-primary-fg font-extrabold shadow-lg shadow-primary-500/20'
-                  : 'text-text-muted hover:text-text-main'
+              onClick={() => setActiveTab('study')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition duration-200 cursor-pointer whitespace-nowrap ${
+                activeTab === 'study'
+                  ? 'bg-primary-500 text-text-primary-fg font-bold shadow-sm'
+                  : 'text-text-muted hover:text-text-main hover:bg-bg-surface-hover/50'
               }`}
             >
-              <BookOpen className="w-4 h-4" /> 📚 Lý Thuyết & Ví Dụ
+              <BookOpen className="w-3.5 h-3.5" /> <span>Sổ Tay Cụm Từ</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('theory')}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition duration-200 cursor-pointer whitespace-nowrap ${
+                activeTab === 'theory'
+                  ? 'bg-primary-500 text-text-primary-fg font-bold shadow-sm'
+                  : 'text-text-muted hover:text-text-main hover:bg-bg-surface-hover/50'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" /> <span>Lý Thuyết Chi Tiết</span>
             </button>
             <button
               onClick={() => setActiveTab('quiz')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition duration-200 ease-out cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition duration-200 cursor-pointer whitespace-nowrap ${
                 activeTab === 'quiz'
-                  ? 'bg-primary-500 text-text-primary-fg font-extrabold shadow-lg shadow-primary-500/20'
-                  : 'text-text-muted hover:text-text-main'
+                  ? 'bg-primary-500 text-text-primary-fg font-bold shadow-sm'
+                  : 'text-text-muted hover:text-text-main hover:bg-bg-surface-hover/50'
               }`}
             >
-              <Target className="w-4 h-4" /> ✍️ Tự Làm Bài Tập
+              <Target className="w-3.5 h-3.5" /> <span>Trắc Nghiệm</span>
             </button>
           </div>
         </div>
+
+        {/* TAB 0: INTERACTIVE VERB PATTERNS & COLLOCATIONS STUDY HUB */}
+        {activeTab === 'study' && (
+          <div ref={hubRef} className="space-y-6 animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
+            {/* Study Hub Banner */}
+            <div className="bg-bg-surface border border-border-main rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-bg-base border border-border-main text-text-muted text-xs font-semibold mb-2">
+                    <BookOpen className="w-3.5 h-3.5 text-primary-500" />
+                    <span>Oxford & Cambridge Standard Syllabus</span>
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-black text-text-main tracking-tight">
+                    Sổ Tay Mẫu Động Từ & Cụm Từ Oxford / Cambridge
+                  </h2>
+                  <p className="text-xs md:text-sm text-text-muted font-normal mt-1 max-w-2xl leading-relaxed">
+                    Tra cứu công thức chuẩn, nghe phát âm bản ngữ US/UK, nắm vững các bẫy <strong className="text-text-main font-semibold">To + V-ing</strong> và <strong className="text-text-main font-semibold">Động từ đổi nghĩa</strong> trong các kỳ thi TOEIC, IELTS & THPT Quốc gia.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+                  <span className="px-3 py-1.5 rounded-xl bg-bg-base border border-border-main text-text-main">
+                    📚 158 Mẫu câu chuẩn
+                  </span>
+                  <span className="px-3 py-1.5 rounded-xl bg-bg-base border border-border-main text-text-muted">
+                    ⚠️ Bẫy đề thi
+                  </span>
+                  <span className="px-3 py-1.5 rounded-xl bg-bg-base border border-border-main text-text-muted">
+                    🔊 Song ngữ US / UK
+                  </span>
+                </div>
+              </div>
+
+              {/* Search & Category Filter Bar */}
+              <div className="pt-2 space-y-3">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="text"
+                    value={studySearch}
+                    onChange={(e) => {
+                      setStudySearch(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder="Tìm kiếm mẫu câu, từ vựng (look forward to, used to, remember, regret...)"
+                    className="w-full bg-bg-base border border-border-main rounded-xl pl-11 pr-10 py-2.5 text-xs md:text-sm text-text-main placeholder:text-text-muted focus:outline-none focus:border-primary-500 transition"
+                  />
+                  {studySearch && (
+                    <button
+                      onClick={() => {
+                        setStudySearch('');
+                        setCurrentPage(1);
+                      }}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-main text-xs font-bold p-1"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Pills */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                  {STUDY_CATEGORIES.map((cat) => {
+                    const isSelected = selectedStudyCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          setSelectedStudyCategory(cat.id);
+                          setCurrentPage(1);
+                        }}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition whitespace-nowrap cursor-pointer ${
+                          isSelected
+                            ? 'bg-primary-500 text-text-primary-fg font-bold shadow-sm'
+                            : 'bg-bg-base hover:bg-bg-surface-hover text-text-muted hover:text-text-main border border-border-main'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Results Count, Page Info & Items Per Page */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-text-muted px-1 font-medium">
+              <div>
+                Đang hiển thị <strong className="text-text-main font-bold">{filteredPatterns.length > 0 ? startIndex + 1 : 0} - {endIndex}</strong> trên tổng số <strong className="text-text-main font-bold">{filteredPatterns.length}</strong> mẫu câu
+                {totalPages > 1 && (
+                  <span className="ml-2 text-text-muted">
+                    (Trang {safeCurrentPage}/{totalPages})
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1 text-text-muted">
+                  <Volume2 className="w-3.5 h-3.5" /> Bấm US/UK để nghe phát âm
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span>Mỗi trang:</span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="bg-bg-surface border border-border-main rounded-lg px-2 py-0.5 text-xs text-text-main focus:outline-none focus:border-primary-500"
+                  >
+                    <option value={12}>12</option>
+                    <option value={24}>24</option>
+                    <option value={48}>48</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Pattern Cards Grid */}
+            {filteredPatterns.length === 0 ? (
+              <div className="bg-bg-surface rounded-3xl border border-border-main p-12 text-center space-y-4 shadow-sm">
+                <HelpCircle className="w-12 h-12 text-text-muted mx-auto" />
+                <p className="text-base font-bold text-text-main">Không tìm thấy mẫu câu phù hợp</p>
+                <p className="text-xs text-text-muted">Hãy thử từ khóa khác hoặc bấm nút bên dưới để xem lại tất cả.</p>
+                <button
+                  onClick={() => {
+                    setStudySearch('');
+                    setSelectedStudyCategory('all');
+                    setCurrentPage(1);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-primary-500 text-text-primary-fg text-xs font-bold hover:opacity-90 transition cursor-pointer"
+                >
+                  Hiển thị tất cả 158+ mẫu
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {paginatedPatterns.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-bg-surface rounded-2xl border border-border-main hover:border-border-hover p-5 flex flex-col justify-between gap-4 shadow-sm hover:shadow transition"
+                    >
+                      {/* Card Header: Pattern + Badges + Audio */}
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                              <span className="px-2 py-0.5 rounded-md bg-bg-base border border-border-main text-text-muted text-[11px] font-bold">
+                                {item.cefr}
+                              </span>
+                              <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-bg-base border border-border-main text-text-muted">
+                                {item.categoryLabel}
+                              </span>
+                            </div>
+                            <h3 className="text-base md:text-lg font-bold text-text-main tracking-tight">
+                              {item.pattern}
+                            </h3>
+                          </div>
+
+                          {/* Dual Pronunciation Buttons */}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              onClick={() => playAudio(item.pattern, 'us', `${item.id}-us`)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-medium transition cursor-pointer ${
+                                playingId === `${item.id}-us`
+                                  ? 'bg-primary-500 text-text-primary-fg border-primary-500 shadow-sm'
+                                  : 'bg-bg-base hover:bg-bg-surface-hover text-text-muted hover:text-text-main border-border-main'
+                              }`}
+                              title="Nghe phát âm chuẩn US (Mỹ)"
+                            >
+                              <Volume2 className={`w-3.5 h-3.5 ${playingId === `${item.id}-us` ? 'animate-pulse' : ''}`} />
+                              <span>US</span>
+                            </button>
+                            <button
+                              onClick={() => playAudio(item.pattern, 'uk', `${item.id}-uk`)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-medium transition cursor-pointer ${
+                                playingId === `${item.id}-uk`
+                                  ? 'bg-primary-500 text-text-primary-fg border-primary-500 shadow-sm'
+                                  : 'bg-bg-base hover:bg-bg-surface-hover text-text-muted hover:text-text-main border-border-main'
+                              }`}
+                              title="Nghe phát âm chuẩn UK (Anh)"
+                            >
+                              <Volume2 className={`w-3.5 h-3.5 ${playingId === `${item.id}-uk` ? 'animate-pulse' : ''}`} />
+                              <span>UK</span>
+                            </button>
+                            <button
+                              onClick={() => playAudio(item.pattern, 'vi', `${item.id}-vi`)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-medium transition cursor-pointer ${
+                                playingId === `${item.id}-vi`
+                                  ? 'bg-emerald-500 text-text-primary-fg border-emerald-500 shadow-sm'
+                                  : 'bg-bg-base hover:bg-bg-surface-hover text-text-muted hover:text-emerald-400 border-border-main'
+                              }`}
+                              title="Phát âm tiếng Anh giọng người Việt"
+                            >
+                              <Volume2 className={`w-3.5 h-3.5 ${playingId === `${item.id}-vi` ? 'animate-pulse' : ''}`} />
+                              <span>VI</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Vietnamese Meaning */}
+                        <p className="text-sm font-semibold text-text-main leading-snug">
+                          {item.meaningVi}
+                        </p>
+
+                        {/* Monospace Formula Box */}
+                        <div className="bg-bg-base p-2.5 rounded-xl border border-border-main font-mono text-xs text-text-main font-semibold">
+                          <span className="text-[10px] uppercase font-sans text-text-muted font-bold block mb-0.5 tracking-wider">
+                            Cấu trúc chuẩn:
+                          </span>
+                          {item.formula}
+                        </div>
+
+                        {/* Trap Tip Box */}
+                        <div className="bg-bg-base border border-border-main rounded-xl p-2.5 text-xs leading-relaxed flex items-start gap-2">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                          <div className="text-text-main">
+                            <span className="font-bold text-amber-600 dark:text-amber-400">Lưu ý bẫy: </span>
+                            <span className="text-text-muted font-normal">{item.trapAlert.replace(/^⚠️\s*/, '')}</span>
+                          </div>
+                        </div>
+
+                        {/* Example with Full Audio */}
+                        <div className="bg-bg-base p-3 rounded-xl border border-border-main space-y-1.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-xs font-medium text-text-main italic leading-relaxed">
+                              &ldquo;{item.exampleEn}&rdquo;
+                            </p>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                onClick={() => playAudio(item.exampleEn, 'us', `${item.id}-ex-us`)}
+                                className={`p-1 rounded-lg border transition cursor-pointer ${
+                                  playingId === `${item.id}-ex-us`
+                                    ? 'bg-primary-500 text-text-primary-fg border-primary-500'
+                                    : 'bg-bg-surface hover:bg-bg-surface-hover text-text-muted hover:text-text-main border-border-main'
+                                }`}
+                                title="Nghe câu ví dụ giọng US"
+                              >
+                                <Volume2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => playAudio(item.exampleEn, 'vi', `${item.id}-ex-vi`)}
+                                className={`p-1 rounded-lg border transition cursor-pointer ${
+                                  playingId === `${item.id}-ex-vi`
+                                    ? 'bg-emerald-500 text-text-primary-fg border-emerald-500'
+                                    : 'bg-bg-surface hover:bg-bg-surface-hover text-text-muted hover:text-emerald-400 border-border-main'
+                                }`}
+                                title="Nghe câu ví dụ tiếng Anh giọng người Việt"
+                              >
+                                <span className="text-[10px] font-bold px-1 text-emerald-400">VI</span>
+                              </button>
+                            </div>
+                          </div>
+                          <p className="text-[11px] text-text-muted">
+                            {item.exampleVi}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Card Actions: Practice + Quiz */}
+                      <div className="flex items-center gap-2 pt-2 border-t border-border-main">
+                        <Link
+                          href="/practice"
+                          className="flex-1 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded-xl bg-bg-base hover:bg-bg-surface-hover border border-border-main text-xs font-medium text-text-muted hover:text-text-main transition"
+                        >
+                          <span>✍️ Luyện viết</span>
+                          <ArrowUpRight className="w-3 h-3 text-text-muted" />
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setSelectedCategory('Verb Patterns (To-V / V-ing)');
+                            loadQuestions('Verb Patterns (To-V / V-ing)');
+                            setActiveTab('quiz');
+                          }}
+                          className="flex-1 inline-flex items-center justify-center gap-1 py-1.5 px-3 rounded-xl bg-primary-500 text-text-primary-fg hover:opacity-90 text-xs font-semibold transition cursor-pointer"
+                        >
+                          <span>🎯 Làm bài tập</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border-main">
+                    <div className="text-xs text-text-muted">
+                      Hiển thị <span className="font-semibold text-text-main">{startIndex + 1}</span> - <span className="font-semibold text-text-main">{endIndex}</span> trên <span className="font-semibold text-text-main">{filteredPatterns.length}</span> mẫu câu
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {/* First Page */}
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        disabled={safeCurrentPage === 1}
+                        className="p-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover border border-border-main text-text-muted hover:text-text-main disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                        title="Trang đầu"
+                      >
+                        <ChevronsLeft className="w-4 h-4" />
+                      </button>
+
+                      {/* Previous Page */}
+                      <button
+                        onClick={() => handlePageChange(safeCurrentPage - 1)}
+                        disabled={safeCurrentPage === 1}
+                        className="p-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover border border-border-main text-text-muted hover:text-text-main disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                        title="Trang trước"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      {/* Page Numbers */}
+                      <div className="flex items-center gap-1">
+                        {getPageNumbers(safeCurrentPage, totalPages).map((p, idx) => {
+                          if (p === '...') {
+                            return (
+                              <span key={`ellipsis-${idx}`} className="px-2 text-xs text-text-muted font-bold">
+                                …
+                              </span>
+                            );
+                          }
+                          const pageNum = p as number;
+                          const isActive = pageNum === safeCurrentPage;
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => handlePageChange(pageNum)}
+                              className={`w-8 h-8 rounded-xl text-xs font-bold transition cursor-pointer ${
+                                isActive
+                                  ? 'bg-primary-500 text-text-primary-fg shadow-sm'
+                                  : 'bg-bg-surface hover:bg-bg-surface-hover text-text-muted hover:text-text-main border border-border-main'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Next Page */}
+                      <button
+                        onClick={() => handlePageChange(safeCurrentPage + 1)}
+                        disabled={safeCurrentPage === totalPages}
+                        className="p-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover border border-border-main text-text-muted hover:text-text-main disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                        title="Trang tiếp"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+
+                      {/* Last Page */}
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        disabled={safeCurrentPage === totalPages}
+                        className="p-2 rounded-xl bg-bg-surface hover:bg-bg-surface-hover border border-border-main text-text-muted hover:text-text-main disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
+                        title="Trang cuối"
+                      >
+                        <ChevronsRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         {/* TAB 1: THEORY LESSONS WITH EXAMPLES */}
         {activeTab === 'theory' && (
@@ -397,6 +905,29 @@ export default function GrammarPage() {
         {/* TAB 2: INTERACTIVE PRACTICE QUIZ */}
         {activeTab === 'quiz' && (
           <div className="space-y-6 animate-in fade-in zoom-in-[0.98] duration-300 ease-out">
+            {/* Category Filter Chips */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <span className="text-xs font-bold text-text-muted shrink-0 flex items-center gap-1 mr-1">
+                <Filter className="w-3.5 h-3.5 text-primary-400" /> Dạng bài:
+              </span>
+              {QUIZ_CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    loadQuestions(cat);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    selectedCategory === cat
+                      ? "bg-primary-500 text-text-primary-fg shadow-lg shadow-primary-500/25 border border-primary-400"
+                      : "bg-bg-surface hover:bg-bg-base text-text-muted hover:text-text-main border border-border-main"
+                  }`}
+                >
+                  {cat === 'All' ? 'Tất cả dạng bài' : cat}
+                </button>
+              ))}
+            </div>
+
             {loading ? (
               <div className="p-12 text-center text-primary-400 font-bold animate-pulse bg-bg-surface rounded-3xl border border-border-main">
                 <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" /> Đang tải bài tập tự làm...

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { checkAdvancedPractice, fetchPracticeTopics, getAiUsage } from "@/lib/api";
 import { WritingCheckResponse, WritingError, TopicSample } from "@/types";
 import {
@@ -22,6 +23,7 @@ import {
   Trash2,
   HelpCircle,
   Lightbulb,
+  ArrowRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -288,6 +290,25 @@ export default function PracticePage() {
                     ))}
                   </div>
                 </div>
+
+                {/* Bridge Banner to Verb Patterns Study Hub */}
+                {selectedCategory === "Verb Patterns & To + V-ing" && (
+                  <div className="bg-gradient-to-r from-amber-500/15 via-primary-500/10 to-blue-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md animate-in fade-in">
+                    <div className="flex items-center gap-2.5 text-xs text-amber-200">
+                      <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                      <span>
+                        Chưa tự tin về công thức <strong className="text-amber-300">To + V-ing</strong> hoặc <strong className="text-primary-300">Động từ đổi nghĩa</strong>?
+                      </span>
+                    </div>
+                    <Link
+                      href="/grammar"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-black transition shadow-sm self-start sm:self-auto flex-shrink-0 cursor-pointer"
+                    >
+                      <span>📖 Mở Sổ Tay Cụm Từ</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                )}
 
                 <div className="p-5 rounded-2xl bg-bg-surface border border-border-main space-y-4 relative overflow-hidden shadow-inner">
                   <div className="flex items-center justify-between text-xs text-primary-400 font-bold">
