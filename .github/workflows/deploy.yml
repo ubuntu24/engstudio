@@ -174,7 +174,20 @@ jobs:
           printf 'GEMINI_API_KEY=%s\n'      "$GEMINI_API_KEY"      >> .env
 
       - name: Pull new images
-        run: docker compose -f docker-compose.prod.yml pull
+        run: |
+          for i in 1 2 3 4 5; do
+            echo "==> Pulling Docker images (attempt $i/5)..."
+            if docker compose -f docker-compose.prod.yml pull; then
+              echo "✅ Successfully pulled all images"
+              break
+            fi
+            if [ $i -eq 5 ]; then
+              echo "❌ Failed to pull images after 5 attempts"
+              exit 1
+            fi
+            echo "⚠️ Network connection interrupted. Retrying in 5s..."
+            sleep 5
+          done
 
       - name: Restart containers
         run: docker compose -f docker-compose.prod.yml up -d --wait --remove-orphans
